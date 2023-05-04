@@ -53,7 +53,7 @@ func (s *service) GetTokenEncryptedPassword(
 
 	res := models.EncryptedPasswordResponse{
 		EncryptedPassword: pwd,
-		DealNumber:        number.String(),
+		DealNumber:        number,
 	}
 
 	return &res, nil

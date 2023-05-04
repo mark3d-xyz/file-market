@@ -51,7 +51,7 @@ type Transfers interface {
 	GetActiveOutgoingTransfersByAddress(ctx context.Context, tx pgx.Tx, address common.Address) ([]*domain.Transfer, error)
 	GetTransfer(ctx context.Context, tx pgx.Tx, id int64) (*domain.Transfer, error)
 	GetActiveTransfer(ctx context.Context, tx pgx.Tx, contractAddress common.Address, tokenId *big.Int) (*domain.Transfer, error)
-	GetTokenEncryptedPassword(ctx context.Context, tx pgx.Tx, contractAddress common.Address, tokenId *big.Int) (string, *big.Int, error)
+	GetTokenEncryptedPassword(ctx context.Context, tx pgx.Tx, contractAddress common.Address, tokenId *big.Int) (string, string, error)
 	InsertTransfer(ctx context.Context, tx pgx.Tx, transfer *domain.Transfer) (int64, error)
 	UpdateTransfer(ctx context.Context, tx pgx.Tx, transfer *domain.Transfer) error
 	InsertTransferStatus(ctx context.Context, tx pgx.Tx, transferId int64, status *domain.TransferStatus) error
