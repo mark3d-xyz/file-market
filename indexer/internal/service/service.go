@@ -58,6 +58,7 @@ type EthClient interface {
 }
 
 type Collections interface {
+	GetCollectionsByCreator(ctx context.Context, address common.Address, lastCollectionAddress *common.Address, limit int) ([]*models.Collection, *models.ErrorResponse)
 	GetCollection(ctx context.Context, address common.Address) (*models.Collection, *models.ErrorResponse)
 	GetCollectionWithTokens(ctx context.Context, address common.Address) (*models.CollectionData, *models.ErrorResponse)
 }

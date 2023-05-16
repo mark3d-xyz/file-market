@@ -54,3 +54,30 @@ func (s *service) GetCollectionWithTokens(ctx context.Context,
 		Tokens:     domain.MapSlice(tokens, domain.TokenToModel),
 	}, nil
 }
+
+func (s *service) GetCollectionsByCreator(
+	ctx context.Context,
+	address common.Address,
+	lastCollectionAddress *common.Address,
+	limit int,
+) ([]*models.Collection, *models.ErrorResponse) {
+	tx, err := s.repository.BeginTransaction(ctx, pgx.TxOptions{})
+	if err != nil {
+		log.Println("begin tx failed: ", err)
+		return nil, internalError
+	}
+	defer s.repository.RollbackTransaction(ctx, tx)
+
+	collections, err := s.repository.GetCollectionsByCreator(ctx, tx, address, lastCollectionAddress, limit)
+	if err != nil {
+		log.Println("get collections by creator failed: ", err)
+		return nil, internalError
+	}
+
+	res := make([]*models.Collection, len(collections))
+	for i, c := range collections {
+		res[i] = domain.CollectionToModel(c)
+	}
+
+	return res, nil
+}

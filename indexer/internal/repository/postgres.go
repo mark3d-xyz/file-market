@@ -25,6 +25,7 @@ type Transactions interface {
 }
 
 type Collections interface {
+	GetCollectionsByCreator(ctx context.Context, tx pgx.Tx, address common.Address, lastCollectionAddress *common.Address, limit int) ([]*domain.Collection, error)
 	GetCollectionsByAddress(ctx context.Context, tx pgx.Tx, address common.Address) ([]*domain.Collection, error)
 	GetCollection(ctx context.Context, tx pgx.Tx, contractAddress common.Address) (*domain.Collection, error)
 	GetCollectionsByTokenId(ctx context.Context, tx pgx.Tx, tokenId *big.Int) (*domain.Collection, error)

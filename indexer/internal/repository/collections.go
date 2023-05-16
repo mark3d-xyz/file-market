@@ -10,6 +10,65 @@ import (
 	"strings"
 )
 
+func (p *postgres) GetCollectionsByCreator(
+	ctx context.Context,
+	tx pgx.Tx,
+	address common.Address,
+	lastCollectionAddress *common.Address,
+	limit int,
+) ([]*domain.Collection, error) {
+	query := `
+		SELECT address, creator, owner, name, token_id, meta_uri, description, image
+		FROM collections
+		WHERE creator=$1 AND address > $2
+		ORDER BY address
+		LIMIT $3
+	`
+
+	lastCollectionAddressStr := ""
+	if lastCollectionAddress != nil {
+		lastCollectionAddressStr = strings.ToLower(lastCollectionAddress.String())
+	}
+
+	rows, err := tx.Query(ctx, query, strings.ToLower(address.String()), lastCollectionAddressStr, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var res []*domain.Collection
+	for rows.Next() {
+		var collectionAddress, creator, owner, tokenId string
+		c := &domain.Collection{}
+
+		if err := rows.Scan(
+			&collectionAddress,
+			&creator,
+			&owner,
+			&c.Name,
+			&tokenId,
+			&c.MetaUri,
+			&c.Description,
+			&c.Image,
+		); err != nil {
+			return nil, err
+		}
+
+		c.Address = common.HexToAddress(collectionAddress)
+		c.Owner = common.HexToAddress(owner)
+		c.Creator = common.HexToAddress(creator)
+
+		var ok bool
+		c.TokenId, ok = big.NewInt(0).SetString(tokenId, 10)
+		if !ok {
+			return nil, fmt.Errorf("failed to parse big int: %s", tokenId)
+		}
+
+		res = append(res, c)
+	}
+	return res, nil
+}
+
 func (p *postgres) GetCollectionsByAddress(ctx context.Context,
 	tx pgx.Tx, address common.Address) ([]*domain.Collection, error) {
 	// language=PostgreSQL

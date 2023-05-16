@@ -53,6 +53,43 @@ paths:
           required: true
           type: string
           pattern: "0x[0-9a-f-A-F]{40}"
+  /collections/by_creator/{address}:
+    get:
+      tags:
+        - collections
+      description: Получение коллекций по адресу создателя
+      produces:
+        - application/json
+      responses:
+        "200":
+          description: Коллекции
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Collection"
+        default:
+          description: Ошибка
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+      parameters:
+        - name: address
+          in: path
+          required: true
+          type: string
+          pattern: "0x[0-9a-f-A-F]{40}"
+        - name: lastCollectionAddress
+          in: query
+          description: Адрес последней коллекции.
+          type: string
+          pattern: "0x[0-9a-f-A-F]{40}"
+        - name: limit
+          in: query
+          description: Максимальное число коллекций, которое вернется на этой странице.
+          type: integer
+          format: int
+          default: 10
+          minimum: 1
+          maximum: 100
   /tokens/{address}:
     get:
       tags:
