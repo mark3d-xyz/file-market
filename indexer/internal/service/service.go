@@ -270,8 +270,7 @@ func (s *service) getRoyalty(ctx context.Context, blockNumber *big.Int, address 
 			}
 			var royalty *big.Int
 			royalty, err = instance.Royalties(&bind.CallOpts{
-				BlockNumber: blockNumber,
-				Context:     ctx,
+				Context: ctx,
 			}, tokenId)
 			if err != nil {
 				log.Println("token uri access token failed", tokenId, err)
@@ -289,8 +288,7 @@ func (s *service) getRoyalty(ctx context.Context, blockNumber *big.Int, address 
 			}
 			var royalty *big.Int
 			royalty, err = instance.Royalties(&bind.CallOpts{
-				BlockNumber: blockNumber,
-				Context:     ctx,
+				Context: ctx,
 			}, tokenId)
 			if err != nil {
 				log.Println("token uri access token failed", tokenId, err)
@@ -308,8 +306,7 @@ func (s *service) getRoyalty(ctx context.Context, blockNumber *big.Int, address 
 			}
 			var royalty *big.Int
 			royalty, err = instance.Royalties(&bind.CallOpts{
-				BlockNumber: blockNumber,
-				Context:     ctx,
+				Context: ctx,
 			}, tokenId)
 			if err != nil {
 				log.Println("token uri access token failed", tokenId, err)

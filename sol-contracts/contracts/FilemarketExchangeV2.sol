@@ -183,7 +183,7 @@ contract FilemarketExchangeV2 is IEncryptedFileTokenCallbackReceiver, Context, O
 
     function payoffRoyalty(uint256 tokenId, uint256 price, IERC20 currency, uint256 finalAmount) internal returns (uint256) {
         try IERC2981(_msgSender()).royaltyInfo(tokenId, price) returns (address receiver, uint royaltyAmount) {
-            require(royaltyAmount < price * royaltyCeiling / PERCENT_MULTIPLIER, "FilemarketExchangeV2: royalty % is too high");
+            require(royaltyAmount <= price * royaltyCeiling / PERCENT_MULTIPLIER, "FilemarketExchangeV2: royalty % is too high");
             if (receiver != address(0) && royaltyAmount > 0) {
                 finalAmount -= royaltyAmount;
                 safeTransferCurrency(currency, payable(receiver), royaltyAmount);

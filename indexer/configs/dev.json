@@ -11,7 +11,7 @@
   },
   "service": {
     "accessTokenAddress": "0xC3F07F620715Fec92db305f718C7FA10C708Bf7A",
-    "exchangeAddress": "0xc7477BC829f77A2eE5d6AFbEfefcA0c3E87Bd392",
+    "exchangeAddress": "0x2301D80E8A7e4Cf59a349ffC20A51367cb27A4fc",
     "publicCollectionAddress": "0xc8c4d9daf70fb945a1a53ac1d977303836df425e",
     "fileBunniesCollectionAddress": "0x",
     "fraudDeciderWeb2Address": "0x09bdE52a5251C02B1Be69b40dd6fBdA536Af5164",

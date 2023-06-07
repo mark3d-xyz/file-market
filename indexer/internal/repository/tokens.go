@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"math/big"
@@ -288,7 +287,7 @@ func (p *postgres) GetToken(
 
 	metadata, err := p.GetMetadata(ctx, tx, t.CollectionAddress, t.TokenId)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			metadata = domain.NewPlaceholderMetadata()
 		} else {
 			return nil, err
