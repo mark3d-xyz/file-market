@@ -14,7 +14,7 @@
     "prepare": "yarn swagger && yarn abi",
     "start": "vite",
     "start:prod": "VITE_IS_MAINNET=true vite -c vite.prod.config",
-    "build": "tsc && vite build && shx cp public/.well-known/walletconnect.txt dist/.well-known/walletconnect.txt",
+    "build": "tsc && vite build",
     "preview": "vite preview",
     "lint:fix": "eslint --fix \"**/*.{ts,tsx}\"",
     "storybook": "start-storybook -p 6006",
@@ -96,7 +96,6 @@
     "eslint-plugin-storybook": "^0.6.6",
     "eslint-plugin-unused-imports": "^2.0.0",
     "prettier": "2.7.1",
-    "shx": "^0.3.4",
     "typescript": "*",
     "vite": "^3.1.0",
     "vite-plugin-eslint": "^1.8.1"
