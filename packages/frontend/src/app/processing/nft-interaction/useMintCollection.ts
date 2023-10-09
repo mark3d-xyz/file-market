@@ -68,9 +68,9 @@ export function useMintCollection() {
 
     console.log(receipt)
 
-    // if (!createCollectionEvent) {
-    //   throw Error(`receipt does not contain ${Mark3dAccessTokenEventNames.CollectionCreation} event`)
-    // }
+    if (!receipt.contractAddress) {
+      throw Error('receipt does not contain Collection Create event')
+    }
 
     return { collectionAddress: receipt.contractAddress }
   }), [config, wrapPromise, upload])
