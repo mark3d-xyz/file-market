@@ -7,7 +7,7 @@ import { textVariant } from '../Txt'
 const Wrapper = styled('div', {
   backgroundColor: '$white',
   display: 'grid',
-  gridTemplateColumns: 'auto minmax(0, 1fr)',
+  gridTemplateColumns: 'minmax(0, auto) minmax(0, 1fr)',
   gap: '$2',
   padding: '$2 12px',
   alignItems: 'center',

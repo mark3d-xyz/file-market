@@ -167,7 +167,12 @@ const CollectionPage = observer(() => {
                   href={`${config?.chain.blockExplorers?.default.url}` +
                       `/address/${collectionAndNfts.collection?.address}`}
                 >
-                  <Badge content={{ title: config?.chain.blockExplorers?.default.name, value: 'VRG' }} />
+                  <Badge
+                    content={{
+                      title: config?.chain.blockExplorers?.default.name,
+                      value: reduceAddress(collectionAndNfts.collection?.address ?? ''),
+                    }}
+                  />
                 </Link>
               )}
             </Badges>
