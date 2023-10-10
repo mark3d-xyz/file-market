@@ -157,7 +157,7 @@ export default observer(function ProfileSettings() {
                   return value.length > 3 && value.length < 50 ? undefined : 'The name must have more than 3 characters and less than 50 characters'
                 },
               },
-              error: isNameExist ? 'This name is exist' : undefined,
+              error: isNameExist ? 'This name already exists' : undefined,
             }}
             url={{
               control,
@@ -177,7 +177,7 @@ export default observer(function ProfileSettings() {
                 pattern: /^[a-z0-9_]+$/,
                 isLowerCase: true,
               },
-              error: isUrlExist ? 'This username is exist' : undefined,
+              error: isUrlExist ? 'This URL already exists' : undefined,
             }}
             bio={{
               setValue,

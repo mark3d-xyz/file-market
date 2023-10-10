@@ -427,6 +427,10 @@ export const subcategory: Record<category, ComboBoxOption[]> = {
     title: 'Worksheets',
     id: '13',
   },
+  {
+    title: 'Contacts',
+    id: '14',
+  },
   ],
   Promocodes: [
     {
@@ -472,7 +476,12 @@ export const subcategory: Record<category, ComboBoxOption[]> = {
     {
       title: 'Subscriptions',
       id: '10',
-    }],
+    },
+    {
+      title: 'Services',
+      id: '11',
+    },
+  ],
   Archives: [],
 }
 

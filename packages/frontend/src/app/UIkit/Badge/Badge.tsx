@@ -6,7 +6,8 @@ import { textVariant } from '../Txt'
 
 const Wrapper = styled('div', {
   backgroundColor: '$white',
-  display: 'flex',
+  display: 'grid',
+  gridTemplateColumns: 'minmax(0, auto) minmax(0, 1fr)',
   gap: '$2',
   padding: '$2 12px',
   alignItems: 'center',
@@ -54,7 +55,6 @@ const Content = styled('div', {
   justifyContent: 'center',
   gap: '$1',
   minHeight: 48,
-  width: '140',
 })
 
 const Image = styled('img', {
