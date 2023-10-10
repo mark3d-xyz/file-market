@@ -147,6 +147,8 @@ jobs:
           sudo mv dist/* /usr/share/nginx/filemarket.xyz/
           sudo mkdir /usr/share/nginx/filemarket.xyz/zohoverify
           sudo cp public/verifyforzoho.html /usr/share/nginx/filemarket.xyz/zohoverify
+          sudo mkdir -p /usr/share/nginx/filemarket.xyz/.well-known
+          sudo cp packages/frontend/public/.well-known/walletconnect.txt /usr/share/nginx/filemarket.xyz/.well-known
           rm frontend.zip
       - name: Update swagger
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}

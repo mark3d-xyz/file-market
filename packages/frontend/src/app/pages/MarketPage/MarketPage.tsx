@@ -14,7 +14,7 @@ const MarketPage = observer(() => {
   const { data: collectionsData } = useCollectionsListStore()
   const location = useLocation()
   const isDisabledPaddingContainer = useMemo(() => {
-    const currentTabUrl = location?.pathname?.split('/')?.at(-1) ?? ''
+    const currentTabUrl = location?.pathname?.split('/')?.at?.(-1) ?? ''
 
     return currentTabUrl === 'collections'
   }, [location])

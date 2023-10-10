@@ -3,11 +3,9 @@ import { useCallback } from 'react'
 import { useAccount } from 'wagmi'
 
 import { mark3dConfig } from '../../config/mark3d'
-import { wagmiConfig } from '../../config/web3Modal'
 import { useStatusState } from '../../hooks'
 import { useCallContract } from '../../hooks/useCallContract'
 import { useConfig } from '../../hooks/useConfig'
-import { Mark3dAccessTokenEventNames } from '../types'
 import { assertAccount, assertConfig } from '../utils/assert'
 import { useUploadErc721Meta } from './useUploadErc721Meta'
 
@@ -27,6 +25,7 @@ export function useMintCollection() {
   const { wrapPromise, ...statuses } = useStatusState<CreateCollectionResult, CreateCollectionForm>()
   const upload = useUploadErc721Meta()
   const config = useConfig()
+  const { callContract } = useCallContract()
   const mintCollection = useCallback(wrapPromise(async (form: CreateCollectionForm) => {
     const { name, symbol, image, description } = form
     assertConfig(config)
@@ -40,8 +39,6 @@ export function useMintCollection() {
       external_link: mark3dConfig.externalLink,
     })
     console.log('mint metadata', metadata)
-
-    const { callContract } = useCallContract()
 
     const hex = Array.from(crypto.getRandomValues(new Uint8Array(32)))
       .map(b => b.toString(16).padStart(2, '0')).join('')
@@ -64,22 +61,18 @@ export function useMintCollection() {
         ignoreTxFailture: true,
       })
 
-    const createCollectionEvent = await wagmiConfig.getPublicClient().getContractEvents({
-      address: config.accessToken.address,
-      abi: config.accessToken.abi,
-      eventName: 'CollectionCreation',
-    })
+    console.log('event')
 
     console.log('event')
-    console.log(createCollectionEvent)
+    // console.log(createCollectionEvent)
 
-    console.log(receipt.logs)
+    console.log(receipt)
 
-    if (!createCollectionEvent) {
-      throw Error(`receipt does not contain ${Mark3dAccessTokenEventNames.CollectionCreation} event`)
+    if (!receipt.contractAddress) {
+      throw Error('receipt does not contain Collection Create event')
     }
 
-    return { collectionAddress: '' }
+    return { collectionAddress: receipt.contractAddress }
   }), [config, wrapPromise, upload])
 
   return { ...statuses, mintCollection }

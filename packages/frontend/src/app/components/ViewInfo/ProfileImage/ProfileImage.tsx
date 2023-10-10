@@ -57,6 +57,7 @@ const ProfileImage = ({ src, isOwner, onSuccess }: IProfileImageProps) => {
   const { modalProps } = useStatusModal({
     statuses,
     okMsg: 'Profile data update completed successfully!',
+    waitForSign: false,
     loadingMsg: 'Profile is updating',
   })
 

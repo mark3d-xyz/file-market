@@ -28,7 +28,7 @@ export const Tabs: React.FC<TabsProps> = observer(({ tabs, isSmall, isTransparen
   }
 
   useEffect(() => {
-    const currentTabUrl = location?.pathname?.split('/')?.at(-1) ?? ''
+    const currentTabUrl = location?.pathname?.split('/')?.at?.(-1) ?? ''
     let tabIndex = tabs.find((t) =>
       t.value === currentTabUrl,
     )

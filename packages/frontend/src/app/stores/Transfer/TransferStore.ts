@@ -220,13 +220,14 @@ export class TransferStore implements IStoreRequester,
 
   onTransferPublicKeySet(tokenId: bigint, publicKeyHex: string, blockNumber: bigint) {
     console.log('onTransferPublicKeySet')
-    if (this.checkExistStatus(TransferStatus.PublicKeySet)) return
     this.checkData(tokenId, data => {
       data.publicKey = publicKeyHex
-      data.statuses?.unshift({
-        status: TransferStatus.PublicKeySet,
-        timestamp: Date.now(),
-      })
+      if (!this.checkExistStatus(TransferStatus.PublicKeySet)) {
+        data.statuses?.unshift({
+          status: TransferStatus.PublicKeySet,
+          timestamp: Date.now(),
+        })
+      }
       this.setIsWaitingForEvent(false)
       this.setBlockTransfer(blockNumber)
       this.onTransferPublicKeySetCall?.()
@@ -235,9 +236,9 @@ export class TransferStore implements IStoreRequester,
 
   onTransferPasswordSet(tokenId: bigint, encryptedPasswordHex: string, blockNumber: bigint) {
     console.log('onTransferPasswordSet')
-    if (this.checkExistStatus(TransferStatus.PasswordSet)) return
     this.checkData(tokenId, data => {
       data.encryptedPassword = encryptedPasswordHex
+      if (this.checkExistStatus(TransferStatus.PasswordSet)) return
       data.statuses?.unshift({
         status: TransferStatus.PasswordSet,
         timestamp: Date.now(),
