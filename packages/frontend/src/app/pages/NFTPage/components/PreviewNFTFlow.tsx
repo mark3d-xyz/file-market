@@ -101,8 +101,6 @@ export const PreviewNFTFlow = ({
   const [is3D, setIs3D] = useState<boolean | undefined>(undefined)
   const [isViewFile, setIsViewFile] = useState<boolean>(false)
 
-  const [isFullScreen, setIsFullScreen] = useState<boolean>()
-
   useEffect(() => {
     const img = new Image()
     img.onload = function() {
@@ -282,10 +280,8 @@ export const PreviewNFTFlow = ({
                     onClick={(e) => {
                       if (screenfull.isFullscreen) {
                         screenfull.exit()
-                        setIsFullScreen(false)
                       } else if (screenfull.isEnabled) {
                         screenfull.request(e.target as Element)
-                        setIsFullScreen(true)
                       }
                     }}
                   />
