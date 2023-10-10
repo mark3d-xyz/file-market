@@ -253,7 +253,7 @@ export const PreviewNFTFlow = ({
                   : (
                     <ImageStyle
                       src={previewState.data}
-                      style={{ objectFit: `${isFullScreen ? (isObjectFitFile ? 'contain' : 'none') : (isObjectFitFile ? 'initial' : 'none')}` }}
+                      style={{ objectFit: `${isObjectFitFile ? 'contain' : 'none'}` }}
                       onError={({ currentTarget }) => {
                         currentTarget.onerror = null
                         currentTarget.src = gradientPlaceholderImg
@@ -274,7 +274,7 @@ export const PreviewNFTFlow = ({
                 {isLoading ? <Loading size='xl' color={'white'} /> : (
                   <ImageStyle
                     src={imageURL}
-                    style={{ cursor: 'pointer', objectFit: `${isFullScreen ? (isObjectFitPreview ? 'contain' : 'none') : (isObjectFitPreview ? 'initial' : 'none')}` }}
+                    style={{ cursor: 'pointer', objectFit: `${isObjectFitPreview ? 'contain' : 'none'}` }}
                     onError={({ currentTarget }) => {
                       currentTarget.onerror = null
                       currentTarget.src = gradientPlaceholderImg
