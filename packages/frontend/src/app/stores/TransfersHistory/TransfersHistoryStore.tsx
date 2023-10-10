@@ -1,6 +1,5 @@
 import dayjs from 'dayjs'
 import { makeAutoObservable } from 'mobx'
-import { type Chain } from 'wagmi'
 
 import { styled } from '../../../styles'
 import {
@@ -24,6 +23,7 @@ import { lastItem } from '../../utils/structs'
 import { formatCurrency } from '../../utils/web3/currency'
 import { type CurrentBlockChainStore } from '../CurrentBlockChain/CurrentBlockChainStore'
 import { type ErrorStore } from '../Error/ErrorStore'
+import { type MultiChainStore } from '../MultiChain/MultiChainStore'
 
 const getLatestStatusTimestamp = (statuses?: OrderStatusInfo[]) => {
   if (!statuses) return 0
@@ -48,85 +48,94 @@ const EthImg = styled('img', {
   objectFit: 'contain',
 })
 
-const convertTransferToTableRows = (target: 'incoming' | 'outgoing', chain: Chain | undefined) => {
+const convertTransferToTableRows = (target: 'incoming' | 'outgoing', multiChainStore: MultiChainStore | undefined) => {
   const eventOptions =
     target === 'incoming' ? ['Receive', 'Buy'] : ['Send', 'Sale']
 
-  return (transfer: TransferWithData): ITableRow => ({
-    cells: [
-      {
-        columnName: 'Event',
-        value:
-          (transfer.order?.id ?? 0) === 0 ? eventOptions[0] : eventOptions[1],
-        cellAttributes: {
-          css: {
-            flexGrow: 0.5,
+  return (transfer: TransferWithData): ITableRow => {
+    const chain = multiChainStore
+      ?.getChainById(Number(transfer.collection?.chainId))?.chain
+
+    return ({
+      cells: [
+        {
+          columnName: 'Event',
+          value:
+            (transfer.order?.id ?? 0) === 0 ? eventOptions[0] : eventOptions[1],
+          cellAttributes: {
+            css: {
+              flexGrow: 0.5,
+            },
           },
         },
-      },
-      {
-        columnName: 'Object',
-        value: (
-          <Badge
-            small
-            wrapperProps={{ css: { padding: 0 } }}
-            image={{
-              borderRadius: 'roundedSquare',
-              url: getHttpLinkFromIpfsString(transfer.collection?.image ?? ''),
-            }}
-            content={{
-              value: reduceAddress(transfer.collection?.owner ?? '—'),
-              title: transfer.collection?.name ?? '—',
-            }}
-          />
-        ),
-        cellAttributes: {
-          css: {
-            flexGrow: 1.5,
+        {
+          columnName: 'Object',
+          value: (
+            <Badge
+              small
+              wrapperProps={{ css: { padding: 0 } }}
+              image={{
+                borderRadius: 'roundedSquare',
+                url: getHttpLinkFromIpfsString(transfer.collection?.image ?? ''),
+              }}
+              content={{
+                value: reduceAddress(transfer.collection?.owner ?? '—'),
+                title: transfer.collection?.name ?? '—',
+              }}
+            />
+          ),
+          cellAttributes: {
+            css: {
+              flexGrow: 1.5,
+            },
           },
         },
+        {
+          columnName: 'From',
+          value: reduceAddress(transfer.transfer?.from ?? '—'),
+        },
+        {
+          columnName: 'To',
+          value: reduceAddress(transfer.transfer?.to ?? '—'),
+        },
+        {
+          columnName: 'Price',
+          value: (
+            <PriceContainer>
+              <Price>
+                {transfer.order?.price !== undefined
+                  ? formatCurrency(
+                    transfer.order.price,
+                    chain,
+                  )
+                  : '—'
+                }
+              </Price>
+              <EthImg src={ethIcon} />
+            </PriceContainer>
+          ),
+        },
+        {
+          columnName: 'Date',
+          value:
+            transfer.order?.statuses?.length
+              ? dayjs(getLatestStatusTimestamp(transfer.order?.statuses)).format(
+                'MMM D[,] YYYY [at] HH[:]mm',
+              )
+              : '—',
+        },
+      ],
+      additionalData: {
+        linkToPage: chain ? `/collection/${chain?.name}/${transfer.collection?.address}/${transfer.token?.tokenId}` : '/',
       },
-      {
-        columnName: 'From',
-        value: reduceAddress(transfer.transfer?.from ?? '—'),
-      },
-      {
-        columnName: 'To',
-        value: reduceAddress(transfer.transfer?.to ?? '—'),
-      },
-      {
-        columnName: 'Price',
-        value: (
-          <PriceContainer>
-            <Price>
-              {transfer.order?.price !== undefined
-                ? formatCurrency(transfer.order.price, chain)
-                : '—'
-              }
-            </Price>
-            <EthImg src={ethIcon} />
-          </PriceContainer>
-        ),
-      },
-      {
-        columnName: 'Date',
-        value:
-          transfer.order?.statuses?.length
-            ? dayjs(getLatestStatusTimestamp(transfer.order?.statuses)).format(
-              'MMM D[,] YYYY [at] HH[:]mm',
-            )
-            : '—',
-      },
-    ],
-    additionalData: {
-      linkToPage: `/collection/${transfer.collection?.address}/${transfer.token?.tokenId}`,
-    },
-  })
+    })
+  }
 }
 
 export class TransfersHistoryStore implements IActivateDeactivate<[string]>, IStoreRequester {
   errorStore: ErrorStore
   currentBlockChainStore: CurrentBlockChainStore
+  multiChainStore: MultiChainStore
 
   currentRequest?: RequestContext
   requestCount = 0
@@ -141,13 +150,23 @@ export class TransfersHistoryStore implements IActivateDeactivate<[string]>, ISt
 
   collectionAddress = ''
 
-  constructor({ errorStore, currentBlockChainStore }: { errorStore: ErrorStore, currentBlockChainStore: CurrentBlockChainStore }) {
+  constructor({
+    errorStore,
+    currentBlockChainStore,
+    multiChainStore,
+  }: {
+    errorStore: ErrorStore
+    currentBlockChainStore: CurrentBlockChainStore
+    multiChainStore: MultiChainStore
+  }) {
     this.errorStore = errorStore
     this.currentBlockChainStore = currentBlockChainStore
+    this.multiChainStore = multiChainStore
 
     makeAutoObservable(this, {
       errorStore: false,
       currentBlockChainStore: false,
+      multiChainStore: false,
     })
   }
 
@@ -232,10 +251,10 @@ export class TransfersHistoryStore implements IActivateDeactivate<[string]>, ISt
     }
 
     const incomingRows = incoming.map<ITableRow>(
-      convertTransferToTableRows('incoming', this.currentBlockChainStore.chain),
+      convertTransferToTableRows('incoming', this.multiChainStore),
     )
     const outgoingRows = outgoing.map<ITableRow>(
-      convertTransferToTableRows('outgoing', this.currentBlockChainStore.chain),
+      convertTransferToTableRows('outgoing', this.multiChainStore),
     )
 
     return incomingRows.concat(outgoingRows)
