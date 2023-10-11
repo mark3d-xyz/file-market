@@ -88,6 +88,9 @@ export const PreviewNFTFlow = ({
   canViewFile,
   hiddenFile,
 }: PreviewNFTFlowProps) => {
+  useEffect(() => {
+    console.log('PreviewNFTFlow here', { imageURL, date: new Date().toISOString() })
+  }, [imageURL])
   const [previewState, setPreviewState] = useState<{
     state: PreviewState
     data?: string
@@ -101,30 +104,6 @@ export const PreviewNFTFlow = ({
   const [is3D, setIs3D] = useState<boolean | undefined>(undefined)
   const [isViewFile, setIsViewFile] = useState<boolean>(false)
 
-  useEffect(() => {
-    const img = new Image()
-    img.onload = function() {
-      setIsObjectFitPreview(img.height > parseInt(adaptive({
-        sm: '358',
-        defaultValue: '500',
-      })),
-      )
-    }
-    img.src = imageURL
-  }, [imageURL])
-
-  useEffect(() => {
-    const img = new Image()
-    img.onload = function() {
-      setIsObjectFitFile(img.height > parseInt(adaptive({
-        sm: '358',
-        defaultValue: '500',
-      })),
-      )
-    }
-    img.src = previewState?.data ?? ''
-  }, [previewState?.data])
-
   const typeFile: typeFiles | undefined = useMemo(() => {
     return hiddenFile ? fileToType(hiddenFile) : undefined
   }, [hiddenFile])
@@ -134,7 +113,7 @@ export const PreviewNFTFlow = ({
   }, [hiddenFile])
 
   const isLoading: boolean = useMemo(() => {
-    return (tokenMetaStore.isLoading || tokenStore.isLoading || !seed) && isConnected
+    return (tokenMetaStore.isLoading || tokenStore.isLoading || (!seed && isConnected))
   }, [tokenMetaStore.isLoading, tokenStore.isLoading, !seed, isConnected])
 
   const isCanView: boolean = useMemo(() => {
@@ -256,6 +235,14 @@ export const PreviewNFTFlow = ({
                         currentTarget.onerror = null
                         currentTarget.src = gradientPlaceholderImg
                       }}
+                      onLoad={(event) => {
+                        const img = event.currentTarget
+                        setIsObjectFitFile(img.height > parseInt(adaptive({
+                          sm: '358',
+                          defaultValue: '500',
+                        })),
+                        )
+                      }}
                     />
                   )
               ) : previewState?.state === PreviewState.LOADING ? (
@@ -284,6 +271,14 @@ export const PreviewNFTFlow = ({
                         screenfull.request(e.target as Element)
                       }
                     }}
+                    onLoad={(event) => {
+                      const img = event.currentTarget
+                      setIsObjectFitPreview(img.height > parseInt(adaptive({
+                        sm: '358',
+                        defaultValue: '500',
+                      })),
+                      )
+                    }}
                   />
                 )}
               </>
@@ -293,8 +288,11 @@ export const PreviewNFTFlow = ({
               isPreviewView={!isViewFile}
               type={typeFile}
               onClick={() => {
-                setIsViewFile(value => !value)
-                handleLoadClick()
+                const isViewFileNew = !isViewFile
+                if (isViewFileNew) {
+                  void handleLoadClick()
+                }
+                setIsViewFile(isViewFileNew)
               }}
             />
           )}
