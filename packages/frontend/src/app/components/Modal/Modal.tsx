@@ -5,6 +5,7 @@ import SuccessfullImg from '../../../assets/img/SuccesfullIcon.svg'
 import { styled } from '../../../styles'
 import { ButtonGlowing, ButtonNavGlowing } from '../../UIkit'
 import { Modal, ModalBody, ModalButtonContainer, ModalP, ModalTitle } from '../../UIkit/Modal/Modal'
+import { type AppDialogProps } from '../../utils/dialog'
 import { stringifyError } from '../../utils/error'
 
 export interface InProcessBodyProps {
@@ -122,18 +123,16 @@ export const ErrorBody = ({ message, onClose }: { message: string, onClose?: () 
   </>
 )
 
-export interface MintModalProps {
-  open: boolean
-  handleClose: () => void
+export type MintModalProps = AppDialogProps<{
   body?: ReactNode
   footer?: ReactNode
   onOpen?: () => void
   isError?: boolean
   isLoading?: boolean
-}
+}>
 
 export default function BaseModal({
-  handleClose,
+  onClose,
   open,
   body,
   footer,
@@ -151,9 +150,7 @@ export default function BaseModal({
       style={{
         maxWidth: '690px',
       }}
-      onClose={() => {
-        handleClose?.()
-      }}
+      onClose={onClose}
       onOpen={onOpen}
     >
       {body && <ModalBody style={{ padding: 0 }}>{body}</ModalBody>}

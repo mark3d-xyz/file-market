@@ -1,8 +1,15 @@
 import React, { useState } from 'react'
 import { type SubmitHandler, useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 
-import BaseModal, { ErrorBody, extractMessageFromError, InProgressBody, SuccessNavBody } from '../../../../../components/Modal/Modal'
+import BaseModal, {
+  ErrorBody,
+  extractMessageFromError,
+  InProgressBody,
+  SuccessOkBody,
+} from '../../../../../components/Modal/Modal'
 import ImageLoader from '../../../../../components/Uploaders/ImageLoader/ImageLoader'
+import { useStores } from '../../../../../hooks'
 import { useCurrentBlockChain } from '../../../../../hooks/useCurrentBlockChain'
 import { useAfterDidMountEffect } from '../../../../../hooks/useDidMountEffect'
 import { useModalProperties } from '../../../../../hooks/useModalProperties'
@@ -54,6 +61,10 @@ export default function CreateCollectionSection() {
 
   const currentBlockChainStore = useCurrentBlockChain()
 
+  const { dialogStore } = useStores()
+
+  const navigate = useNavigate()
+
   useAfterDidMountEffect(() => {
     if (isLoading) {
       setModalOpen(true)
@@ -70,16 +81,21 @@ export default function CreateCollectionSection() {
         />,
       )
     } else if (result) {
-      setModalOpen(true)
-      setModalBody(
-        <SuccessNavBody
-          buttonText='View collection'
-          link={`/collection/${currentBlockChainStore.chain?.name}/${result.collectionAddress}`}
-          onPress={() => {
-            setModalOpen(false)
-          }}
-        />,
-      )
+      const successCreateCollectionDialogName = 'SuccessCreateCollectionDialog'
+      dialogStore.openDialog({
+        component: BaseModal,
+        props: {
+          name: successCreateCollectionDialogName,
+          body: (
+            <SuccessOkBody
+              handleClose={() => { dialogStore.closeDialogByName(successCreateCollectionDialogName) }}
+              description="Your Collection is ready!"
+            />
+          ),
+        },
+      })
+      const collectionUrl = `/collection/${currentBlockChainStore.chain?.name}/${result.collectionAddress}`
+      navigate(collectionUrl)
     }
   }, [error, isLoading, result])
 
@@ -93,7 +109,8 @@ export default function CreateCollectionSection() {
         body={modalBody}
         open={modalOpen}
         isError={!!error}
-        handleClose={() => {
+        isLoading={isLoading}
+        onClose={() => {
           setModalOpen(false)
         }}
       />
@@ -183,7 +200,7 @@ export default function CreateCollectionSection() {
             <Button
               primary
               type='submit'
-              isDisabled={!isValid}
+              isDisabled={!isValid || isLoading}
               title={isValid ? undefined : 'Required fields must be filled'}
               css={{
                 width: '320px',

@@ -2,13 +2,14 @@ import { Tooltip } from '@nextui-org/react'
 import { observer } from 'mobx-react-lite'
 import React, { useEffect, useMemo, useState } from 'react'
 import { type SubmitHandler, useForm } from 'react-hook-form'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useAccount } from 'wagmi'
 
 import BaseModal, {
   ErrorBody,
   extractMessageFromError,
-  InProgressBody, SuccessNavBody,
+  InProgressBody,
+  SuccessOkBody,
 } from '../../../../../components/Modal/Modal'
 import ImageLoader from '../../../../../components/Uploaders/ImageLoader/ImageLoader'
 import NftLoader from '../../../../../components/Uploaders/NftLoader/NftLoader'
@@ -85,7 +86,7 @@ export const CreateEFTSection: React.FC = observer(() => {
     isLoading: isCollectionLoading,
   } = useCollectionAndTokenListStore(address)
   const publicCollectionStore = usePublicCollectionStore()
-  const { transferStore } = useStores()
+  const { transferStore, dialogStore } = useStores()
   const { collectionAndTokenList } = useStores()
   const currentBlockChainStore = useCurrentBlockChain()
   const { modalBody, modalOpen, setModalBody, setModalOpen } =
@@ -127,6 +128,8 @@ export const CreateEFTSection: React.FC = observer(() => {
   const description = watch('description')
   const royalty = watch('royalty')
 
+  const navigate = useNavigate()
+
   const onSubmit: SubmitHandler<CreateNFTForm> = (data) => {
     createNft(
       { ...data, tagsValue: chosenTags, licenseUrl },
@@ -162,16 +165,21 @@ export const CreateEFTSection: React.FC = observer(() => {
 
   useEffect(() => {
     if (transferStore.isCanRedirectMint && nftResult) {
-      setModalOpen(true)
-      setModalBody(
-        <SuccessNavBody
-          buttonText='View EFT'
-          link={`/collection/${currentBlockChainStore.chain?.name}/${nftResult.receipt.to}/${nftResult.tokenId}`}
-          onPress={() => {
-            setModalOpen(false)
-          }}
-        />,
-      )
+      const successMintDialogName = 'SuccessMintDialog'
+      dialogStore.openDialog({
+        component: BaseModal,
+        props: {
+          name: successMintDialogName,
+          body: (
+            <SuccessOkBody
+              handleClose={() => { dialogStore.closeDialogByName(successMintDialogName) }}
+              description="Your EFT is ready!"
+            />
+          ),
+        },
+      })
+      const nftUrl = `/collection/${currentBlockChainStore.chain?.name}/${nftResult.receipt.to}/${nftResult.tokenId}`
+      navigate(nftUrl)
       transferStore.setIsCanRedirectMint(false)
     }
   }, [transferStore.isCanRedirectMint, nftResult])
@@ -201,7 +209,8 @@ export const CreateEFTSection: React.FC = observer(() => {
         body={modalBody}
         open={modalOpen}
         isError={!!nftError}
-        handleClose={() => {
+        isLoading={isNftLoading}
+        onClose={() => {
           setIsNftLoading(false)
           setNftError(undefined)
           setModalOpen(false)
@@ -504,7 +513,7 @@ export const CreateEFTSection: React.FC = observer(() => {
             <Button
               primary
               type='submit'
-              isDisabled={!isValid}
+              isDisabled={!isValid || isNftLoading}
               title={isValid ? undefined : 'Required fields must be filled'}
               css={{
                 width: '320px',

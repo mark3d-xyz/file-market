@@ -48,6 +48,7 @@ const NotificationsSection = <T extends FieldValues>({
   const { modalProps } = useStatusModal({
     statuses,
     okMsg: 'Em data update completed successfully!',
+    waitForSign: false,
     loadingMsg: 'Profile is updating',
   })
 
