@@ -5,6 +5,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"math/big"
 	"strconv"
+	"strings"
 )
 
 type AutosellTokenInfo struct {
@@ -116,6 +117,7 @@ func (t *DefaultTransaction) UnmarshalJSON(input []byte) error {
 
 	if dec.ChainId != nil {
 		chainIdHex := string(dec.ChainId)
+		chainIdHex = strings.ReplaceAll(chainIdHex, "\"", "")
 		chainIdInt, err := strconv.ParseInt(chainIdHex, 0, 64)
 		if err != nil {
 			return err
