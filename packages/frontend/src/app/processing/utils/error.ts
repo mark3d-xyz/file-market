@@ -80,9 +80,11 @@ const pingTx = async (txHash: `0x${string}`) => {
     if (Date.now() - start > FIVE_MINUTES) break
     await wait(5000)
 
-    receipt = await wagmiConfig.getPublicClient().getTransactionReceipt({ hash: txHash })
-
-    if (receipt === null) continue
+    try {
+      receipt = await wagmiConfig.getPublicClient().getTransactionReceipt({ hash: txHash })
+    } catch (e) {
+      console.error('wagmi getTransactionReceipt error', e)
+    }
   }
 
   console.log('PING')

@@ -14,7 +14,6 @@ import { type HiddenFileMetaData } from '../../../../swagger/Api'
 import { type typeFiles } from '../../../components/MarketCard/helper/data'
 import { fileToExtension, fileToType } from '../../../components/MarketCard/helper/fileToType'
 import { useStores } from '../../../hooks'
-import { useMediaMui } from '../../../hooks/useMediaMui'
 import { useSeed } from '../../../processing/SeedProvider/useSeed'
 import { type DecryptResult } from '../../../processing/types'
 import { gradientPlaceholderImg, textVariant } from '../../../UIkit'
@@ -88,16 +87,10 @@ export const PreviewNFTFlow = ({
   canViewFile,
   hiddenFile,
 }: PreviewNFTFlowProps) => {
-  useEffect(() => {
-    console.log('PreviewNFTFlow here', { imageURL, date: new Date().toISOString() })
-  }, [imageURL])
   const [previewState, setPreviewState] = useState<{
     state: PreviewState
     data?: string
   }>()
-  const { adaptive } = useMediaMui()
-  const [isObjectFitPreview, setIsObjectFitPreview] = useState<boolean>(false)
-  const [isObjectFitFile, setIsObjectFitFile] = useState<boolean>(false)
   const { address, isConnected } = useAccount()
   const { tokenMetaStore, tokenStore } = useStores()
   const seed = useSeed(address)
@@ -230,18 +223,10 @@ export const PreviewNFTFlow = ({
                   : (
                     <ImageStyle
                       src={previewState.data}
-                      style={{ objectFit: `${isObjectFitFile ? 'contain' : 'none'}` }}
+                      style={{ objectFit: 'contain' }}
                       onError={({ currentTarget }) => {
                         currentTarget.onerror = null
                         currentTarget.src = gradientPlaceholderImg
-                      }}
-                      onLoad={(event) => {
-                        const img = event.currentTarget
-                        setIsObjectFitFile(img.height > parseInt(adaptive({
-                          sm: '358',
-                          defaultValue: '500',
-                        })),
-                        )
                       }}
                     />
                   )
@@ -259,7 +244,7 @@ export const PreviewNFTFlow = ({
                 {isLoading ? <Loading size='xl' color={'white'} /> : (
                   <ImageStyle
                     src={imageURL}
-                    style={{ cursor: 'pointer', objectFit: `${isObjectFitPreview ? 'contain' : 'none'}` }}
+                    style={{ cursor: 'pointer', objectFit: 'contain' }}
                     onError={({ currentTarget }) => {
                       currentTarget.onerror = null
                       currentTarget.src = gradientPlaceholderImg
@@ -270,14 +255,6 @@ export const PreviewNFTFlow = ({
                       } else if (screenfull.isEnabled) {
                         screenfull.request(e.target as Element)
                       }
-                    }}
-                    onLoad={(event) => {
-                      const img = event.currentTarget
-                      setIsObjectFitPreview(img.height > parseInt(adaptive({
-                        sm: '358',
-                        defaultValue: '500',
-                      })),
-                      )
                     }}
                   />
                 )}

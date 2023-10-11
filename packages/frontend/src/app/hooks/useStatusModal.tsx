@@ -88,7 +88,7 @@ export function useStatusModal({
     modalProps: {
       body: modalBody,
       open: modalOpen,
-      handleClose,
+      onClose: handleClose,
       isError: !!error,
       isLoading,
     },
