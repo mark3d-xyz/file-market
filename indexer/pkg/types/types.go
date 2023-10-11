@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/ethereum/go-ethereum/common"
 	"math/big"
+	"strconv"
 )
 
 type AutosellTokenInfo struct {
@@ -101,7 +102,7 @@ func (t *DefaultTransaction) UnmarshalJSON(input []byte) error {
 	var dec struct {
 		Hash    common.Hash     `json:"hash"`
 		To      *common.Address `json:"to"`
-		ChainId int64           `json:"chainId"`
+		ChainId json.RawMessage `json:"chainId"`
 		From    common.Address  `json:"from"`
 	}
 
@@ -110,9 +111,17 @@ func (t *DefaultTransaction) UnmarshalJSON(input []byte) error {
 	}
 
 	t.to = dec.To
-	t.chainId = big.NewInt(dec.ChainId)
 	t.hash = dec.Hash
 	t.from = dec.From
+
+	if dec.ChainId != nil {
+		chainIdHex := string(dec.ChainId)
+		chainIdInt, err := strconv.ParseInt(chainIdHex, 0, 64)
+		if err != nil {
+			return err
+		}
+		t.chainId = big.NewInt(chainIdInt)
+	}
 
 	return nil
 }
