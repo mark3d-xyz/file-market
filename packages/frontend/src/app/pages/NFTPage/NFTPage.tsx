@@ -29,19 +29,28 @@ const NFTPreviewContainer = styled('div', {
   height: 686,
   background: '$gradients$background',
   boxSizing: 'content-box',
-  '& .blur': {
-    width: '100%',
-    height: '100%',
-    mixBlendMode: 'normal',
-    backdropFilter: 'blur(300px)', // 150px is not enough on some devices
-    paddingTop: '3px',
-  },
-  zIndex: '1',
+  zIndex: 1,
   position: 'relative',
+  overflow: 'hidden',
   '@sm': {
     marginTop: '83px',
     height: 365,
   },
+})
+
+const NFTPreviewBlur = styled('div', {
+  backgroundSize: '100% 100%',
+  backgroundPosition: 'center',
+  position: 'absolute',
+  inset: '-200px',
+  filter: 'blur(150px)',
+})
+
+const NFTPreviewContent = styled('div', {
+  width: '100%',
+  height: '100%',
+  position: 'relative',
+  zIndex: 1,
 })
 
 const MainInfo = styled(PageLayout, {
@@ -135,22 +144,20 @@ const NFTPage: React.FC = observer(() => {
 
   return (
     <>
-      <NFTPreviewContainer style={{
-        backgroundImage: `url(${getHttpLinkFromIpfsString(tokenStore.data?.image ?? '')})`,
-        backgroundSize: '100% 100%',
-        backgroundPosition: 'center',
-      }}
-      >
-        <div className='blur'>
-          {
-            <PreviewNFTFlow
-              getFile={files[0]?.getFile}
-              hiddenFile={tokenStore.data?.hiddenFileMeta}
-              canViewFile={isOwner || canViewHiddenFiles}
-              imageURL={getHttpLinkFromIpfsString(tokenStore.data?.image ?? '')}
-            />
-          }
-        </div>
+      <NFTPreviewContainer >
+        <NFTPreviewBlur
+          css={{
+            backgroundImage: `url(${getHttpLinkFromIpfsString(tokenStore.data?.image ?? '')})`,
+          }}
+        />
+        <NFTPreviewContent>
+          <PreviewNFTFlow
+            getFile={files[0]?.getFile}
+            hiddenFile={tokenStore.data?.hiddenFileMeta}
+            canViewFile={isOwner || canViewHiddenFiles}
+            imageURL={getHttpLinkFromIpfsString(tokenStore.data?.image ?? '')}
+          />
+        </NFTPreviewContent>
       </NFTPreviewContainer>
       <MainInfo>
         <GridLayout>
