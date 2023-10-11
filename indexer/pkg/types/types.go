@@ -3,7 +3,6 @@ package types
 import (
 	"encoding/json"
 	"github.com/ethereum/go-ethereum/common"
-	"github.com/ethereum/go-ethereum/common/hexutil"
 	"math/big"
 )
 
@@ -102,7 +101,7 @@ func (t *DefaultTransaction) UnmarshalJSON(input []byte) error {
 	var dec struct {
 		Hash    common.Hash     `json:"hash"`
 		To      *common.Address `json:"to"`
-		ChainId *hexutil.Big    `json:"chainId"`
+		ChainId int64           `json:"chainId"`
 		From    common.Address  `json:"from"`
 	}
 
@@ -111,9 +110,7 @@ func (t *DefaultTransaction) UnmarshalJSON(input []byte) error {
 	}
 
 	t.to = dec.To
-	if dec.ChainId != nil {
-		t.chainId = (*big.Int)(dec.ChainId)
-	}
+	t.chainId = big.NewInt(dec.ChainId)
 	t.hash = dec.Hash
 	t.from = dec.From
 
