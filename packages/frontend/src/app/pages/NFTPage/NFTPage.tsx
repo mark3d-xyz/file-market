@@ -33,7 +33,7 @@ const NFTPreviewContainer = styled('div', {
     width: '100%',
     height: '100%',
     mixBlendMode: 'normal',
-    backdropFilter: 'blur(150px)',
+    backdropFilter: 'blur(300px)', // 150px is not enough on some devices
     paddingTop: '3px',
   },
   zIndex: '1',

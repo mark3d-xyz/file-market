@@ -384,51 +384,51 @@ export const subcategory: Record<category, ComboBoxOption[]> = {
     id: '2',
   },
   {
-    title: 'eBooks',
+    title: 'Contacts',
     id: '3',
   },
   {
-    title: 'Guides',
+    title: 'eBooks',
     id: '4',
   },
   {
-    title: 'Legal Documents',
+    title: 'Guides',
     id: '5',
   },
   {
-    title: 'Manuals',
+    title: 'Legal Documents',
     id: '6',
   },
   {
-    title: 'Presentations',
+    title: 'Manuals',
     id: '7',
   },
   {
-    title: 'Reports',
+    title: 'Presentations',
     id: '8',
   },
   {
-    title: 'Scripts',
+    title: 'Reports',
     id: '9',
   },
   {
-    title: 'Templates',
+    title: 'Scripts',
     id: '10',
   },
   {
-    title: 'Translations',
+    title: 'Templates',
     id: '11',
   },
   {
-    title: 'Whitepapers',
+    title: 'Translations',
     id: '12',
   },
   {
-    title: 'Worksheets',
+    title: 'Whitepapers',
     id: '13',
   },
   {
-    title: 'Contacts',
+    title: 'Worksheets',
     id: '14',
   },
   ],
@@ -476,10 +476,6 @@ export const subcategory: Record<category, ComboBoxOption[]> = {
     {
       title: 'Subscriptions',
       id: '10',
-    },
-    {
-      title: 'Services',
-      id: '11',
     },
   ],
   Archives: [],

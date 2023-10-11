@@ -40,7 +40,7 @@ export const ButtonFulfillOrder: FC<ButtonFulfillOrderProps> = observer(({
     statuses,
     okMsg: 'Order fulfilled! Now wait until owner of the EFT transfers you hidden files. ' +
       'After that, check the hidden files and finalize the transfer',
-    loadingMsg: 'Fulfilling order',
+    loadingMsg: 'Fulfilling order. The operation might seem unresponsive, but it\'s processing. Please be patient.',
   })
 
   const getPublicKeyHex = useCallback(async () => {

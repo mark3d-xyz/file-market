@@ -91,7 +91,7 @@ export class SocketStore {
 
   private readonly onMessageSubscribeToEft = (event: MessageEvent<string>, chainName?: string) => {
     const data = JSON.parse(event.data) as EFTSubscriptionMessage
-    if (!data) {
+    if (!data || Object.keys(data).length === 0) {
       // sometimes backend sends empty subscription
       return
     }
