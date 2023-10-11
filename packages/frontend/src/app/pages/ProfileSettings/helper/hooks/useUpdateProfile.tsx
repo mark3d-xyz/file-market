@@ -19,7 +19,12 @@ export const useUpdateProfile = (onSuccess?: () => void) => {
     discord: '',
   })
   const [isEmailUpdated, setIsEmailUpdated] = useState<boolean>(false)
-  const { wrapPromise, statuses, setError, setIsLoading } = useStatusState<UserProfile | undefined, IProfileSettings>()
+  const {
+    wrapPromise,
+    statuses,
+    setError,
+    setIsLoading,
+  } = useStatusState<UserProfile | undefined | true, IProfileSettings>()
 
   const updateEmail = async (email?: string) => {
     await userStore.updateEmail(email)
@@ -29,6 +34,8 @@ export const useUpdateProfile = (onSuccess?: () => void) => {
     if (props.email !== userStore.user?.email) {
       await updateEmail(props.email)
       setIsEmailUpdated(true)
+
+      return true
     } else setIsEmailUpdated(false)
     const result = await userStore.updateUserInfo(props)
     onSuccess?.()
@@ -37,7 +44,7 @@ export const useUpdateProfile = (onSuccess?: () => void) => {
   }), [userStore, onSuccess])
 
   useAfterDidMountEffect(() => {
-    updateProfile(formToTransfer)
+    void updateProfile(formToTransfer)
   }, [formToTransfer])
 
   return {

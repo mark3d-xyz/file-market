@@ -63,6 +63,7 @@ export const StyledTitle = styled(Txt, {
 })
 
 export const StyledCollectionName = styled(Txt, {
+  width: '100%',
   overflow: 'hidden',
   textOverflow: 'ellipsis',
   whiteSpace: 'nowrap',

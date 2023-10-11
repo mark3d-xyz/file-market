@@ -1,5 +1,6 @@
 import assert from 'assert'
 import { useCallback } from 'react'
+import { getAddress } from 'viem'
 import { useAccount } from 'wagmi'
 
 import { mark3dConfig } from '../../config/mark3d'
@@ -67,12 +68,32 @@ export function useMintCollection() {
     // console.log(createCollectionEvent)
 
     console.log(receipt)
+    // sometimes there is no collection address in a receipt
+    let contractAddress = receipt?.contractAddress
 
-    if (!receipt.contractAddress) {
+    if (!contractAddress) {
+      const collectionAddressLog = receipt
+        ?.logs
+        ?.find(log => {
+          try {
+            // длина массива логов меняется между чейнами, так что ищем лог с похожим на нормальный адрес
+            // не 100% решение, но должно работать с хреновыми rpc
+            return getAddress(log.address) !== getAddress(config.accessToken.address) &&
+              getAddress(log.address) !== getAddress(address) &&
+              !log.address?.startsWith('0x000000')
+          } catch (e) {
+            // getAddress can throw error, but it's useless. We need to find correct address
+            return false
+          }
+        })
+      contractAddress = collectionAddressLog?.address || null
+    }
+
+    if (!contractAddress) {
       throw Error('receipt does not contain Collection Create event')
     }
 
-    return { collectionAddress: receipt.contractAddress }
+    return { collectionAddress: contractAddress }
   }), [config, wrapPromise, upload])
 
   return { ...statuses, mintCollection }
