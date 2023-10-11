@@ -114,7 +114,9 @@ export default observer(function ProfileSettings() {
     okMsg: 'Profile data update completed successfully!',
     loadingMsg: 'Profile is updating',
     waitForSign: false,
-    successNavTo: isEmailUpdated ? undefined : `/profile/${statuses?.result?.username ?? statuses.result?.address}`,
+    successNavTo: isEmailUpdated || !statuses.result
+      ? undefined
+      : `/profile/${statuses?.result?.username ?? ('address' in statuses?.result && statuses.result?.address)}`,
   })
 
   const isExistProblem = useMemo(() => {

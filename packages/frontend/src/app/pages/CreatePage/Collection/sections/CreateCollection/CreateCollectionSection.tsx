@@ -156,7 +156,7 @@ export default function CreateCollectionSection() {
             <Label>Symbol</Label>
             <Input<CreateCollectionForm>
               withoutDefaultBorder
-              placeholder='Token symbol'
+              placeholder='Collection short name (Bitcoin - BTC)'
               controlledInputProps={{
                 control,
                 name: 'symbol',
