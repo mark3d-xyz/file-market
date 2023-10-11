@@ -24,7 +24,7 @@ export const useUpdateProfile = (onSuccess?: () => void) => {
     statuses,
     setError,
     setIsLoading,
-  } = useStatusState<UserProfile | undefined | true, IProfileSettings>()
+  } = useStatusState<UserProfile | undefined | IProfileSettings, IProfileSettings>()
 
   const updateEmail = async (email?: string) => {
     await userStore.updateEmail(email)
@@ -35,7 +35,7 @@ export const useUpdateProfile = (onSuccess?: () => void) => {
       await updateEmail(props.email)
       setIsEmailUpdated(true)
 
-      return true
+      return props
     } else setIsEmailUpdated(false)
     const result = await userStore.updateUserInfo(props)
     onSuccess?.()
