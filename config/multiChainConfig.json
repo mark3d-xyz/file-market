@@ -91,7 +91,7 @@
       "rpcUrls": {
         "default": {
           "http": [
-            " https://nd-223-015-392.p2pify.com/80abe9200081e09a2ac7f6c101c9dd1e"
+            "https://nd-223-015-392.p2pify.com/80abe9200081e09a2ac7f6c101c9dd1e"
           ]
         },
         "public": {
