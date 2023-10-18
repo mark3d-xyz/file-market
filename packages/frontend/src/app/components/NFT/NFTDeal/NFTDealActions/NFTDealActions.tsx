@@ -71,7 +71,9 @@ export const NFTDealActions: FC<NFTDealActionsProps> = observer(({
   }, [serverTime])
 
   return (
-    <ButtonsContainer content={(isDisabledFileBunnies ? fileBunniesText : undefined) ?? blockStore.confirmationsText}>
+    <ButtonsContainer
+      content={(isOwner && isDisabledFileBunnies ? fileBunniesText : undefined) ?? blockStore.confirmationsText}
+    >
       {isOwner ? (
         <NFTDealActionOwner
           transfer={transfer}
