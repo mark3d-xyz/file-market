@@ -52,14 +52,15 @@ export const NFTDealActions: FC<NFTDealActionsProps> = observer(({
   const collectionAddressNormalized = tokenFullId?.collectionAddress && getAddress(tokenFullId?.collectionAddress)
   const fileBunniesAddressNormalized = getAddress(config?.fileBunniesCollectionToken.address ?? '')
   const isFileBunnies = collectionAddressNormalized === fileBunniesAddressNormalized
-
-  const fileBunniesText = useMemo(() => {
-    return (isFileBunnies && +tokenFullId.tokenId < 7000) ? 'Unlocked 24.12.2023' : ''
-  }, [isFileBunnies, transfer, tokenFullId])
+  const transferNumber = Number(transfer?.number)
 
   const isDisabledFileBunnies = useMemo(() => {
-    return (isFileBunnies && +tokenFullId.tokenId < 7000)
-  }, [isFileBunnies, transfer, tokenFullId])
+    return isFileBunnies && +tokenFullId.tokenId < 7000
+  }, [isFileBunnies, transfer, tokenFullId, transferNumber])
+
+  const fileBunniesText = useMemo(() => {
+    return isDisabledFileBunnies ? 'Unlocked 24.12.2023' : ''
+  }, [isDisabledFileBunnies])
 
   useEffect(() => {
     if (!serverTime) {
@@ -85,7 +86,7 @@ export const NFTDealActions: FC<NFTDealActionsProps> = observer(({
           order={order}
           tokenFullId={tokenFullId}
           isBuyer={isBuyer}
-          isDisabled={isDisabled || isDisabledFileBunnies}
+          isDisabled={isDisabled}
         />
       )}
     </ButtonsContainer>
