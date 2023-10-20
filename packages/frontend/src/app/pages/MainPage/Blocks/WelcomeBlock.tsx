@@ -226,16 +226,16 @@ export default function WelcomeBlock() {
         <WelcomeInfo>
           <StorageImg src={bgStorage} />
           <Title>
-            Tokenized File Sharing platform with programmable access & incentives
+            P2P platform for trading any digital goods
           </Title>
           <Description>
-            Your access point to decentralized storage for impactful
-            content, where data hunters, keepers, and providers connect.
+            Experience true ownership and complete privacy with brand new Encrypted FileToken (EFT) standard, offering
+            on-chain provenance on the secondary market with royalties, low fees, instant payouts, and decentralized
+            storage for your valuable content.
           </Description>
           <NavigateBlock>
             <NavigateTitle>
-              Upload and protect your data in a perpetual decentralized
-              storage and start earning by selling access to it!
+              Upload your data, protect it, then start earning by selling access!
             </NavigateTitle>
             <div className='buttonContainer'>
               <Button
