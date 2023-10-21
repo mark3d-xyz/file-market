@@ -64,6 +64,7 @@ const Title = styled('h1', {
 const Description = styled('p', {
   ...textVariant('body1').true,
   fontWeight: 400,
+  fontSize: '19px',
   color: '$gray700',
   maxWidth: 776,
   marginTop: '24px',
@@ -247,7 +248,7 @@ export default function WelcomeBlock() {
                   navigate('/create/eft')
                 }}
               >
-                Upload file right here
+                Upload & sell a file
               </Button>
               <Button
                 mediumMxWidth
