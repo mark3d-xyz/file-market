@@ -205,7 +205,7 @@ func (s *service) getTokenCurrentState(ctx context.Context, address common.Addre
 	defer s.repository.RollbackTransaction(ctx, tx)
 
 	token, err := s.repository.GetToken(ctx, tx, address, tokenId)
-	if err != nil {
+	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
 		logger.Error("failed to get token", err, nil)
 		return nil, nil, nil, err
 	}
