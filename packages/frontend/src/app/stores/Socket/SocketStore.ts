@@ -101,11 +101,14 @@ export class SocketStore {
     this.transferStore.setData(transfer)
     this.orderStore.setData(order)
     this.tokenStore.setData(token)
+    this.transferStore.setIsWaitingSocket(false)
 
     console.log(transfer)
     console.log(order)
     console.log(token)
-    if (data.event === 'Transfer') this.transferStore.setIsCanRedirectMint(true)
+
+    // Если токен есть, то можно редиректить
+    if (!this.transferStore.isCanRedirectMint && token) this.transferStore.setIsCanRedirectMint(true)
   }
 
   disconnect({ type, chainName }: IFindSocket) {

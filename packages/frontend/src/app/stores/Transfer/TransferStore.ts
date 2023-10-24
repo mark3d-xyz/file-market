@@ -27,6 +27,7 @@ export class TransferStore implements IStoreRequester,
 
   isWaitingForEvent: boolean = false
   isWaitingForReciept: boolean = false
+  isWaitingForSocket: boolean = false
 
   data?: Transfer = undefined
   tokenFullId?: TokenFullId = undefined
@@ -149,6 +150,10 @@ export class TransferStore implements IStoreRequester,
 
   setIsWaitingReciept = (isWaiting: boolean) => {
     this.isWaitingForReciept = isWaiting
+  }
+
+  setIsWaitingSocket = (isWaiting: boolean) => {
+    this.isWaitingForSocket = isWaiting
   }
 
   setBlockTransfer = (blockNumber?: bigint) => {
@@ -295,6 +300,6 @@ export class TransferStore implements IStoreRequester,
   }
 
   get isWaitingForContinue() {
-    return this.isWaitingForEvent || this.isWaitingForReciept
+    return this.isWaitingForEvent || this.isWaitingForReciept || this.isWaitingForSocket
   }
 }
