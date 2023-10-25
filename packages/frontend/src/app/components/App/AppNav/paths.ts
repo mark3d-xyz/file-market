@@ -10,6 +10,10 @@ export const paths: NavBarItemData[] = [
     label: 'Collections',
   },
   {
+    to: '/fileBunnies',
+    label: 'FileBunnies',
+  },
+  {
     to: 'https://medium.com/filemarket-xyz',
     label: 'Blogs',
     isLink: true,

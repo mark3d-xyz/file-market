@@ -215,6 +215,7 @@ const TopSection = () => {
     {
       text: 'Explore EFTs',
       url: '/market',
+      isMock: true,
     },
     {
       text: 'Build own Shop',
@@ -227,6 +228,11 @@ const TopSection = () => {
       onClick: () => {
         window.scrollTo(0, collectionPosition)
       },
+    },
+    {
+      text: 'FileBunnies',
+      url: '/fileBunnies',
+      isMock: true,
     },
     {
       text: 'How to get FIL',

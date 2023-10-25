@@ -25,7 +25,7 @@ const Pre = styled('pre', {
   color: '$gray800',
   fontWeight: 400,
   whiteSpace: 'pre-wrap',
-  wordWrap: 'break-word',
+  wordWrap: 'anywhere',
   lineHeight: 1.5,
   maxWidth: 640,
 })

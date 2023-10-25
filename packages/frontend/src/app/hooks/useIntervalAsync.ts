@@ -1,13 +1,15 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 const useIntervalAsync = <R = unknown>(fn: () => Promise<R>, ms: number) => {
   const runningCount = useRef(0)
   const timeout = useRef<number>()
   const mountedRef = useRef(false)
+  const [allRunsCount, setAllRunsCount] = useState(0)
 
   const next = useCallback(
     (handler: TimerHandler) => {
       if (mountedRef.current && runningCount.current === 0) {
+        setAllRunsCount(prevState => prevState + 1)
         // eslint-disable-next-line @typescript-eslint/no-implied-eval
         timeout.current = window.setTimeout(handler, ms)
       }
@@ -41,6 +43,7 @@ const useIntervalAsync = <R = unknown>(fn: () => Promise<R>, ms: number) => {
   return {
     flush,
     run,
+    allRunsCount,
   }
 }
 
