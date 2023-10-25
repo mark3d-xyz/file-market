@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { type SubmitHandler, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
+import { useAccount } from 'wagmi'
 
 import { type Collection } from '../../../../../../swagger/Api'
 import BaseModal, {
@@ -17,6 +18,7 @@ import useIntervalAsync from '../../../../../hooks/useIntervalAsync'
 import { useModalProperties } from '../../../../../hooks/useModalProperties'
 import { Button, FormControl, Input, PageLayout } from '../../../../../UIkit'
 import { TextArea } from '../../../../../UIkit/Form/TextArea/TextArea'
+import { ZeroAddress } from '../../../../../utils/constants'
 import { stringifyError } from '../../../../../utils/error'
 import { wrapRequest } from '../../../../../utils/error/wrapRequest'
 import {
@@ -43,6 +45,7 @@ const MAX_COUNT_TRY_INDEXER = 10
 export default function CreateCollectionSection() {
   const [indexerCollectionInfo, setIndexerCollectionInfo] = useState<Collection | undefined>()
   const currentBlockChainStore = useCurrentBlockChain()
+  const { address } = useAccount()
 
   const {
     register,
@@ -141,7 +144,24 @@ export default function CreateCollectionSection() {
         />,
       )
     } else if (result) {
-      runIsMinted()
+      if (result.collectionAddress === ZeroAddress) {
+        dialogStore.openDialog({
+          component: BaseModal,
+          props: {
+            name: 'SuccessCreateCollectionDialog',
+            body: (
+              <SuccessOkBody
+                handleClose={() => { dialogStore.closeDialogByName('SuccessCreateCollectionDialog') }}
+                description="Your Collection is ready!"
+              />
+            ),
+          },
+        })
+        const collectionUrl = `/profile/${address}`
+        navigate(collectionUrl)
+      } else {
+        runIsMinted()
+      }
     }
   }, [error, isLoading, result])
 
