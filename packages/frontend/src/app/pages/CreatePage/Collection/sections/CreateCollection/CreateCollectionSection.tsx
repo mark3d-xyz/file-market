@@ -38,7 +38,7 @@ export interface CreateCollectionForm {
   description: string
 }
 
-const MAX_COUNT_TRY_INDEXER = 5
+const MAX_COUNT_TRY_INDEXER = 10
 
 export default function CreateCollectionSection() {
   const [indexerCollectionInfo, setIndexerCollectionInfo] = useState<Collection | undefined>()
@@ -93,7 +93,9 @@ export default function CreateCollectionSection() {
   }, 3000)
 
   useEffect(() => {
-    if (indexerCollectionInfo?.address === 'opa') {
+    console.log('COLLECTION')
+    console.log(indexerCollectionInfo)
+    if (indexerCollectionInfo?.address) {
       flushIsMinted()
       const successCreateCollectionDialogName = 'SuccessCreateCollectionDialog'
       dialogStore.openDialog({
@@ -111,7 +113,7 @@ export default function CreateCollectionSection() {
       const collectionUrl = `/collection/${currentBlockChainStore.chain?.name}/${indexerCollectionInfo?.address}`
       navigate(collectionUrl)
     }
-  }, [indexerCollectionInfo])
+  }, [indexerCollectionInfo?.address])
 
   const { modalBody, setModalBody, modalOpen, setModalOpen } =
     useModalProperties()
