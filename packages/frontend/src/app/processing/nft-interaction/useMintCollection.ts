@@ -7,6 +7,7 @@ import { mark3dConfig } from '../../config/mark3d'
 import { useStatusState } from '../../hooks'
 import { useCallContract } from '../../hooks/useCallContract'
 import { useConfig } from '../../hooks/useConfig'
+import { ZeroAddress } from '../../utils/constants'
 import { assertAccount, assertConfig } from '../utils/assert'
 import { useUploadErc721Meta } from './useUploadErc721Meta'
 
@@ -86,11 +87,7 @@ export function useMintCollection() {
             return false
           }
         })
-      contractAddress = collectionAddressLog?.address || null
-    }
-
-    if (!contractAddress) {
-      throw Error('receipt does not contain Collection Create event')
+      contractAddress = collectionAddressLog?.address || ZeroAddress
     }
 
     return { collectionAddress: contractAddress }
