@@ -7,7 +7,6 @@ import { useCollectionsListStore } from '../../hooks/useCollectionsListStore'
 import { useOpenOrderListStore } from '../../hooks/useOrdersListStore'
 import { PageLayout, type TabItem, Tabs } from '../../UIkit'
 import { TabsContainer } from '../../UIkit/Tabs/TabsContainer'
-import FileBunniesSection from './FileBunnies/FileBunniesSection/FileBunniesSection'
 
 const MarketPage = observer(() => {
   const { data: orderData } = useOpenOrderListStore()
@@ -37,18 +36,15 @@ const MarketPage = observer(() => {
   }, [orderData.total, collectionsData.total])
 
   return (
-    <>
-      <FileBunniesSection />
-      <PageLayout style={{ paddingTop: '102px' }} collectionPage={isDisabledPaddingContainer}>
-        <TabsContainer>
-          <Tabs
-            tabs={tabs}
-            isSmall
-          />
-        </TabsContainer>
-        <Outlet />
-      </PageLayout>
-    </>
+    <PageLayout isHasSelectBlockChain collectionPage={isDisabledPaddingContainer}>
+      <TabsContainer>
+        <Tabs
+          tabs={tabs}
+          isSmall
+        />
+      </TabsContainer>
+      <Outlet />
+    </PageLayout>
   )
 })
 export default MarketPage

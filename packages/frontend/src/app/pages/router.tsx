@@ -9,6 +9,7 @@ import CollectionPage from './CollectionPage/CollectionPage'
 import { collectionPageRoutes } from './CollectionPage/routes'
 import { createRoutes } from './CreatePage/routes'
 import ExplorerPage from './ExplorerPage/ExplorerPage'
+import FileBunniesPage from './FileBunnies/FileBunniesPage'
 import MainPage from './MainPage/MainPage'
 import MarketPage from './MarketPage/MarketPage'
 import { marketRoutes } from './MarketPage/routes'
@@ -69,6 +70,10 @@ const routes: RouteObject[] = [
       path: '',
       element: <ProfileSettings />,
     }],
+  },
+  {
+    path: 'fileBunnies',
+    element: <FileBunniesPage />,
   },
   {
     path: '*',

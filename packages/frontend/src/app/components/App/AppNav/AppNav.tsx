@@ -16,6 +16,10 @@ export const AppNav: FC = () => {
   const location = useLocation()
   const scrollY = useScrollWindow()
 
+  const isFilebunnies: boolean = useMemo(() => {
+    return location.pathname.includes('/fileBunnies')
+  }, [location.pathname])
+
   const isMarketPage: boolean = useMemo(() => {
     return location.pathname.includes('/market')
   }, [location.pathname])
@@ -47,8 +51,8 @@ export const AppNav: FC = () => {
 
   return (
     <NavBar
-      noneBlurShadow={noneBlurShadow && isMarketPage}
-      isTransparent={isTransparent && isMarketPage}
+      noneBlurShadow={(noneBlurShadow && isFilebunnies) || isMarketPage}
+      isTransparent={isTransparent && isFilebunnies}
       mobileBp={mobileBp}
       brand={<AppLogoButton to='/' hideNameIn={mobileBp} />}
       items={paths}
