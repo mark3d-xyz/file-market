@@ -1,7 +1,6 @@
 import { type PressEvent } from '@react-types/shared/src/events'
 import { observer } from 'mobx-react-lite'
 import { type FC, useCallback } from 'react'
-import { trim } from 'viem'
 import { useAccount } from 'wagmi'
 
 import { type Order } from '../../../../../../swagger/Api'
@@ -59,13 +58,9 @@ export const ButtonFulfillOrder: FC<ButtonFulfillOrderProps> = observer(({
     })
     const publicKeyHexRes = await getPublicKeyHex()
     console.log(receipt)
-    console.log(receipt?.logs[0].topics[1])
-    const to = trim(receipt?.logs[0].topics[1] ?? '0x')
-    console.log(to)
     if (receipt?.blockNumber && publicKeyHexRes) {
       transferStore.onTransferPublicKeySet(BigInt(tokenFullId.tokenId), publicKeyHexRes, receipt?.blockNumber)
     }
-    transferStore.onTransferDraftCompletion(BigInt(tokenFullId.tokenId), to, receipt?.blockNumber)
   })
 
   return (

@@ -21,7 +21,7 @@ export const useChangeNetwork = (props?: { onSuccess?: (chainId?: number) => voi
       props?.onSuccess?.(data.id)
       reloadStores()
     },
-    onError: () => {
+    onError: (error) => {
       props?.onError?.()
     },
   })

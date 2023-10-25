@@ -10,6 +10,7 @@ import { stringifyError } from '../../utils/error'
 
 export interface InProcessBodyProps {
   text: ReactNode
+  mainText?: ReactNode
   waitForSign?: boolean
 }
 
@@ -19,11 +20,11 @@ const Loading = styled('img', {
   marginBottom: '20px',
 })
 
-export const InProgressBody: React.FC<InProcessBodyProps> = ({ text, waitForSign = true }) => (
+export const InProgressBody: React.FC<InProcessBodyProps> = ({ text, mainText, waitForSign = true }) => (
   <>
     <Loading src={LoadingIcon} />
     <ModalTitle>{text}</ModalTitle>
-    {waitForSign && <ModalP style={{ fontSize: '16px' }}>Please check your wallet and sign the transaction</ModalP>}
+    {waitForSign && <ModalP style={{ fontSize: '16px' }}>{mainText ?? 'Please check your wallet and sign the transaction'}</ModalP>}
   </>
 )
 

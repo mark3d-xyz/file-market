@@ -9,11 +9,13 @@ export function wrapButtonActionsFunction<Arguments = void>() {
     // we disable buttons when user starts contract interaction, and enable back when event arrives
     transferStore.setIsWaitingForEvent(true)
     transferStore.setIsWaitingReciept(true)
+    transferStore.setIsWaitingSocket(true)
   }
 
   const onActionError = () => {
     transferStore.setIsWaitingReciept(false)
     transferStore.setIsWaitingForEvent(false)
+    transferStore.setIsWaitingSocket(false)
   }
 
   const onActionEnd = () => {

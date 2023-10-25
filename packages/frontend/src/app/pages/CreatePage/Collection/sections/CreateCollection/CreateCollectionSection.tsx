@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { type SubmitHandler, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
+import { type Collection } from '../../../../../../swagger/Api'
 import BaseModal, {
   ErrorBody,
   extractMessageFromError,
@@ -12,9 +13,12 @@ import ImageLoader from '../../../../../components/Uploaders/ImageLoader/ImageLo
 import { useStores } from '../../../../../hooks'
 import { useCurrentBlockChain } from '../../../../../hooks/useCurrentBlockChain'
 import { useAfterDidMountEffect } from '../../../../../hooks/useDidMountEffect'
+import useIntervalAsync from '../../../../../hooks/useIntervalAsync'
 import { useModalProperties } from '../../../../../hooks/useModalProperties'
 import { Button, FormControl, Input, PageLayout } from '../../../../../UIkit'
 import { TextArea } from '../../../../../UIkit/Form/TextArea/TextArea'
+import { stringifyError } from '../../../../../utils/error'
+import { wrapRequest } from '../../../../../utils/error/wrapRequest'
 import {
   ButtonContainer,
   Description,
@@ -34,7 +38,12 @@ export interface CreateCollectionForm {
   description: string
 }
 
+const MAX_COUNT_TRY_INDEXER = 5
+
 export default function CreateCollectionSection() {
+  const [indexerCollectionInfo, setIndexerCollectionInfo] = useState<Collection | undefined>()
+  const currentBlockChainStore = useCurrentBlockChain()
+
   const {
     register,
     handleSubmit,
@@ -56,31 +65,36 @@ export default function CreateCollectionSection() {
     mintCollection(data)
   }
 
-  const { modalBody, setModalBody, modalOpen, setModalOpen } =
-    useModalProperties()
-
-  const currentBlockChainStore = useCurrentBlockChain()
-
   const { dialogStore } = useStores()
 
   const navigate = useNavigate()
 
-  useAfterDidMountEffect(() => {
-    if (isLoading) {
-      setModalOpen(true)
-      setModalBody(<InProgressBody text='Collection is being minted' />)
-    } else if (error) {
+  const checkIsIndexerHasMintInfo = useCallback(async () => {
+    if (!result?.collectionAddress) return
+    try {
+      const responseCollection = await wrapRequest(async () => currentBlockChainStore.api.collections.collectionsDetail(result?.collectionAddress))
+      setIndexerCollectionInfo(responseCollection?.collection)
+    } catch (e) {
+      flushIsMinted()
       setModalOpen(true)
       setModalBody(
         <ErrorBody
-          message={extractMessageFromError(error)}
+          message={stringifyError(e)}
           onClose={() => {
             setModalOpen(false)
           }
           }
-        />,
-      )
-    } else if (result) {
+        />)
+    }
+  }, [currentBlockChainStore.api, result?.collectionAddress])
+
+  const { flush: flushIsMinted, run: runIsMinted, allRunsCount } = useIntervalAsync(() => {
+    return checkIsIndexerHasMintInfo()
+  }, 3000)
+
+  useEffect(() => {
+    if (indexerCollectionInfo?.address === 'opa') {
+      flushIsMinted()
       const successCreateCollectionDialogName = 'SuccessCreateCollectionDialog'
       dialogStore.openDialog({
         component: BaseModal,
@@ -94,10 +108,46 @@ export default function CreateCollectionSection() {
           ),
         },
       })
-      const collectionUrl = `/collection/${currentBlockChainStore.chain?.name}/${result.collectionAddress}`
+      const collectionUrl = `/collection/${currentBlockChainStore.chain?.name}/${indexerCollectionInfo?.address}`
       navigate(collectionUrl)
     }
+  }, [indexerCollectionInfo])
+
+  const { modalBody, setModalBody, modalOpen, setModalOpen } =
+    useModalProperties()
+
+  const loadingModalMainText = useMemo(() => {
+    return allRunsCount > MAX_COUNT_TRY_INDEXER ? 'Attention! Your EFT collection have been successfully' +
+      ' created! We are currently updating data from the blockchain' +
+      ' to accurately display information about this for' +
+      ' you. This may take some time, please wait.' : undefined
+  }, [allRunsCount])
+
+  useAfterDidMountEffect(() => {
+    if (isLoading) {
+      setModalOpen(true)
+      setModalBody(<InProgressBody text='Collection is being minted' mainText={loadingModalMainText} />)
+    } else if (error) {
+      setModalOpen(true)
+      setModalBody(
+        <ErrorBody
+          message={extractMessageFromError(error)}
+          onClose={() => {
+            setModalOpen(false)
+          }
+          }
+        />,
+      )
+    } else if (result) {
+      runIsMinted()
+    }
   }, [error, isLoading, result])
+
+  useEffect(() => {
+    if (!loadingModalMainText) return
+    setModalOpen(true)
+    setModalBody(<InProgressBody text='Collection is being minted' mainText={loadingModalMainText} />)
+  }, [loadingModalMainText])
 
   const [textareaLength, setTextareaLength] = useState(
     getValues('description')?.length ?? 0,
@@ -109,7 +159,7 @@ export default function CreateCollectionSection() {
         body={modalBody}
         open={modalOpen}
         isError={!!error}
-        isLoading={isLoading}
+        isLoading={isLoading || (result && !indexerCollectionInfo?.address)}
         onClose={() => {
           setModalOpen(false)
         }}
