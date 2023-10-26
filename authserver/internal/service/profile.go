@@ -214,19 +214,9 @@ func (s *service) UpdateUserProfile(
 	}
 
 	// check banwords
-	if profile.Username != oldProfile.Username && isForbiddenWord(profile.Username, false) {
-		return nil, &domain.APIError{
-			Code:    http.StatusBadRequest,
-			Message: "forbidden username",
-		}
+	if err := checkBanwords(profile, oldProfile); err != nil {
+		return nil, err
 	}
-	if profile.Name != oldProfile.Name && isForbiddenWord(profile.Name, false) {
-		return nil, &domain.APIError{
-			Code:    http.StatusBadRequest,
-			Message: "forbidden name",
-		}
-	}
-
 	updateUserProfileFields(profile, oldProfile)
 
 	if err := s.repository.UpdateUserProfile(ctx, tx, profile); err != nil {
@@ -252,6 +242,22 @@ func (s *service) UpdateUserProfile(
 	}
 
 	return res, nil
+}
+
+func checkBanwords(profile *domain.UserProfile, oldProfile *domain.UserProfile) *domain.APIError {
+	if profile.Username != oldProfile.Username && isForbiddenWord(profile.Username, false) {
+		return &domain.APIError{
+			Code:    http.StatusBadRequest,
+			Message: "forbidden username",
+		}
+	}
+	if profile.Name != oldProfile.Name && isForbiddenWord(profile.Name, false) {
+		return &domain.APIError{
+			Code:    http.StatusBadRequest,
+			Message: "forbidden name",
+		}
+	}
+	return nil
 }
 
 func isForbiddenWord(word string, caseSensitive bool) bool {
@@ -386,7 +392,7 @@ func (s *service) VerifyEmail(
 	return strings.ToLower(token.Address.String()), nil
 }
 
-// updateUserProfileFields updates `new` profile fields except email and twitter
+// updateUserProfileFields updates `new` profile fields except email
 func updateUserProfileFields(new *domain.UserProfile, old *domain.UserProfile) {
 	if new.Name == "" {
 		new.Name = old.Name
@@ -411,6 +417,9 @@ func updateUserProfileFields(new *domain.UserProfile, old *domain.UserProfile) {
 	}
 	if new.Twitter == nil || (new.Twitter != nil && *new.Twitter == "") {
 		new.Twitter = old.Twitter
+	}
+	if new.Instagram == nil || (new.Instagram != nil && *new.Instagram == "") {
+		new.Instagram = old.Instagram
 	}
 	if new.Discord == nil || (new.Discord != nil && *new.Discord == "") {
 		new.Discord = old.Discord

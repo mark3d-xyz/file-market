@@ -80,6 +80,7 @@ func (s *GRPCServer) UpdateUserProfile(ctx context.Context, req *authserver_pb.U
 		Twitter:                     &req.Twitter,
 		Discord:                     &req.Discord,
 		Telegram:                    &req.Telegram,
+		Instagram:                   &req.Instagram,
 		IsEmailNotificationsEnabled: req.IsEmailNotificationEnabled,
 		IsPushNotificationsEnabled:  req.IsPushNotificationEnabled,
 	}

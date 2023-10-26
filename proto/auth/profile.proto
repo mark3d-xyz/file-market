@@ -18,7 +18,8 @@ message UserProfile {
   string address = 11;
   string discord = 12;
   string telegram = 13;
-  bool isEmailConfirmed = 14;
+  string instagram = 14;
+  bool isEmailConfirmed = 15;
 }
 
 message GetUserProfileRequest {

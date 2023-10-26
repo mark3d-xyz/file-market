@@ -1273,6 +1273,9 @@ definitions:
       telegram:
         type: string
         description: ссылка на telegram
+      instagram:
+        type: string
+        description: ссылка на instagram
       email:
         type: string
         pattern: '^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$'
