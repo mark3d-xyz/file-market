@@ -32,8 +32,10 @@ type conn struct {
 func (c *conn) listen() {
 	for {
 		kind, data, err := c.conn.ReadMessage()
-		if err != nil && !websocket.IsUnexpectedCloseError(err) {
-			log.Println("listen failed", c.id, err)
+		if err != nil {
+			if !websocket.IsUnexpectedCloseError(err) {
+				log.Println("listen failed", c.id, err)
+			}
 			break
 		}
 		if kind == websocket.TextMessage {
