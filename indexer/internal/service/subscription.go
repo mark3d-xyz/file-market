@@ -78,32 +78,36 @@ func (s *service) EFTSubOnConnectionResponse(ctx context.Context, req any) any {
 }
 
 func (s *service) SendEFTSubscriptionUpdate(collectionAddress common.Address, tokenId *big.Int, msg *domain.EFTSubMessage) {
-	if msg.Order != nil {
-		currency := "FIL"
-		if strings.Contains(s.cfg.Mode, "era") {
-			currency = "ETH"
+	go func() {
+		if msg.Order != nil {
+			currency := "FIL"
+			if strings.Contains(s.cfg.Mode, "era") {
+				currency = "ETH"
+			}
+
+			rate, err := s.currencyConverter.GetExchangeRate(context.Background(), currency, "USD")
+			if err != nil {
+				log.Println("failed to get conversion rate: ", err)
+				rate = 0
+			}
+			msg.Order.PriceUsd = currencyconversion.Convert(rate, msg.Order.Price)
 		}
 
-		rate, err := s.currencyConverter.GetExchangeRate(context.Background(), currency, "USD")
-		if err != nil {
-			log.Println("failed to get conversion rate: ", err)
-			rate = 0
-		}
-		msg.Order.PriceUsd = currencyconversion.Convert(rate, msg.Order.Price)
-	}
-
-	topic := fmt.Sprintf("%s:%s", strings.ToLower(collectionAddress.String()), tokenId.String())
-	s.wsPool.SendTopicSub(topic, domain.EFTSubMessageToModel(msg))
+		topic := fmt.Sprintf("%s:%s", strings.ToLower(collectionAddress.String()), tokenId.String())
+		s.wsPool.SendTopicSub(topic, domain.EFTSubMessageToModel(msg))
+	}()
 }
 
 func (s *service) SendBlockNumberSubscriptionUpdate(number *big.Int) {
-	lastBlockMessage, err := json.Marshal(map[string]any{"last_block_number": number.Uint64()})
-	if err != nil {
-		logger.Error("failed to marshal last block number for broadcast: %v", err, nil)
-		return
-	}
+	go func() {
+		lastBlockMessage, err := json.Marshal(map[string]any{"last_block_number": number.Uint64()})
+		if err != nil {
+			logger.Error("failed to marshal last block number for broadcast: %v", err, nil)
+			return
+		}
 
-	s.wsPool.SendTopicSub("last_block", lastBlockMessage)
+		s.wsPool.SendTopicSub("last_block", lastBlockMessage)
+	}()
 }
 
 func (s *service) AddBlockNumberSubscription(w http.ResponseWriter, r *http.Request) {
