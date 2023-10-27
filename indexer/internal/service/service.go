@@ -1451,10 +1451,15 @@ func (s *service) ListenBlockchain() error {
 		}
 	}
 
+	delay := 2500 * time.Millisecond
+	if strings.Contains(s.cfg.Mode, "era") {
+		delay = 500 * time.Millisecond
+	}
+
 	lastNotificationTime := time.Now().Add(-1 * time.Hour)
 	for {
 		select {
-		case <-time.After(2500 * time.Millisecond):
+		case <-time.After(delay):
 			// FIXME
 			t := time.Now()
 			current, err := s.checkBlock(lastBlock)
