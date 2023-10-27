@@ -1471,7 +1471,7 @@ func (s *service) ListenBlockchain() error {
 					}
 				}
 			}
-			logger.Info("checkBlock took", log2.Fields{"time": time.Since(t)})
+			logger.Info("checkBlock took", log2.Fields{"time": time.Since(t), "num": lastBlock})
 			if lastBlock.Cmp(current) != 0 {
 				s.SendBlockNumberSubscriptionUpdate(current)
 			}
@@ -1493,7 +1493,7 @@ func (s *service) checkBlock(latest *big.Int) (*big.Int, error) {
 		log.Println("get latest block failed", err)
 		return latest, err
 	}
-	logger.Info("checkBlock GetLatestBlockNumber", log2.Fields{"time": time.Since(t)})
+	logger.Info("checkBlock GetLatestBlockNumber", log2.Fields{"time": time.Since(t), "num": latest})
 	if blockNum.Cmp(latest) != 0 {
 		log.Println("processing block difference", latest, blockNum)
 	}
@@ -1504,7 +1504,7 @@ func (s *service) checkBlock(latest *big.Int) (*big.Int, error) {
 		if err != nil {
 			return latest, err
 		}
-		logger.Info("checkBlock checkSingleBlock", log2.Fields{"time": time.Since(t)})
+		logger.Info("checkBlock checkSingleBlock", log2.Fields{"time": time.Since(t), "num": latest})
 	}
 	return latest, nil
 }
@@ -1516,7 +1516,7 @@ func (s *service) checkSingleBlock(latest *big.Int) (*big.Int, error) {
 	// FIXME
 	t := time.Now()
 	block, err := s.ethClient.BlockByNumber(ctx, pending)
-	logger.Info("checkBlock checkSingleBlock ethClient.BlockByNumber", log2.Fields{"time": time.Since(t)})
+	logger.Info("checkBlock checkSingleBlock ethClient.BlockByNumber", log2.Fields{"time": time.Since(t), "num": latest})
 
 	if err != nil {
 		log.Println("get pending block failed", pending.String(), err)
@@ -1527,7 +1527,7 @@ func (s *service) checkSingleBlock(latest *big.Int) (*big.Int, error) {
 		// FIXME
 		t = time.Now()
 		err := s.processBlock(block)
-		logger.Info("checkBlock checkSingleBlock processBlock", log2.Fields{"time": time.Since(t)})
+		logger.Info("checkBlock checkSingleBlock processBlock", log2.Fields{"time": time.Since(t), "num": latest})
 		if err != nil && !strings.Contains(err.Error(), "requested epoch was a null round") {
 			log.Println("process block failed", err)
 			return latest, err
