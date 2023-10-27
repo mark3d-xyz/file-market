@@ -1295,6 +1295,24 @@ definitions:
       bannerUrl:
         type: string
         pattern: '^ipfs://[0-9a-zA-Z]+$'
+  UserProfileShort:
+    type: object
+    description: Профиль юзера
+    properties:
+      address:
+        type: string
+        pattern: '^0x[0-9a-fA-F]{40}$'
+        description: Адрес юзера
+      name:
+        type: string
+        description: Display name юзера
+      username:
+        type: string
+        pattern: '^[a-z0-9_]+$'
+        description: Уникальный никнейм, который будет юзаться в URL
+      avatarUrl:
+        type: string
+        pattern: '^ipfs://[0-9a-zA-Z]+$'
   ProfileEmailExistsRequest:
     type: object
     properties:
@@ -1662,10 +1680,14 @@ definitions:
         type: string
         description: Создатель коллекции
         pattern: "0x[0-9a-f-A-F]{40}"
+      creatorProfile:
+        $ref: '#/definitions/UserProfileShort'
       owner:
         type: string
         description: Владелец коллекции
         pattern: "0x[0-9a-f-A-F]{40}"
+      ownerProfile:
+        $ref: '#/definitions/UserProfileShort'
       tokenId:
         type: string
         description: Id Access токена
@@ -1778,10 +1800,14 @@ definitions:
         type: string
         description: Владелец
         pattern: "0x[0-9a-f-A-F]{40}"
+      ownerProfile:
+        $ref: '#/definitions/UserProfileShort'
       creator:
         type: string
         description: Создатель
         pattern: "0x[0-9a-f-A-F]{40}"
+      creatorProfile:
+        $ref: '#/definitions/UserProfileShort'
       metaUri:
         type: string
         description: uri метаданных токена
@@ -1900,10 +1926,14 @@ definitions:
         type: string
         description: Отправитель
         pattern: "0x[0-9a-f-A-F]{40}"
+      fromProfile:
+        $ref: '#/definitions/UserProfileShort'
       to:
         type: string
         description: Получатель, если уже назначен
         pattern: "0x[0-9a-f-A-F]{40}"
+      toProfile:
+        $ref: '#/definitions/UserProfileShort'
       orderId:
         type: integer
         description: Id ордера, если трансфер создан из-за ордера

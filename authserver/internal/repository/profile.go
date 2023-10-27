@@ -117,6 +117,56 @@ func (p *postgres) GetUserProfileByUsername(ctx context.Context, tx pgx.Tx, user
 	return &profile, nil
 }
 
+func (p *postgres) GetUserProfileBulk(ctx context.Context, tx pgx.Tx, addresses []string) ([]*domain.UserProfile, error) {
+	// language=PostgreSQL
+	query := `
+		SELECT address, name, username, bio, website_url, twitter, discord, telegram, instagram, 
+		       avatar_url, banner_url
+		FROM user_profiles
+		WHERE address = ANY($1)
+	`
+	var res []*domain.UserProfile
+	rows, err := tx.Query(ctx, query,
+		domain.MapSlice(addresses, strings.ToLower),
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var profile domain.UserProfile
+		var address string
+		var uname, name *string
+		if err := rows.Scan(
+			&address,
+			&name,
+			&uname,
+			&profile.Bio,
+			&profile.WebsiteURL,
+			&profile.Twitter,
+			&profile.Discord,
+			&profile.Telegram,
+			&profile.Instagram,
+			&profile.AvatarURL,
+			&profile.BannerURL,
+		); err != nil {
+			return nil, err
+		}
+
+		profile.Address = common.HexToAddress(address)
+		if uname != nil {
+			profile.Username = *uname
+		}
+		if name != nil {
+			profile.Name = *name
+		}
+		res = append(res, &profile)
+	}
+
+	return res, nil
+}
+
 func (p *postgres) EmailExists(ctx context.Context, tx pgx.Tx, email string) (bool, error) {
 	// language=PostgreSQL
 	query := `

@@ -128,6 +128,27 @@ func (s *service) GetProfileByIdentification(ctx context.Context, identification
 	}
 }
 
+func (s *service) GetProfileBulk(ctx context.Context, addresses []string) ([]*domain.UserProfile, *domain.APIError) {
+	tx, err := s.repository.BeginTransaction(ctx, pgx.TxOptions{})
+	if err != nil {
+		log.Println("begin tx failed: ", err)
+		return nil, domain.InternalError
+	}
+	defer s.repository.RollbackTransaction(ctx, tx)
+
+	profiles, err := s.repository.GetUserProfileBulk(ctx, tx, addresses)
+	if err != nil {
+		log.Printf("failed to GetUserProfile: %s", err.Error())
+		return nil, domain.InternalError
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return nil, domain.InternalError
+	}
+
+	return profiles, nil
+}
+
 func (s *service) EmailExist(ctx context.Context, email string) (bool, *domain.APIError) {
 	tx, err := s.repository.BeginTransaction(ctx, pgx.TxOptions{})
 	if err != nil {

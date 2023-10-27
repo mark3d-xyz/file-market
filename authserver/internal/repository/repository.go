@@ -36,6 +36,7 @@ type Auth interface {
 type UserProfile interface {
 	GetUserProfile(ctx context.Context, tx pgx.Tx, address common.Address) (*domain.UserProfile, error)
 	GetUserProfileByUsername(ctx context.Context, tx pgx.Tx, username string) (*domain.UserProfile, error)
+	GetUserProfileBulk(ctx context.Context, tx pgx.Tx, addresses []string) ([]*domain.UserProfile, error)
 	EmailExists(ctx context.Context, tx pgx.Tx, email string) (bool, error)
 	NameExists(ctx context.Context, tx pgx.Tx, name string) (bool, error)
 	UsernameExists(ctx context.Context, tx pgx.Tx, username string) (bool, error)
