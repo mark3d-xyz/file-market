@@ -16,6 +16,7 @@ import (
 	"golang.org/x/exp/slices"
 	"log"
 	"math/big"
+	"math/rand"
 	"strings"
 	"time"
 )
@@ -214,8 +215,18 @@ func (e *ethClient) Shutdown() {
 	}
 }
 
+var body struct {
+	Hash         common.Hash                 `json:"hash"`
+	Number       string                      `json:"number"`
+	Time         string                      `json:"timestamp"`
+	Transactions []*types.DefaultTransaction `json:"transactions"`
+}
+
 // // Zk specific staff
 func getZkBlock(ctx context.Context, c *rpc.Client, args ...any) (types.Block, error) {
+	// FIXME
+	n := rand.Int63()
+	t := time.Now()
 	var raw json.RawMessage
 	if err := c.CallContext(ctx, &raw, "eth_getBlockByNumber", args...); err != nil {
 		log.Println("get block error", err)
@@ -223,17 +234,13 @@ func getZkBlock(ctx context.Context, c *rpc.Client, args ...any) (types.Block, e
 	} else if len(raw) == 0 {
 		return nil, ethereum.NotFound
 	}
+	log.Println("-- get block call took: ", time.Since(t).Seconds(), "id:", n)
 
-	var body struct {
-		Hash         common.Hash                 `json:"hash"`
-		Number       string                      `json:"number"`
-		Time         string                      `json:"timestamp"`
-		Transactions []*types.DefaultTransaction `json:"transactions"`
-	}
-
+	t1 := time.Now()
 	if err := json.Unmarshal(raw, &body); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal body: %w", err)
 	}
+	log.Println("-- get block unmarshal took: ", time.Since(t1).Seconds(), "id:", n)
 
 	txs := make([]types.Transaction, len(body.Transactions))
 	for i, tx := range body.Transactions {
@@ -255,6 +262,8 @@ func getZkBlock(ctx context.Context, c *rpc.Client, args ...any) (types.Block, e
 		timestamp,
 		txs,
 	)
+
+	log.Println("-- get block took: ", time.Since(t).Seconds(), "id:", n)
 
 	return block, nil
 }
