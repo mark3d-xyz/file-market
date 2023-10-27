@@ -19,6 +19,7 @@ type Token struct {
 	MetaUri           string
 	Metadata          *TokenMetadata
 	BlockNumber       int64
+	LikeCount         int64
 }
 
 func TokenToModel(t *Token) *models.Token {
@@ -47,6 +48,7 @@ func TokenToModel(t *Token) *models.Token {
 		MetaURI:         t.MetaUri,
 		Name:            t.Metadata.Name,
 		Owner:           t.Owner.String(),
+		LikeCount:       t.LikeCount,
 		OwnerProfile: &models.UserProfileShort{
 			Address: t.Owner.String(),
 		},

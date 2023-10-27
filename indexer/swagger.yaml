@@ -1882,6 +1882,10 @@ definitions:
         type: integer
         format: int64
         description: id ордера, находящегося в процессе
+      likeCount:
+        type: integer
+        format: int64
+        description: Количество лайков у токена
       block:
         type: object
         description: Информация о блоке с актуальной информацией о сущности
