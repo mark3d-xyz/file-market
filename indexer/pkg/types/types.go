@@ -5,7 +5,6 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"math/big"
 	"strconv"
-	"strings"
 )
 
 type AutosellTokenInfo struct {
@@ -98,12 +97,34 @@ func (t *DefaultTransaction) ChainId() *big.Int {
 	return t.chainId
 }
 
+type chainIdType struct {
+	Int *int64
+	Hex *string
+}
+
+func (c *chainIdType) UnmarshalJSON(input []byte) error {
+	if input[0] == '"' {
+		var hexValue string
+		if err := json.Unmarshal(input, &hexValue); err != nil {
+			return err
+		}
+		c.Hex = &hexValue
+		return nil
+	}
+	var intValue int64
+	if err := json.Unmarshal(input, &intValue); err != nil {
+		return err
+	}
+	c.Int = &intValue
+	return nil
+}
+
 // UnmarshalJSON overrides json.Unmarshaler
 func (t *DefaultTransaction) UnmarshalJSON(input []byte) error {
 	var dec struct {
 		Hash    common.Hash     `json:"hash"`
 		To      *common.Address `json:"to"`
-		ChainId json.RawMessage `json:"chainId"`
+		ChainId chainIdType     `json:"chainId"`
 		From    common.Address  `json:"from"`
 	}
 
@@ -115,10 +136,10 @@ func (t *DefaultTransaction) UnmarshalJSON(input []byte) error {
 	t.hash = dec.Hash
 	t.from = dec.From
 
-	if dec.ChainId != nil {
-		chainIdHex := string(dec.ChainId)
-		chainIdHex = strings.ReplaceAll(chainIdHex, "\"", "")
-		chainIdInt, err := strconv.ParseInt(chainIdHex, 0, 64)
+	if dec.ChainId.Int != nil {
+		t.chainId = big.NewInt(*dec.ChainId.Int)
+	} else if dec.ChainId.Hex != nil {
+		chainIdInt, err := strconv.ParseInt(*dec.ChainId.Hex, 16, 64)
 		if err != nil {
 			return err
 		}

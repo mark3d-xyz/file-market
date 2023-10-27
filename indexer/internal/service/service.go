@@ -1533,7 +1533,7 @@ func (s *service) checkSingleBlock(latest *big.Int) (*big.Int, error) {
 		t = time.Now()
 		err := s.processBlock(block)
 		logger.Info("checkBlock checkSingleBlock processBlock", log2.Fields{"time": time.Since(t), "num": latest})
-		if err != nil && !strings.Contains(err.Error(), "requested epoch was a null round") {
+		if err != nil {
 			log.Println("process block failed", err)
 			return latest, err
 		}
