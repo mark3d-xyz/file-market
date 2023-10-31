@@ -74,6 +74,7 @@
     "imgGray": "https://svgshare.com/i/vuR.svg",
     "accessTokenAddress": "0xC3F07F620715Fec92db305f718C7FA10C708Bf7A",
     "exchangeTokenAddress": "0x2301D80E8A7e4Cf59a349ffC20A51367cb27A4fc",
+    "likeEmitterAddress": "0x03afEF500900839F109957f8b856C3E2CC9309a8",
     "baseUrl": "https://dev.filemarket.xyz/api",
     "explorer": "https://calibration.filfox.info/",
     "wsUrl": "wss://dev.filemarket.xyz"
@@ -151,6 +152,7 @@
     "isDefault": true,
     "accessTokenAddress": "0x53B7A53465fE0d7951Aec67200eCa1B9B306DcF4",
     "exchangeTokenAddress": "0xc0a3b362Bf9088F63cBf880ce06F369C17d958A9",
+    "likeEmitter": "0xE48c71D68101053bC2E0EE18355f1C7A1Fa919E0",
     "baseUrl": "https://era-dev.filemarket.xyz/api",
     "explorer": "https://goerli.explorer.zksync.io/tx/",
     "wsUrl": "wss://era-dev.filemarket.xyz"
