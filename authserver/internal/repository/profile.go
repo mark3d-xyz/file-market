@@ -11,19 +11,20 @@ import (
 )
 
 var (
-	ErrProfileNotUniqueEmail    = Error{"email is not unique"}
-	ErrProfileNotUniqueDiscord  = Error{"discord is not unique"}
-	ErrProfileNotUniqueTwitter  = Error{"twitter is not unique"}
-	ErrProfileNotUniqueTelegram = Error{"telegram is not unique"}
-	ErrProfileNotUniqueUsername = Error{"username is not unique"}
-	ErrProfileNotUniqueProfile  = Error{"profile for this address already exists"}
+	ErrProfileNotUniqueEmail     = Error{"email is not unique"}
+	ErrProfileNotUniqueDiscord   = Error{"discord is not unique"}
+	ErrProfileNotUniqueTwitter   = Error{"twitter is not unique"}
+	ErrProfileNotUniqueTelegram  = Error{"telegram is not unique"}
+	ErrProfileNotUniqueInstagram = Error{"instagram is not unique"}
+	ErrProfileNotUniqueUsername  = Error{"username is not unique"}
+	ErrProfileNotUniqueProfile   = Error{"profile for this address already exists"}
 )
 
 func (p *postgres) GetUserProfile(ctx context.Context, tx pgx.Tx, address common.Address) (*domain.UserProfile, error) {
 	// language=PostgreSQL
 	query := `
-		SELECT name, username, bio, website_url, twitter, email, is_email_confirmed, discord, telegram, avatar_url, banner_url,
-		       is_email_notifications_enabled, is_push_notifications_enabled
+		SELECT name, username, bio, website_url, twitter, email, is_email_confirmed, discord, telegram, instagram,
+		       avatar_url, banner_url, is_email_notifications_enabled, is_push_notifications_enabled
 		FROM user_profiles
 		WHERE address = $1
 	`
@@ -45,6 +46,7 @@ func (p *postgres) GetUserProfile(ctx context.Context, tx pgx.Tx, address common
 		&profile.IsEmailConfirmed,
 		&profile.Discord,
 		&profile.Telegram,
+		&profile.Instagram,
 		&profile.AvatarURL,
 		&profile.BannerURL,
 		&profile.IsEmailNotificationsEnabled,
@@ -69,8 +71,8 @@ func (p *postgres) GetUserProfile(ctx context.Context, tx pgx.Tx, address common
 func (p *postgres) GetUserProfileByUsername(ctx context.Context, tx pgx.Tx, username string) (*domain.UserProfile, error) {
 	// language=PostgreSQL
 	query := `
-		SELECT address, name, username, bio, website_url, twitter, discord, telegram, email, is_email_confirmed, avatar_url, banner_url, 
-		       is_email_notifications_enabled, is_push_notifications_enabled
+		SELECT address, name, username, bio, website_url, twitter, discord, telegram, instagram, email, 
+		       is_email_confirmed, avatar_url, banner_url, is_email_notifications_enabled, is_push_notifications_enabled
 		FROM user_profiles
 		WHERE username = $1
 	`
@@ -89,6 +91,7 @@ func (p *postgres) GetUserProfileByUsername(ctx context.Context, tx pgx.Tx, user
 		&profile.Twitter,
 		&profile.Discord,
 		&profile.Telegram,
+		&profile.Instagram,
 		&email,
 		&profile.IsEmailConfirmed,
 		&profile.AvatarURL,
@@ -112,6 +115,56 @@ func (p *postgres) GetUserProfileByUsername(ctx context.Context, tx pgx.Tx, user
 	}
 
 	return &profile, nil
+}
+
+func (p *postgres) GetUserProfileBulk(ctx context.Context, tx pgx.Tx, addresses []string) ([]*domain.UserProfile, error) {
+	// language=PostgreSQL
+	query := `
+		SELECT address, name, username, bio, website_url, twitter, discord, telegram, instagram, 
+		       avatar_url, banner_url
+		FROM user_profiles
+		WHERE address = ANY($1)
+	`
+	var res []*domain.UserProfile
+	rows, err := tx.Query(ctx, query,
+		domain.MapSlice(addresses, strings.ToLower),
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var profile domain.UserProfile
+		var address string
+		var uname, name *string
+		if err := rows.Scan(
+			&address,
+			&name,
+			&uname,
+			&profile.Bio,
+			&profile.WebsiteURL,
+			&profile.Twitter,
+			&profile.Discord,
+			&profile.Telegram,
+			&profile.Instagram,
+			&profile.AvatarURL,
+			&profile.BannerURL,
+		); err != nil {
+			return nil, err
+		}
+
+		profile.Address = common.HexToAddress(address)
+		if uname != nil {
+			profile.Username = *uname
+		}
+		if name != nil {
+			profile.Name = *name
+		}
+		res = append(res, &profile)
+	}
+
+	return res, nil
 }
 
 func (p *postgres) EmailExists(ctx context.Context, tx pgx.Tx, email string) (bool, error) {
@@ -174,10 +227,10 @@ func (p *postgres) UsernameExists(ctx context.Context, tx pgx.Tx, username strin
 func (p *postgres) InsertUserProfile(ctx context.Context, tx pgx.Tx, profile *domain.UserProfile) error {
 	// language=PostgreSQL
 	query := `
-		INSERT INTO user_profiles(
-			address, name, username, bio, website_url, avatar_url, banner_url, email, is_email_confirmed, twitter, discord, telegram,
-		    is_email_notifications_enabled, is_push_notifications_enabled)
-		VALUES ($1,$2,$3,$4,$5,$6,$7,NULL,FALSE,$8,$9,$10,TRUE,$11)
+		INSERT INTO user_profiles(address, name, username, bio, website_url, avatar_url, banner_url, email, 
+		                          is_email_confirmed, twitter, discord, telegram, instagram, 
+		                          is_email_notifications_enabled, is_push_notifications_enabled)
+		VALUES ($1,$2,$3,$4,$5,$6,$7,NULL,FALSE,$8,$9,$10,$11,TRUE,$12)
 	`
 	var name, username *string
 	if profile.Name != "" {
@@ -198,6 +251,7 @@ func (p *postgres) InsertUserProfile(ctx context.Context, tx pgx.Tx, profile *do
 		profile.Twitter,
 		profile.Discord,
 		profile.Telegram,
+		profile.Instagram,
 		profile.IsPushNotificationsEnabled,
 	); err != nil {
 		return resolveUserProfileDBErr(err)
@@ -211,8 +265,8 @@ func (p *postgres) UpdateUserProfile(ctx context.Context, tx pgx.Tx, profile *do
 	query := `
 		UPDATE user_profiles 
 		SET name=$1, username=$2, bio=$3, website_url=$4, avatar_url=$5, banner_url=$6, twitter=$7, discord=$8, 
-		    telegram=$9,is_email_notifications_enabled=$10, is_push_notifications_enabled=$11
-		WHERE address=$12
+		    telegram=$9,is_email_notifications_enabled=$10, is_push_notifications_enabled=$11, instagram=$12
+		WHERE address=$13
 	`
 	var name, username *string
 	if profile.Name != "" {
@@ -235,6 +289,7 @@ func (p *postgres) UpdateUserProfile(ctx context.Context, tx pgx.Tx, profile *do
 		profile.Telegram,
 		profile.IsEmailNotificationsEnabled,
 		profile.IsPushNotificationsEnabled,
+		profile.Instagram,
 		strings.ToLower(profile.Address.String()),
 	); err != nil {
 		return resolveUserProfileDBErr(err)
@@ -343,6 +398,8 @@ func resolveUserProfileDBErr(err error) error {
 		return ErrProfileNotUniqueTelegram
 	} else if strings.Contains(err.Error(), "user_profiles_discord_key") {
 		return ErrProfileNotUniqueDiscord
+	} else if strings.Contains(err.Error(), "user_profiles_instagram_key") {
+		return ErrProfileNotUniqueInstagram
 	} else if strings.Contains(err.Error(), "user_profiles_pkey") {
 		return ErrProfileNotUniqueProfile
 	} else if errors.Is(err, pgx.ErrNoRows) {

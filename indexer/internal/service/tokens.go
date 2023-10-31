@@ -3,8 +3,10 @@ package service
 import (
 	"context"
 	"errors"
+	"github.com/mark3d-xyz/mark3d/indexer/pkg/utils"
 	"log"
 	"math/big"
+	"strings"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/jackc/pgx/v4"
@@ -31,7 +33,15 @@ func (s *service) GetToken(ctx context.Context, address common.Address,
 		return nil, internalError
 	}
 
-	return domain.TokenToModel(token), nil
+	profilesMap, e := s.getProfilesMap(ctx, []string{token.Owner.String(), token.Creator.String()})
+	if e != nil {
+		return nil, e
+	}
+
+	t := domain.TokenToModel(token)
+	fillTokenUserProfiles(t, profilesMap[t.Owner], profilesMap[t.Creator])
+
+	return t, nil
 }
 
 func (s *service) GetTokenEncryptedPassword(
@@ -48,7 +58,7 @@ func (s *service) GetTokenEncryptedPassword(
 
 	pwd, number, err := s.repository.GetTokenEncryptedPassword(ctx, tx, address, tokenId)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil
 		}
 		log.Println("get token password failed: ", err)
@@ -86,8 +96,24 @@ func (s *service) GetCollectionTokens(
 		log.Println("get collection tokens total failed: ", err)
 		return nil, internalError
 	}
+
+	addresses := make(map[string]struct{})
+	for _, t := range tokens {
+		addresses[strings.ToLower(t.Owner.String())] = struct{}{}
+		addresses[strings.ToLower(t.Creator.String())] = struct{}{}
+	}
+	profilesMap, e := s.getProfilesMap(ctx, utils.SetToSlice(addresses))
+	if e != nil {
+		return nil, e
+	}
+
+	modelsTokens := domain.MapSlice(tokens, domain.TokenToModel)
+	for _, t := range modelsTokens {
+		fillTokenUserProfiles(t, profilesMap[t.Owner], profilesMap[t.Creator])
+	}
+
 	return &models.TokensByCollectionResponse{
-		Tokens: domain.MapSlice(tokens, domain.TokenToModel),
+		Tokens: modelsTokens,
 		Total:  total,
 	}, nil
 }
@@ -118,7 +144,6 @@ func (s *service) GetTokensByAddress(
 		log.Println("get collections total by address failed: ", err)
 		return nil, internalError
 	}
-
 	tokens, err := s.repository.GetTokensByAddress(ctx, tx, address, lastTokenCollectionAddress, lastTokenId, tokenLimit)
 	if err != nil {
 		log.Println("get tokens by address failed: ", err)
@@ -130,16 +155,31 @@ func (s *service) GetTokensByAddress(
 		return nil, internalError
 	}
 
+	addresses := make(map[string]struct{})
+	for _, c := range collections {
+		addresses[strings.ToLower(c.Owner.String())] = struct{}{}
+		addresses[strings.ToLower(c.Creator.String())] = struct{}{}
+	}
+	for _, t := range tokens {
+		addresses[strings.ToLower(t.Owner.String())] = struct{}{}
+		addresses[strings.ToLower(t.Creator.String())] = struct{}{}
+	}
+	profilesMap, e := s.getProfilesMap(ctx, utils.SetToSlice(addresses))
+	if e != nil {
+		return nil, e
+	}
+
 	tokensRes := domain.MapSlice(tokens, domain.TokenToModel)
 	for i, t := range tokens {
 		transfer, err := s.repository.GetActiveTransfer(ctx, tx, t.CollectionAddress, t.TokenId)
 		if err != nil {
-			if err == pgx.ErrNoRows {
+			if errors.Is(err, pgx.ErrNoRows) {
 				continue
 			}
 			log.Println("get token active transfer failed: ", err)
 			return nil, internalError
 		}
+		fillTokenUserProfiles(tokensRes[i], profilesMap[tokensRes[i].Owner], profilesMap[tokensRes[i].Creator])
 		tokensRes[i].PendingTransferID, tokensRes[i].PendingOrderID = transfer.Id, transfer.OrderId
 	}
 
@@ -169,8 +209,10 @@ func (s *service) GetTokensByAddress(
 				res.Stats = append(res.Stats, &models.CollectionStat{Name: s.Name, Value: s.Value})
 			}
 		}
+		fillCollectionUserProfiles(res, profilesMap[res.Owner], profilesMap[res.Creator])
 		collectionsRes[i] = res
 	}
+
 	return &models.TokensResponse{
 		Collections:      collectionsRes,
 		CollectionsTotal: collectionsTotal,

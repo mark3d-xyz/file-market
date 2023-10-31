@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/mark3d-xyz/mark3d/indexer/models"
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/mail"
+	authserver_pb "github.com/mark3d-xyz/mark3d/indexer/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"html/template"
@@ -130,4 +131,43 @@ func renderHTMLToString(tmpl *template.Template, data any) (string, error) {
 		return "", err
 	}
 	return buf.String(), nil
+}
+
+func fillCollectionUserProfiles(
+	c *models.Collection,
+	owner *authserver_pb.UserProfileShort,
+	creator *authserver_pb.UserProfileShort,
+) {
+	c.OwnerProfile.Username = owner.Username
+	c.OwnerProfile.Name = owner.Name
+	c.OwnerProfile.AvatarURL = owner.AvatarURL
+	c.CreatorProfile.Username = creator.Username
+	c.CreatorProfile.Name = creator.Name
+	c.CreatorProfile.AvatarURL = creator.AvatarURL
+}
+
+func fillTokenUserProfiles(
+	t *models.Token,
+	owner *authserver_pb.UserProfileShort,
+	creator *authserver_pb.UserProfileShort,
+) {
+	t.OwnerProfile.Username = owner.Username
+	t.OwnerProfile.Name = owner.Name
+	t.OwnerProfile.AvatarURL = owner.AvatarURL
+	t.CreatorProfile.Username = creator.Username
+	t.CreatorProfile.Name = creator.Name
+	t.CreatorProfile.AvatarURL = creator.AvatarURL
+}
+
+func fillTransferUserProfiles(
+	t *models.Transfer,
+	to *authserver_pb.UserProfileShort,
+	from *authserver_pb.UserProfileShort,
+) {
+	t.ToProfile.Username = to.Username
+	t.ToProfile.Name = to.Name
+	t.ToProfile.AvatarURL = to.AvatarURL
+	t.FromProfile.Username = from.Username
+	t.FromProfile.Name = from.Name
+	t.FromProfile.AvatarURL = from.AvatarURL
 }

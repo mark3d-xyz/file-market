@@ -29,6 +29,7 @@ func (s *service) GetUserProfile(ctx context.Context, identification string, isP
 		Name:                       res.Name,
 		Telegram:                   res.Telegram,
 		Twitter:                    res.Twitter,
+		Instagram:                  res.Instagram,
 		Username:                   res.Username,
 		WebsiteURL:                 res.WebsiteURL,
 	}
@@ -92,6 +93,7 @@ func (s *service) UpdateUserProfile(ctx context.Context, p *models.UserProfile) 
 		Twitter:                    p.Twitter,
 		Discord:                    p.Discord,
 		Telegram:                   p.Telegram,
+		Instagram:                  p.Instagram,
 	}
 
 	res, err := s.authClient.UpdateUserProfile(ctx, &arg)
@@ -113,6 +115,7 @@ func (s *service) UpdateUserProfile(ctx context.Context, p *models.UserProfile) 
 		Name:                       res.Name,
 		Telegram:                   res.Telegram,
 		Twitter:                    res.Twitter,
+		Instagram:                  res.Instagram,
 		Username:                   res.Username,
 		WebsiteURL:                 res.WebsiteURL,
 	}

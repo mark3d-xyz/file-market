@@ -41,6 +41,7 @@ func (s *service) AuthBySignature(ctx context.Context, req models.AuthBySignatur
 		Name:                       res.Profile.Name,
 		Telegram:                   res.Profile.Telegram,
 		Twitter:                    res.Profile.Twitter,
+		Instagram:                  res.Profile.Instagram,
 		Username:                   res.Profile.Username,
 		WebsiteURL:                 res.Profile.WebsiteURL,
 	}
@@ -91,6 +92,7 @@ func (s *service) RefreshJwtTokens(ctx context.Context) (*models.AuthResponse, *
 		Name:                       res.Profile.Name,
 		Telegram:                   res.Profile.Telegram,
 		Twitter:                    res.Profile.Twitter,
+		Instagram:                  res.Profile.Instagram,
 		Username:                   res.Profile.Username,
 		WebsiteURL:                 res.Profile.WebsiteURL,
 	}
@@ -158,6 +160,7 @@ func (s *service) CheckAuth(ctx context.Context) (*models.UserProfile, *models.E
 		IsPushNotificationEnabled:  res.IsPushNotificationEnabled,
 		Name:                       res.Name,
 		Telegram:                   res.Telegram,
+		Instagram:                  res.Instagram,
 		Twitter:                    res.Twitter,
 		Username:                   res.Username,
 		WebsiteURL:                 res.WebsiteURL,

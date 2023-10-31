@@ -7,8 +7,11 @@ import (
 	"github.com/jackc/pgx/v4"
 	"github.com/mark3d-xyz/mark3d/indexer/internal/domain"
 	"github.com/mark3d-xyz/mark3d/indexer/models"
+	"github.com/mark3d-xyz/mark3d/indexer/pkg/utils"
+	authserver_pb "github.com/mark3d-xyz/mark3d/indexer/proto"
 	"log"
 	"math/big"
+	"strings"
 )
 
 func (s *service) GetCollection(
@@ -24,7 +27,7 @@ func (s *service) GetCollection(
 
 	collection, err := s.repository.GetCollection(ctx, tx, address)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil
 		}
 		log.Println("get collection failed: ", err)
@@ -55,25 +58,28 @@ func (s *service) GetCollection(
 		}
 	}
 
+	profilesMap, e := s.getProfilesMap(ctx, []string{collection.Owner.String(), collection.Creator.String()})
+	if e != nil {
+		logger.Error("failed to call GetUserProfile", errors.New(e.Message), nil)
+		return nil, e
+	}
+	fillCollectionUserProfiles(c, profilesMap[c.Owner], profilesMap[c.Creator])
+
 	res := models.CollectionResponse{
 		Collection: c,
-		Discord:    "",
-		Slug:       "",
-		Twitter:    "",
-		WebsiteURL: "",
 	}
 
-	profile, err := s.repository.GetCollectionProfile(ctx, tx, address)
+	collectionProfile, err := s.repository.GetCollectionProfile(ctx, tx, address)
 	if err != nil {
 		if !errors.Is(err, pgx.ErrNoRows) {
 			logger.Error("failed to get collection profile", err, nil)
 		}
 	} else {
-		res.Slug = profile.Slug
-		res.WebsiteURL = profile.WebsiteURL
-		res.Twitter = profile.Twitter
-		res.Discord = profile.Discord
-		res.BannerURL = profile.BannerUrl
+		res.Slug = collectionProfile.Slug
+		res.WebsiteURL = collectionProfile.WebsiteURL
+		res.Twitter = collectionProfile.Twitter
+		res.Discord = collectionProfile.Discord
+		res.BannerURL = collectionProfile.BannerUrl
 	}
 
 	return &res, nil
@@ -102,6 +108,16 @@ func (s *service) GetCollections(
 		return nil, internalError
 	}
 
+	addresses := make(map[string]struct{})
+	for _, c := range collections {
+		addresses[strings.ToLower(c.Owner.String())] = struct{}{}
+		addresses[strings.ToLower(c.Creator.String())] = struct{}{}
+	}
+	profilesMap, e := s.getProfilesMap(ctx, utils.SetToSlice(addresses))
+	if e != nil {
+		return nil, e
+	}
+
 	modelsCollections := make([]*models.Collection, len(collections))
 	for i, collection := range collections {
 		c := domain.CollectionToModel(collection)
@@ -115,6 +131,7 @@ func (s *service) GetCollections(
 			FileExtensions: fileTypes,
 			Subcategories:  subcategories,
 		}
+		fillCollectionUserProfiles(c, profilesMap[c.Owner], profilesMap[c.Creator])
 
 		if collection.Address == s.cfg.FileBunniesCollectionAddress {
 			stats, err := s.repository.GetFileBunniesStats(ctx, tx)
@@ -133,6 +150,22 @@ func (s *service) GetCollections(
 		Collections: modelsCollections,
 		Total:       total,
 	}, nil
+}
+
+func (s *service) getProfilesMap(ctx context.Context, addresses []string) (map[string]*authserver_pb.UserProfileShort, *models.ErrorResponse) {
+	ownersProfile, err := s.authClient.GetUserProfileBulk(ctx, &authserver_pb.GetUserProfileBulkRequest{
+		Addresses: addresses,
+	})
+	if err != nil {
+		logger.Errorf("failed to call GetUserProfileBulk", err, nil)
+		return nil, grpcErrToHTTP(err)
+	}
+
+	profilesMap := make(map[string]*authserver_pb.UserProfileShort)
+	for _, p := range ownersProfile.Profiles {
+		profilesMap[p.Address] = p
+	}
+	return profilesMap, nil
 }
 
 func (s *service) GetCollectionWithTokens(
@@ -167,18 +200,31 @@ func (s *service) GetCollectionWithTokens(
 		return nil, internalError
 	}
 
+	addresses := make(map[string]struct{})
+	for _, t := range tokens {
+		addresses[strings.ToLower(t.Owner.String())] = struct{}{}
+		addresses[strings.ToLower(t.Creator.String())] = struct{}{}
+	}
+	addresses[strings.ToLower(collection.Owner.String())] = struct{}{}
+	addresses[strings.ToLower(collection.Creator.String())] = struct{}{}
+
+	profilesMap, e := s.getProfilesMap(ctx, []string{})
+	if e != nil {
+		return nil, e
+	}
+
 	c := domain.CollectionToModel(collection)
 	fileTypes, categories, subcategories, err := s.repository.GetTokensContentTypeByCollection(ctx, tx, address)
 	if err != nil {
 		logger.Errorf("failed to get collection content types", err, nil)
 		return nil, internalError
 	}
-
 	c.ContentTypes = &models.CollectionContentTypes{
 		Categories:     categories,
 		FileExtensions: fileTypes,
 		Subcategories:  subcategories,
 	}
+	fillCollectionUserProfiles(c, profilesMap[c.Owner], profilesMap[c.Creator])
 
 	if collection.Address == s.cfg.FileBunniesCollectionAddress {
 		stats, err := s.repository.GetFileBunniesStats(ctx, tx)
@@ -190,9 +236,14 @@ func (s *service) GetCollectionWithTokens(
 			c.Stats = append(c.Stats, &models.CollectionStat{Name: s.Name, Value: s.Value})
 		}
 	}
+	modelsTokens := domain.MapSlice(tokens, domain.TokenToModel)
+	for _, t := range modelsTokens {
+		fillTokenUserProfiles(t, profilesMap[t.Owner], profilesMap[t.Creator])
+	}
+
 	return &models.CollectionData{
 		Collection: c,
-		Tokens:     domain.MapSlice(tokens, domain.TokenToModel),
+		Tokens:     modelsTokens,
 		Total:      total,
 	}, nil
 }

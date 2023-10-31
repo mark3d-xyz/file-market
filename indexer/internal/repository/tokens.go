@@ -24,7 +24,7 @@ func (p *postgres) GetCollectionTokens(
 	query := `
 		SELECT 
 		    t.token_id, t.owner, t.meta_uri, t.creator, t.royalty, t.mint_transaction_timestamp, t.mint_transaction_hash,
-		    t.block_number,
+		    t.block_number, t.like_count,
 		    c.name
 		FROM tokens t
 		INNER JOIN collections c ON c.address = t.collection_address
@@ -66,6 +66,7 @@ func (p *postgres) GetCollectionTokens(
 				&t.MintTxTimestamp,
 				&mintTxHash,
 				&t.BlockNumber,
+				&t.LikeCount,
 				&t.CollectionName,
 			); err != nil {
 				return err
@@ -140,7 +141,7 @@ func (p *postgres) GetTokensByAddress(
 	query := `
 		SELECT 
 		    t.collection_address, t.token_id, t.meta_uri, t.creator, t.royalty, 
-		    t.mint_transaction_timestamp, t.mint_transaction_hash, t.block_number,
+		    t.mint_transaction_timestamp, t.mint_transaction_hash, t.block_number, t.like_count,
 		    c.name
 		FROM tokens t
 		INNER JOIN collections c ON c.address = t.collection_address
@@ -189,6 +190,7 @@ func (p *postgres) GetTokensByAddress(
 				&t.MintTxTimestamp,
 				&mintTxHash,
 				&t.BlockNumber,
+				&t.LikeCount,
 				&t.CollectionName,
 			); err != nil {
 				return err
@@ -261,7 +263,7 @@ func (p *postgres) GetToken(
 	query := `
 		SELECT 
 		    t.owner, t.meta_uri, t.creator, t.royalty, t.mint_transaction_timestamp, t.mint_transaction_hash,
-		    t.block_number,
+		    t.block_number, t.like_count,
 		    c.name
 		FROM tokens t
 		INNER JOIN collections c ON t.collection_address = c.address
@@ -286,6 +288,7 @@ func (p *postgres) GetToken(
 		&t.MintTxTimestamp,
 		&mintTxHash,
 		&t.BlockNumber,
+		&t.LikeCount,
 		&t.CollectionName,
 	)
 	if err != nil {
@@ -852,4 +855,20 @@ func (p *postgres) GetTokensContentTypeByCollection(
 	}
 
 	return fileTypes, categories, subcategories, nil
+}
+
+func (r *postgres) IncrementLike(ctx context.Context, tx pgx.Tx, collectionAddress common.Address, tokenId *big.Int) error {
+	// language=PostgreSQL
+	query := `
+		UPDATE tokens SET like_count=like_count+1
+		              WHERE collection_address=$1 AND token_id=$2
+	`
+	if _, err := tx.Exec(ctx, query,
+		strings.ToLower(collectionAddress.String()),
+		tokenId.String(),
+	); err != nil {
+		return err
+	}
+
+	return nil
 }

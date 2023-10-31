@@ -30,13 +30,19 @@ type TransferStatus struct {
 
 func TransferToModel(t *Transfer) *models.Transfer {
 	return &models.Transfer{
-		Collection:        t.CollectionAddress.String(),
-		FraudApproved:     t.FraudApproved,
-		From:              t.FromAddress.String(),
-		ID:                t.Id,
-		OrderID:           t.OrderId,
-		Statuses:          MapSlice(t.Statuses, TransferStatusToModel),
-		To:                t.ToAddress.String(),
+		Collection:    t.CollectionAddress.String(),
+		FraudApproved: t.FraudApproved,
+		From:          t.FromAddress.String(),
+		FromProfile: &models.UserProfileShort{
+			Address: t.FromAddress.String(),
+		},
+		ID:       t.Id,
+		OrderID:  t.OrderId,
+		Statuses: MapSlice(t.Statuses, TransferStatusToModel),
+		To:       t.ToAddress.String(),
+		ToProfile: &models.UserProfileShort{
+			Address: t.ToAddress.String(),
+		},
 		TokenID:           t.TokenId.String(),
 		PublicKey:         t.PublicKey,
 		EncryptedPassword: t.EncryptedPassword,

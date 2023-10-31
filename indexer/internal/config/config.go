@@ -58,6 +58,7 @@ type (
 		FileBunniesCollectionAddress common.Address
 		FileBunniesCreatorAddress    common.Address
 		FraudDeciderWeb2Address      common.Address
+		LikeEmitterAddress           common.Address
 		AllowedBlockNumberDifference int64
 		TelegramHealthNotifierAddr   string
 		HealthCheckInterval          int
@@ -133,6 +134,7 @@ func Init(configPath string) (*Config, error) {
 			PublicCollectionAddress:      common.HexToAddress(jsonCfg.GetString("service.publicCollectionAddress")),
 			FileBunniesCollectionAddress: common.HexToAddress(jsonCfg.GetString("service.fileBunniesCollectionAddress")),
 			FileBunniesCreatorAddress:    common.HexToAddress(jsonCfg.GetString("service.fileBunniesCreatorAddress")),
+			LikeEmitterAddress:           common.HexToAddress(jsonCfg.GetString("service.likeEmitterAddress")),
 			AllowedBlockNumberDifference: jsonCfg.GetInt64("service.allowedBlockNumberDifference"),
 			TelegramHealthNotifierAddr:   envCfg.GetString("TELEGRAM_HEALTH_NOTIFIER_ADDRESS"),
 			HealthCheckInterval:          jsonCfg.GetInt("service.healthCheckInterval"),
