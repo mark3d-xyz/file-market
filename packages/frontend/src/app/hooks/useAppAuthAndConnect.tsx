@@ -52,9 +52,6 @@ export default function useAppAuthAndConnect(props?: IUseAppAuthAndConnect) {
     }
   }, [isConnected, isACanAuthEffect])
 
-  // useErrorWindow(errorConnect?.message)
-  // useErrorWindow(errorSign?.message)
-
   const connect = useCallback(async () => {
     if (isConnected && address && props?.isWithSign) {
       setAddressState(address)
@@ -70,10 +67,6 @@ export default function useAppAuthAndConnect(props?: IUseAppAuthAndConnect) {
       setIsACanAuthEffect(true)
     }
   }, [isConnected, address, connector, props?.isWithSign, setIsLoading, setAddressState, setIsACanAuthEffect, openConnectModal])
-
-  useEffect(() => {
-
-  }, [])
 
   useEffect(() => {
     if (isLoading) {

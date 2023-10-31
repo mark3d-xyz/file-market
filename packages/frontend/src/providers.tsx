@@ -30,7 +30,6 @@ export const Providers: FC<PropsWithChildren> = ({ children }) => {
           <BlockNumberWatcher />
         </RainbowKitProvider>
       </WagmiConfig>
-      {/* <Web3ModalConfigured /> */}
     </QueryClientProvider>
   )
 }
