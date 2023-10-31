@@ -138,6 +138,9 @@ func fillCollectionUserProfiles(
 	owner *authserver_pb.UserProfileShort,
 	creator *authserver_pb.UserProfileShort,
 ) {
+	c.OwnerProfile = &models.UserProfileShort{}
+	c.CreatorProfile = &models.UserProfileShort{}
+
 	c.OwnerProfile.Username = owner.Username
 	c.OwnerProfile.Name = owner.Name
 	c.OwnerProfile.AvatarURL = owner.AvatarURL
@@ -151,6 +154,9 @@ func fillTokenUserProfiles(
 	owner *authserver_pb.UserProfileShort,
 	creator *authserver_pb.UserProfileShort,
 ) {
+	t.OwnerProfile = &models.UserProfileShort{}
+	t.CreatorProfile = &models.UserProfileShort{}
+
 	t.OwnerProfile.Username = owner.Username
 	t.OwnerProfile.Name = owner.Name
 	t.OwnerProfile.AvatarURL = owner.AvatarURL
@@ -164,6 +170,9 @@ func fillTransferUserProfiles(
 	to *authserver_pb.UserProfileShort,
 	from *authserver_pb.UserProfileShort,
 ) {
+	t.ToProfile = &models.UserProfileShort{}
+	t.FromProfile = &models.UserProfileShort{}
+
 	t.ToProfile.Username = to.Username
 	t.ToProfile.Name = to.Name
 	t.ToProfile.AvatarURL = to.AvatarURL
