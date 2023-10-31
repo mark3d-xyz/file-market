@@ -2,11 +2,13 @@ package service
 
 import (
 	"context"
+	"errors"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/jackc/pgx/v4"
 	"github.com/mark3d-xyz/mark3d/indexer/internal/domain"
 	"github.com/mark3d-xyz/mark3d/indexer/models"
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/currencyconversion"
+	"github.com/mark3d-xyz/mark3d/indexer/pkg/utils"
 	"log"
 	"math/big"
 	"strings"
@@ -47,10 +49,34 @@ func (s *service) GetTransfers(
 		log.Println("get active outgoing transfers total failed: ", err)
 		return nil, internalError
 	}
+
+	addresses := make(map[string]struct{})
+	for _, t := range incomingTransfers {
+		addresses[strings.ToLower(t.FromAddress.String())] = struct{}{}
+		addresses[strings.ToLower(t.ToAddress.String())] = struct{}{}
+	}
+	for _, t := range outgoingTransfers {
+		addresses[strings.ToLower(t.FromAddress.String())] = struct{}{}
+		addresses[strings.ToLower(t.ToAddress.String())] = struct{}{}
+	}
+	profilesMap, e := s.getProfilesMap(ctx, utils.SetToSlice(addresses))
+	if e != nil {
+		return nil, e
+	}
+
+	incomingRes := domain.MapSlice(incomingTransfers, domain.TransferToModel)
+	outgoingRes := domain.MapSlice(outgoingTransfers, domain.TransferToModel)
+	for _, t := range incomingRes {
+		fillTransferUserProfiles(t, profilesMap[t.To], profilesMap[t.From])
+	}
+	for _, t := range outgoingRes {
+		fillTransferUserProfiles(t, profilesMap[t.To], profilesMap[t.From])
+	}
+
 	return &models.TransfersResponse{
-		Incoming:      domain.MapSlice(incomingTransfers, domain.TransferToModel),
+		Incoming:      incomingRes,
 		IncomingTotal: incomingTotal,
-		Outgoing:      domain.MapSlice(outgoingTransfers, domain.TransferToModel),
+		Outgoing:      outgoingRes,
 		OutgoingTotal: outgoingTotal,
 	}, nil
 }
@@ -90,10 +116,34 @@ func (s *service) GetTransfersHistory(
 		log.Println("get outgoing transfers failed: ", err)
 		return nil, internalError
 	}
+
+	addresses := make(map[string]struct{})
+	for _, t := range incomingTransfers {
+		addresses[strings.ToLower(t.FromAddress.String())] = struct{}{}
+		addresses[strings.ToLower(t.ToAddress.String())] = struct{}{}
+	}
+	for _, t := range outgoingTransfers {
+		addresses[strings.ToLower(t.FromAddress.String())] = struct{}{}
+		addresses[strings.ToLower(t.ToAddress.String())] = struct{}{}
+	}
+	profilesMap, e := s.getProfilesMap(ctx, utils.SetToSlice(addresses))
+	if e != nil {
+		return nil, e
+	}
+
+	incomingRes := domain.MapSlice(incomingTransfers, domain.TransferToModel)
+	outgoingRes := domain.MapSlice(outgoingTransfers, domain.TransferToModel)
+	for _, t := range incomingRes {
+		fillTransferUserProfiles(t, profilesMap[t.To], profilesMap[t.From])
+	}
+	for _, t := range outgoingRes {
+		fillTransferUserProfiles(t, profilesMap[t.To], profilesMap[t.From])
+	}
+
 	return &models.TransfersResponse{
-		Incoming:      domain.MapSlice(incomingTransfers, domain.TransferToModel),
+		Incoming:      incomingRes,
 		IncomingTotal: incomingTotal,
-		Outgoing:      domain.MapSlice(outgoingTransfers, domain.TransferToModel),
+		Outgoing:      outgoingRes,
 		OutgoingTotal: outgoingTotal,
 	}, nil
 }
@@ -106,16 +156,25 @@ func (s *service) GetTransfer(ctx context.Context, address common.Address,
 		return nil, internalError
 	}
 	defer s.repository.RollbackTransaction(ctx, tx)
-	res, err := s.repository.GetActiveTransfer(ctx, tx, address, tokenId)
+	transfer, err := s.repository.GetActiveTransfer(ctx, tx, address, tokenId)
 	if err != nil {
-		if err == pgx.ErrNoRows {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return nil, nil
 		}
 
 		logger.Error("failed to get active transfer", err, nil)
 		return nil, internalError
 	}
-	return domain.TransferToModel(res), nil
+
+	profilesMap, e := s.getProfilesMap(ctx, []string{transfer.ToAddress.String(), transfer.FromAddress.String()})
+	if e != nil {
+		return nil, e
+	}
+
+	res := domain.TransferToModel(transfer)
+	fillTransferUserProfiles(res, profilesMap[res.To], profilesMap[res.From])
+
+	return res, nil
 }
 
 func (s *service) GetTransfersV2(
@@ -163,6 +222,7 @@ func (s *service) GetTransfersV2(
 		rate = 0
 	}
 
+	addresses := make(map[string]struct{})
 	incoming, outgoing := make([]*models.TransferWithData, len(incomingTransfers)), make([]*models.TransferWithData, len(outgoingTransfers))
 	for i, t := range incomingTransfers {
 		token, err := s.repository.GetToken(ctx, tx, t.CollectionAddress, t.TokenId)
@@ -179,6 +239,7 @@ func (s *service) GetTransfersV2(
 			logger.Error("failed to get collection", err, nil)
 			return nil, internalError
 		}
+
 		var order *domain.Order
 		if t.OrderId != 0 {
 			order, err = s.repository.GetOrder(ctx, tx, t.OrderId)
@@ -188,6 +249,14 @@ func (s *service) GetTransfersV2(
 			}
 			order.PriceUsd = currencyconversion.Convert(rate, order.Price)
 		}
+
+		addresses[token.Owner.String()] = struct{}{}
+		addresses[token.Creator.String()] = struct{}{}
+		addresses[collection.Owner.String()] = struct{}{}
+		addresses[collection.Creator.String()] = struct{}{}
+		addresses[t.FromAddress.String()] = struct{}{}
+		addresses[t.ToAddress.String()] = struct{}{}
+
 		incoming[i] = &models.TransferWithData{
 			Collection: domain.CollectionToModel(collection),
 			Order:      domain.OrderToModel(order),
@@ -219,6 +288,14 @@ func (s *service) GetTransfersV2(
 			}
 			order.PriceUsd = currencyconversion.Convert(rate, order.Price)
 		}
+
+		addresses[token.Owner.String()] = struct{}{}
+		addresses[token.Creator.String()] = struct{}{}
+		addresses[collection.Owner.String()] = struct{}{}
+		addresses[collection.Creator.String()] = struct{}{}
+		addresses[t.FromAddress.String()] = struct{}{}
+		addresses[t.ToAddress.String()] = struct{}{}
+
 		outgoing[i] = &models.TransferWithData{
 			Collection: domain.CollectionToModel(collection),
 			Order:      domain.OrderToModel(order),
@@ -226,6 +303,17 @@ func (s *service) GetTransfersV2(
 			Transfer:   domain.TransferToModel(t),
 		}
 	}
+
+	profilesMap, e := s.getProfilesMap(ctx, utils.SetToSlice(addresses))
+	if e != nil {
+		return nil, e
+	}
+	for _, d := range incoming {
+		fillTransferUserProfiles(d.Transfer, profilesMap[d.Transfer.To], profilesMap[d.Transfer.From])
+		fillCollectionUserProfiles(d.Collection, profilesMap[d.Collection.Owner], profilesMap[d.Collection.Creator])
+		fillTokenUserProfiles(d.Token, profilesMap[d.Token.Owner], profilesMap[d.Token.Creator])
+	}
+
 	return &models.TransfersResponseV2{
 		Incoming:      incoming,
 		IncomingTotal: incomingTotal,
@@ -279,6 +367,7 @@ func (s *service) GetTransfersHistoryV2(
 		rate = 0
 	}
 
+	addresses := make(map[string]struct{})
 	incoming, outgoing := make([]*models.TransferWithData, len(incomingTransfers)), make([]*models.TransferWithData, len(outgoingTransfers))
 	for i, t := range incomingTransfers {
 		token, err := s.repository.GetToken(ctx, tx, t.CollectionAddress, t.TokenId)
@@ -298,6 +387,14 @@ func (s *service) GetTransfersHistoryV2(
 
 			order.PriceUsd = currencyconversion.Convert(rate, order.Price)
 		}
+
+		addresses[token.Owner.String()] = struct{}{}
+		addresses[token.Creator.String()] = struct{}{}
+		addresses[collection.Owner.String()] = struct{}{}
+		addresses[collection.Creator.String()] = struct{}{}
+		addresses[t.FromAddress.String()] = struct{}{}
+		addresses[t.ToAddress.String()] = struct{}{}
+
 		incoming[i] = &models.TransferWithData{
 			Collection: domain.CollectionToModel(collection),
 			Order:      domain.OrderToModel(order),
@@ -323,6 +420,14 @@ func (s *service) GetTransfersHistoryV2(
 
 			order.PriceUsd = currencyconversion.Convert(rate, order.Price)
 		}
+
+		addresses[token.Owner.String()] = struct{}{}
+		addresses[token.Creator.String()] = struct{}{}
+		addresses[collection.Owner.String()] = struct{}{}
+		addresses[collection.Creator.String()] = struct{}{}
+		addresses[t.FromAddress.String()] = struct{}{}
+		addresses[t.ToAddress.String()] = struct{}{}
+
 		outgoing[i] = &models.TransferWithData{
 			Collection: domain.CollectionToModel(collection),
 			Order:      domain.OrderToModel(order),
@@ -330,6 +435,17 @@ func (s *service) GetTransfersHistoryV2(
 			Transfer:   domain.TransferToModel(t),
 		}
 	}
+
+	profilesMap, e := s.getProfilesMap(ctx, utils.SetToSlice(addresses))
+	if e != nil {
+		return nil, e
+	}
+	for _, d := range incoming {
+		fillTransferUserProfiles(d.Transfer, profilesMap[d.Transfer.To], profilesMap[d.Transfer.From])
+		fillCollectionUserProfiles(d.Collection, profilesMap[d.Collection.Owner], profilesMap[d.Collection.Creator])
+		fillTokenUserProfiles(d.Token, profilesMap[d.Token.Owner], profilesMap[d.Token.Creator])
+	}
+
 	return &models.TransfersResponseV2{
 		Incoming:      incoming,
 		IncomingTotal: incomingTotal,
@@ -349,7 +465,7 @@ func (s *service) GetTransferV2(
 		return nil, internalError
 	}
 	defer s.repository.RollbackTransaction(ctx, tx)
-	res, err := s.repository.GetActiveTransfer(ctx, tx, address, tokenId)
+	transfer, err := s.repository.GetActiveTransfer(ctx, tx, address, tokenId)
 	if err != nil {
 		return nil, internalError
 	}
@@ -372,17 +488,39 @@ func (s *service) GetTransferV2(
 		rate = 0
 	}
 	var order *domain.Order
-	if res.OrderId != 0 {
-		order, err = s.repository.GetOrder(ctx, tx, res.OrderId)
+	if transfer.OrderId != 0 {
+		order, err = s.repository.GetOrder(ctx, tx, transfer.OrderId)
 		if err != nil {
 			return nil, internalError
 		}
 		order.PriceUsd = currencyconversion.Convert(rate, order.Price)
 	}
+
+	addresses := make(map[string]struct{})
+	addresses[token.Owner.String()] = struct{}{}
+	addresses[token.Creator.String()] = struct{}{}
+	addresses[collection.Owner.String()] = struct{}{}
+	addresses[collection.Creator.String()] = struct{}{}
+	addresses[transfer.FromAddress.String()] = struct{}{}
+	addresses[transfer.ToAddress.String()] = struct{}{}
+
+	profilesMap, e := s.getProfilesMap(ctx, utils.SetToSlice(addresses))
+	if e != nil {
+		return nil, e
+	}
+
+	collectionRes := domain.CollectionToModel(collection)
+	tokenRes := domain.TokenToModel(token)
+	transferRes := domain.TransferToModel(transfer)
+
+	fillTransferUserProfiles(transferRes, profilesMap[transferRes.To], profilesMap[transferRes.From])
+	fillCollectionUserProfiles(collectionRes, profilesMap[collectionRes.Owner], profilesMap[collectionRes.Creator])
+	fillTokenUserProfiles(tokenRes, profilesMap[tokenRes.Owner], profilesMap[tokenRes.Creator])
+
 	return &models.TransferWithData{
-		Collection: domain.CollectionToModel(collection),
+		Collection: collectionRes,
 		Order:      domain.OrderToModel(order),
-		Token:      domain.TokenToModel(token),
-		Transfer:   domain.TransferToModel(res),
+		Token:      tokenRes,
+		Transfer:   transferRes,
 	}, nil
 }

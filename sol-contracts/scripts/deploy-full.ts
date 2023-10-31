@@ -4,7 +4,7 @@ import {
   FileBunniesCollection__factory,
   FilemarketCollectionV2__factory,
   FilemarketExchangeV2__factory,
-  FraudDeciderWeb2V2__factory,
+  FraudDeciderWeb2V2__factory, LikeEmitter__factory,
   Mark3dAccessTokenV2__factory,
   PublicCollection__factory,
 } from "../typechain-types";
@@ -99,6 +99,15 @@ async function main() {
       wallet = new Wallet(hre.config.networks.testnetZksync.accounts[0]);
     }
 
+    const likeEmitter = await deployZkContract(
+        wallet,
+        "contracts/LikeEmitter.sol:LikeEmitter",
+        [],
+        shouldVerify
+    );
+    console.log("likeEmitter address: ", likeEmitter.address);
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+
     const collectionToClone = await deployZkContract(
       wallet,
       "contracts/ZkFilemarketCollectionV2.sol:FilemarketCollectionV2",
@@ -169,9 +178,13 @@ async function main() {
       accounts[0]
     );
     const exchangeFactory = new FilemarketExchangeV2__factory(accounts[0]);
+    const likeEmitterFactory = new LikeEmitter__factory(accounts[0])
 
     const priorityFee = await callRpc("eth_maxPriorityFeePerGas", "");
     console.log(priorityFee);
+
+    const likeEmitter = await likeEmitterFactory.deploy({maxPriorityFeePerGas: priorityFee});
+    console.log("likeEmitter address: ", likeEmitter.address);
 
     const collectionToClone = await collectionFactory.deploy({
       maxPriorityFeePerGas: priorityFee,

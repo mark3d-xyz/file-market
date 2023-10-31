@@ -1043,3 +1043,7 @@ func (s *service) onTransferCancel(
 
 	return nil
 }
+
+func (s *service) onLikeEvent(ctx context.Context, tx pgx.Tx, collectionAddress common.Address, tokenId *big.Int) error {
+	return s.repository.IncrementLike(ctx, tx, collectionAddress, tokenId)
+}

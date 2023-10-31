@@ -18,7 +18,15 @@ message UserProfile {
   string address = 11;
   string discord = 12;
   string telegram = 13;
-  bool isEmailConfirmed = 14;
+  string instagram = 14;
+  bool isEmailConfirmed = 15;
+}
+
+message UserProfileShort {
+  string avatarURL = 1;
+  string name = 2;
+  string username = 3;
+  string address = 4;
 }
 
 message GetUserProfileRequest {
@@ -66,3 +74,12 @@ message UsernameExistsRequest {
 message UsernameExistsResponse {
   bool exist = 1;
 }
+
+message GetUserProfileBulkRequest {
+  repeated string addresses = 1;
+}
+
+message GetUserProfileBulkResponse {
+  repeated UserProfileShort profiles = 1;
+}
+

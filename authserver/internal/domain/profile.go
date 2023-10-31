@@ -23,6 +23,7 @@ type UserProfile struct {
 	Twitter                     *string        `json:"twitter"`
 	Discord                     *string        `json:"discord"`
 	Telegram                    *string        `json:"telegram"`
+	Instagram                   *string        `json:"instagram"`
 }
 
 func (p *UserProfile) ToGRPC() *authserver_pb.UserProfile {
@@ -45,6 +46,7 @@ func (p *UserProfile) ToGRPC() *authserver_pb.UserProfile {
 		Twitter:                    utils.UnwrapString(p.Twitter),
 		Discord:                    utils.UnwrapString(p.Discord),
 		Telegram:                   utils.UnwrapString(p.Telegram),
+		Instagram:                  utils.UnwrapString(p.Instagram),
 	}
 }
 

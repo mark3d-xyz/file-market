@@ -10,7 +10,7 @@ type IUseAuth = IUseAppAuthAndConnect
 export const useAuth = (props?: IUseAuth) => {
   const { dialogStore } = useStores()
   const { isConnected } = useAccount()
-  const { connect: openWeb3Modal, setDefaultChain, isLoading } = useAppAuthAndConnect(props)
+  const { connect: openWeb3Modal, isLoading } = useAppAuthAndConnect(props)
 
   const openDialog = () => {
     dialogStore.openDialog({
@@ -32,7 +32,6 @@ export const useAuth = (props?: IUseAuth) => {
 
   return {
     connect,
-    setDefaultChain,
     isLoading,
   }
 }
