@@ -31,6 +31,7 @@
     "@mui/material": "^5.10.12",
     "@nextui-org/react": "^1.0.0-beta.10",
     "@peculiar/webcrypto": "^1.4.1",
+    "@rainbow-me/rainbowkit": "1.2.0",
     "@react-aria/dnd": "^3.0.0-rc.0",
     "@react-types/shared": "^3.15.0",
     "@stitches/react": "^1.2.8",
