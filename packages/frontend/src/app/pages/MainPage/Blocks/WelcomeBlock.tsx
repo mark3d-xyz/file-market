@@ -8,7 +8,7 @@ import GiftLabel from '../components/GiftLabel/GiftLabel'
 import HowToGetStart from '../components/HowToGetStart/HowToGetStart'
 import bgStorage from '../img/BgStorageNew.svg'
 import Achievements from './Achievements'
-import Benefits from './Benefits'
+import Features from './Features'
 import KeepTouchBlock from './KeepTouchBlock'
 import Publications from './Publications/Publications'
 import SupportedBy from './SupportedBy'
@@ -102,7 +102,7 @@ export const ToolDescription = styled('p', {
   },
 })
 
-const BenefitsWrapper = styled('section', {
+const FeaturesWrapper = styled('section', {
   marginBottom: '32px',
   '@md': {
     marginBottom: '40px',
@@ -229,9 +229,9 @@ export default function WelcomeBlock() {
         <WelcomeInfo>
           <StorageImg src={bgStorage} />
           <Title>P2P platform for trading any digital goods</Title>
-          <BenefitsWrapper >
-            <Benefits />
-          </BenefitsWrapper>
+          <FeaturesWrapper >
+            <Features />
+          </FeaturesWrapper>
           <NavigateBlock>
             <GiftLabelWrapper>
               <GiftLabel />

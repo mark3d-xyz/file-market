@@ -1,13 +1,13 @@
 import { styled } from '../../../../styles'
-import { BenefitsData } from '../helper/Benefits/data'
+import { FeaturesData } from '../helper/Features/data'
 
-export interface BenefitItemProps {
+export interface FeaturesItemProps {
   icon: string
   name: string
   mobileName?: string
 }
 
-const BenefitItemWrapper = styled('li', {
+const FeaturesItemWrapper = styled('li', {
   display: 'flex',
   alignItems: 'center',
   width: '100%',
@@ -34,7 +34,7 @@ const BenefitItemWrapper = styled('li', {
   },
 })
 
-const BenefitItemInner = styled('div', {
+const FeaturesItemInner = styled('div', {
   display: 'flex',
   columnGap: 8,
   alignItems: 'center',
@@ -52,7 +52,7 @@ const BenefitItemInner = styled('div', {
   },
 })
 
-const BenefitItemIcon = styled('img', {
+const FeaturesItemIcon = styled('img', {
   display: 'block',
   width: 24,
   height: 'auto',
@@ -67,7 +67,7 @@ const BenefitItemIcon = styled('img', {
   },
 })
 
-const BenefitItemTitle = styled('p', {
+const FeaturesItemTitle = styled('p', {
   color: '$gray700',
   fontSize: 12,
   fontWeight: 500,
@@ -86,16 +86,16 @@ const BenefitItemTitle = styled('p', {
   },
 })
 
-const BenefitItem = (props: BenefitItemProps) => {
+const FeaturesItem = (props: FeaturesItemProps) => {
   const { icon, name, mobileName } = props
 
   console.log(mobileName)
 
   return (
-    <BenefitItemWrapper>
-      <BenefitItemInner>
-        <BenefitItemIcon src={icon} aria-hidden="true" />
-        <BenefitItemTitle>
+    <FeaturesItemWrapper>
+      <FeaturesItemInner>
+        <FeaturesItemIcon src={icon} aria-hidden="true" />
+        <FeaturesItemTitle>
           {!mobileName && name}
           {mobileName && (
             <>
@@ -103,13 +103,13 @@ const BenefitItem = (props: BenefitItemProps) => {
               <span className="_mobile">{mobileName}</span>
             </>
           )}
-        </BenefitItemTitle>
-      </BenefitItemInner>
-    </BenefitItemWrapper>
+        </FeaturesItemTitle>
+      </FeaturesItemInner>
+    </FeaturesItemWrapper>
   )
 }
 
-const BenefitsList = styled('ul', {
+const FeaturesList = styled('ul', {
   display: 'grid',
   gridTemplateColumns: 'repeat(3, 1fr)',
   maxWidth: 618,
@@ -126,19 +126,19 @@ const BenefitsList = styled('ul', {
   },
 })
 
-const Benefits = () => {
+const Features = () => {
   return (
-    <BenefitsList>
-      {BenefitsData.map((item, index) => {
+    <FeaturesList>
+      {FeaturesData.map((item, index) => {
         return (
-          <BenefitItem
+          <FeaturesItem
             key={item.name}
             {...item}
           />
         )
       })}
-    </BenefitsList>
+    </FeaturesList>
   )
 }
 
-export default Benefits
+export default Features
