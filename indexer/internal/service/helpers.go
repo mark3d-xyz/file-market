@@ -138,15 +138,18 @@ func fillCollectionUserProfiles(
 	owner *authserver_pb.UserProfileShort,
 	creator *authserver_pb.UserProfileShort,
 ) {
-	c.OwnerProfile = &models.UserProfileShort{}
-	c.CreatorProfile = &models.UserProfileShort{}
-
-	c.OwnerProfile.Username = owner.Username
-	c.OwnerProfile.Name = owner.Name
-	c.OwnerProfile.AvatarURL = owner.AvatarURL
-	c.CreatorProfile.Username = creator.Username
-	c.CreatorProfile.Name = creator.Name
-	c.CreatorProfile.AvatarURL = creator.AvatarURL
+	if owner != nil {
+		c.OwnerProfile = &models.UserProfileShort{}
+		c.OwnerProfile.Username = owner.Username
+		c.OwnerProfile.Name = owner.Name
+		c.OwnerProfile.AvatarURL = owner.AvatarURL
+	}
+	if creator != nil {
+		c.CreatorProfile = &models.UserProfileShort{}
+		c.CreatorProfile.Username = creator.Username
+		c.CreatorProfile.Name = creator.Name
+		c.CreatorProfile.AvatarURL = creator.AvatarURL
+	}
 }
 
 func fillTokenUserProfiles(
@@ -154,15 +157,18 @@ func fillTokenUserProfiles(
 	owner *authserver_pb.UserProfileShort,
 	creator *authserver_pb.UserProfileShort,
 ) {
-	t.OwnerProfile = &models.UserProfileShort{}
-	t.CreatorProfile = &models.UserProfileShort{}
-
-	t.OwnerProfile.Username = owner.Username
-	t.OwnerProfile.Name = owner.Name
-	t.OwnerProfile.AvatarURL = owner.AvatarURL
-	t.CreatorProfile.Username = creator.Username
-	t.CreatorProfile.Name = creator.Name
-	t.CreatorProfile.AvatarURL = creator.AvatarURL
+	if owner != nil {
+		t.OwnerProfile = &models.UserProfileShort{}
+		t.OwnerProfile.Username = owner.Username
+		t.OwnerProfile.Name = owner.Name
+		t.OwnerProfile.AvatarURL = owner.AvatarURL
+	}
+	if creator != nil {
+		t.CreatorProfile = &models.UserProfileShort{}
+		t.CreatorProfile.Username = creator.Username
+		t.CreatorProfile.Name = creator.Name
+		t.CreatorProfile.AvatarURL = creator.AvatarURL
+	}
 }
 
 func fillTransferUserProfiles(
@@ -170,13 +176,16 @@ func fillTransferUserProfiles(
 	to *authserver_pb.UserProfileShort,
 	from *authserver_pb.UserProfileShort,
 ) {
-	t.ToProfile = &models.UserProfileShort{}
-	t.FromProfile = &models.UserProfileShort{}
-
-	t.ToProfile.Username = to.Username
-	t.ToProfile.Name = to.Name
-	t.ToProfile.AvatarURL = to.AvatarURL
-	t.FromProfile.Username = from.Username
-	t.FromProfile.Name = from.Name
-	t.FromProfile.AvatarURL = from.AvatarURL
+	if to != nil {
+		t.ToProfile = &models.UserProfileShort{}
+		t.ToProfile.Username = to.Username
+		t.ToProfile.Name = to.Name
+		t.ToProfile.AvatarURL = to.AvatarURL
+	}
+	if from != nil {
+		t.FromProfile = &models.UserProfileShort{}
+		t.FromProfile.Username = from.Username
+		t.FromProfile.Name = from.Name
+		t.FromProfile.AvatarURL = from.AvatarURL
+	}
 }
