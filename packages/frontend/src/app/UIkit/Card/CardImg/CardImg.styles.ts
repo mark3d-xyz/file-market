@@ -19,7 +19,7 @@ export const StyledImgWrapper = styled('div', {
   height: '100%',
   variants: {
     variant: {
-      primary: { padding: 12 },
+      primary: { padding: '8px 12px 12px' },
       secondary: { padding: 0 },
     },
   },

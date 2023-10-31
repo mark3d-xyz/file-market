@@ -9,6 +9,8 @@ export interface NFTCardProps {
   imageURL: string
   title: string
   collectionName: string
+  categories?: string
+  likesCount?: number
   user: {
     img: string
     address: string
@@ -26,7 +28,9 @@ export interface NFTCardProps {
 
 export const NFTCard: React.FC<NFTCardProps> = ({
   collectionName,
+  likesCount,
   button,
+  categories,
   imageURL,
   hiddenFileMeta,
   title,
@@ -42,8 +46,9 @@ export const NFTCard: React.FC<NFTCardProps> = ({
     <NftCardBase
       to={button.link}
       title={title}
+      likesCount={likesCount}
       collectionName={collectionName}
-      fileType={<FileType hiddenFileMeta={hiddenFileMeta} />}
+      fileType={<FileType categories={categories} hiddenFileMeta={hiddenFileMeta} />}
       imgSrc={imageURL}
       button={{
         to: button.link,

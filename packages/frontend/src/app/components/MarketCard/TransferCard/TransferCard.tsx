@@ -10,6 +10,8 @@ export interface TransferCardProps {
   title: string
   collectionName: string
   hiddenFileMeta?: HiddenFileMetaData
+  categories?: string
+  likesCount?: number
   user: {
     img: string
     address: string
@@ -28,9 +30,11 @@ export const TransferCard: React.FC<TransferCardProps> = ({
   imageURL,
   title,
   collectionName,
+  categories,
   hiddenFileMeta,
   user,
   price,
+  likesCount,
   status,
   button,
   chainName,
@@ -41,8 +45,9 @@ export const TransferCard: React.FC<TransferCardProps> = ({
       to={button.link}
       imgSrc={imageURL}
       title={title}
+      likesCount={likesCount}
       collectionName={collectionName}
-      fileType={<FileType hiddenFileMeta={hiddenFileMeta} />}
+      fileType={<FileType categories={categories} hiddenFileMeta={hiddenFileMeta} />}
       button={{ to: button.link, text: button.text }}
       chainName={chainName}
       chainImg={chainImg}
