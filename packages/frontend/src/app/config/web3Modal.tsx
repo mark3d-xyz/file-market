@@ -28,7 +28,7 @@ export const { chains, publicClient } = configureChains(
 )
 
 const { connectors } = getDefaultWallets({
-  appName: 'NFT minting dApp',
+  appName: 'Filemarket',
   projectId,
   chains,
 })
