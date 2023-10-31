@@ -8,6 +8,7 @@ import GiftLabel from '../components/GiftLabel/GiftLabel'
 import HowToGetStart from '../components/HowToGetStart/HowToGetStart'
 import bgStorage from '../img/BgStorageNew.svg'
 import Achievements from './Achievements'
+import Benefits from './Benefits'
 import Features from './Features'
 import KeepTouchBlock from './KeepTouchBlock'
 import Publications from './Publications/Publications'
@@ -276,6 +277,7 @@ export default function WelcomeBlock() {
           </NavigateBlock>
           <SupportedBy />
           <HowToGetStart />
+          <Benefits />
           <Achievements />
           <Publications />
           <KeepTouchBlock />
