@@ -11,6 +11,7 @@ import Achievements from './Achievements'
 import Benefits from './Benefits'
 import Features from './Features'
 import KeepTouchBlock from './KeepTouchBlock'
+import Partners from './Partners'
 import Publications from './Publications/Publications'
 import SupportedBy from './SupportedBy'
 
@@ -280,6 +281,7 @@ export default function WelcomeBlock() {
           <Benefits />
           <Achievements />
           <Publications />
+          <Partners />
           <KeepTouchBlock />
         </WelcomeInfo>
       </WelcomeScreenWrapper>

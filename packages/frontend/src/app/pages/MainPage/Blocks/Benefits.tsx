@@ -5,7 +5,7 @@ import DotsGradientBottom from '../img/Benefits/dots-gradient-bottom.svg'
 import DotsGradientTop from '../img/Benefits/dots-gradient-top.svg'
 
 export interface BenefitItemProps {
-  icon: string
+  icon?: string
   title: string
   text: string
 }
