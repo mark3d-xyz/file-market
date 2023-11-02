@@ -9,6 +9,7 @@ import HowToGetStart from '../components/HowToGetStart/HowToGetStart'
 import bgStorage from '../img/BgStorageNew.svg'
 import Achievements from './Achievements'
 import Benefits from './Benefits'
+import EFTProtocol from './EFTProtocol'
 import Features from './Features'
 import KeepTouchBlock from './KeepTouchBlock'
 import Partners from './Partners'
@@ -205,7 +206,7 @@ const WelcomeInfo = styled(Container, {
 
 const StorageImg = styled('img', {
   position: 'absolute',
-  top: '102px',
+  top: '150px',
   left: '55%',
   '@xl': {
     left: '65%',
@@ -279,6 +280,7 @@ export default function WelcomeBlock() {
           <SupportedBy />
           <HowToGetStart />
           <Benefits />
+          <EFTProtocol />
           <Achievements />
           <Publications />
           <Partners />
