@@ -116,6 +116,10 @@ export class UserTransferStore implements IActivateDeactivate<[string]>, IStoreR
         link: `/collection/${chain?.name}/${transfer.collection?.address}/${transfer.token?.tokenId}`,
         text: 'Go to page',
       },
+      tokenFullId: {
+        collectionAddress: transfer?.collection?.address ?? '',
+        tokenId: transfer?.token?.tokenId ?? '',
+      },
       collectionName: transfer.collection?.name ?? '',
       imageURL: getHttpLinkFromIpfsString(transfer.token?.image ?? ''),
       title: transfer.token?.name ?? '',

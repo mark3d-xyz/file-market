@@ -114,6 +114,10 @@ export class CollectionAndTokenListStore implements IActivateDeactivate<[string]
       title: token.name ?? '—',
       categories: token.categories?.[0],
       likesCount: 123123213213,
+      tokenFullId: {
+        collectionAddress: token?.collectionAddress ?? '',
+        tokenId: token?.tokenId ?? '',
+      },
       user: {
         img: getProfileImageUrl(token.owner ?? ''),
         address: reduceAddress(token.owner ?? ''),
