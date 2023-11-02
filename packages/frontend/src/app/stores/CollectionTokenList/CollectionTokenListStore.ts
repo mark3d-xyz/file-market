@@ -124,6 +124,10 @@ export class CollectionTokenListStore implements IActivateDeactivate<[string, st
         link: `/collection/${this.currentBlockChainStore.chain?.name}/${token.collectionAddress}/${token.tokenId}`,
         text: 'Go to page',
       },
+      tokenFullId: {
+        collectionAddress: token?.collectionAddress ?? '',
+        tokenId: token?.tokenId ?? '',
+      },
       hiddenFile: token.hiddenFileMeta,
       hiddenFileMeta: token.hiddenFileMeta,
       chainName: this.currentBlockChainStore.chain?.name,

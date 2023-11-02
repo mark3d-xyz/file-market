@@ -49,6 +49,7 @@ export const TransferCard: React.FC<TransferCardProps> = ({
       imgSrc={imageURL}
       title={title}
       likesCount={likesCount}
+      tokenFullId={tokenFullId}
       collectionName={collectionName}
       fileType={<FileType categories={categories} hiddenFileMeta={hiddenFileMeta} />}
       button={{ to: button.link, text: button.text }}
