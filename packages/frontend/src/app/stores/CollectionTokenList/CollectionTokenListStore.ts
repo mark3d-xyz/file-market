@@ -115,6 +115,7 @@ export class CollectionTokenListStore implements IActivateDeactivate<[string, st
       collectionName: this.data.collection?.name ?? '',
       imageURL: token.image ? getHttpLinkFromIpfsString(token.image) : gradientPlaceholderImg,
       title: token.name ?? '—',
+      likesCount: 13232343,
       user: {
         img: getProfileImageUrl(token.owner ?? ''),
         address: reduceAddress(this.data.collection?.owner ?? ''),
