@@ -2,6 +2,7 @@ import React from 'react'
 
 import { type HiddenFileMetaData } from '../../../../swagger/Api'
 import { useCurrency } from '../../../hooks/useCurrency'
+import { type TokenFullId } from '../../../processing/types'
 import { NftCardBase, NftCardUserInfo, PriceBadge } from '../../../UIkit'
 import { FileType } from '../FileType/FileType'
 
@@ -11,6 +12,7 @@ export interface NFTCardProps {
   collectionName: string
   categories?: string
   likesCount?: number
+  tokenFullId: TokenFullId
   user: {
     img: string
     address: string
@@ -31,6 +33,7 @@ export const NFTCard: React.FC<NFTCardProps> = ({
   likesCount,
   button,
   categories,
+  tokenFullId,
   imageURL,
   hiddenFileMeta,
   title,
@@ -47,6 +50,7 @@ export const NFTCard: React.FC<NFTCardProps> = ({
       to={button.link}
       title={title}
       likesCount={likesCount}
+      tokenFullId={tokenFullId}
       collectionName={collectionName}
       fileType={<FileType categories={categories} hiddenFileMeta={hiddenFileMeta} />}
       imgSrc={imageURL}

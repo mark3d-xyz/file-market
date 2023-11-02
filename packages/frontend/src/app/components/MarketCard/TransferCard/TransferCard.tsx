@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { type HiddenFileMetaData } from '../../../../swagger/Api'
+import { type TokenFullId } from '../../../processing/types'
 import { NftCardBase, NftCardUserInfo, PriceBadge } from '../../../UIkit'
 import { FileType } from '../FileType'
 import { StyledTxtName, StyledTxtValue } from './TransferCard.styles'
@@ -12,6 +13,7 @@ export interface TransferCardProps {
   hiddenFileMeta?: HiddenFileMetaData
   categories?: string
   likesCount?: number
+  tokenFullId: TokenFullId
   user: {
     img: string
     address: string
@@ -31,6 +33,7 @@ export const TransferCard: React.FC<TransferCardProps> = ({
   title,
   collectionName,
   categories,
+  tokenFullId,
   hiddenFileMeta,
   user,
   price,

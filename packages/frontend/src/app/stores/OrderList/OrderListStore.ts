@@ -109,6 +109,10 @@ export class OpenOrderListStore implements IStoreRequester, IActivateDeactivate 
         hiddenFileMeta: token?.hiddenFileMeta,
         imageURL: token?.image ? getHttpLinkFromIpfsString(token.image) : gradientPlaceholderImg,
         title: token?.name ?? '—',
+        tokenFullId: {
+          collectionAddress: token?.collectionAddress ?? '',
+          tokenId: token?.tokenId ?? '',
+        },
         user: {
           img: getProfileImageUrl(token?.owner ?? ''),
           address: reduceAddress(token?.owner ?? ''),

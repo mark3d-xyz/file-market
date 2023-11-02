@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { CardFlame } from '../../../../components/MarketCard/Flames/CardFlame/CardFlame'
 import { StyledFlamesCardContainer } from '../../../../components/MarketCard/Flames/CardFlame/CardFlame.styles'
+import { type TokenFullId } from '../../../../processing/types'
 import { cutNumber } from '../../../../utils/number'
 import { Flex } from '../../../Flex'
 import { Txt } from '../../../Txt'
@@ -27,6 +28,7 @@ interface NftCardProps extends PropsWithChildren {
   imgSrc: string
   title?: ReactNode
   collectionName?: ReactNode
+  tokenFullId: TokenFullId
   button: {
     onClick?: MouseEventHandler<HTMLAnchorElement>
     text: string
@@ -39,6 +41,7 @@ interface NftCardProps extends PropsWithChildren {
 export const NftCardBase: React.FC<NftCardProps> = ({
   to,
   className,
+  tokenFullId,
   likesCount,
   fileType,
   imgSrc,
@@ -82,7 +85,7 @@ export const NftCardBase: React.FC<NftCardProps> = ({
             <StyledButtonWrapper>
               <StyledBottomContentContainer>
                 <StyledFlamesCardContainer>
-                  <CardFlame />
+                  <CardFlame tokenFullId={tokenFullId} />
                   {likesCount !== undefined && (
                     <Txt primary1 style={{ fontSize: '14px', lineHeight: '20px', color: '#6B6F76' }}>
                       {cutNumber(likesCount, 0)}

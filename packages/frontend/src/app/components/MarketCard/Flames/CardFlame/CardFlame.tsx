@@ -1,10 +1,17 @@
+import { type PressEvent } from '@react-types/shared/src/events'
 import { gsap } from 'gsap'
 import { MorphSVGPlugin } from 'gsap/MorphSVGPlugin'
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 
 import { styled } from '../../../../../styles'
+import { useStatusModal } from '../../../../hooks/useStatusModal'
+import { useLike } from '../../../../processing/Like/useLike'
+import { type TokenFullId } from '../../../../processing/types'
+import BaseModal from '../../../Modal/Modal'
+import { wrapButtonActionsFunction } from '../../../NFT/NFTDeal/helper/wrapButtonActionsFunction'
 import FlameFinalSub from '../flame-active.svg?react'
 import FlameIconMain from '../flame-morph.svg?react'
+import { useCardFlameAnimation } from './useCardFlameAnimation'
 
 gsap.registerPlugin(MorphSVGPlugin)
 
@@ -12,6 +19,7 @@ interface CardFlameProps {
   flameSize?: number
   withState?: boolean
   playState?: boolean
+  tokenFullId: TokenFullId
 }
 
 const FlameWrapper = styled('div', {
@@ -67,64 +75,35 @@ const StyledFlameFinal = styled(FlameFinalSub, {
   height: '100%',
 })
 
-export const CardFlame = (props: CardFlameProps) => {
-  const { flameSize, withState, playState } = props
+export const CardFlame = ({ flameSize, withState, playState, tokenFullId }: CardFlameProps) => {
   const tlRef = useRef<GSAPTimeline | null>(null)
 
-  useEffect(() => {
-    const flameFinal = gsap.utils.toArray('.flameFinal')
+  const { handleMouseLeave, handleMouseOver } = useCardFlameAnimation({ tlRef, playState })
 
-    const ctx = gsap.context(() => {
-      const tl = gsap.timeline()
-      tl.pause()
-
-      tl.to(flameFinal, {
-        duration: 0.5,
-        opacity: 1,
-        scaleX: 1,
-        ease: 'power1.inOut',
-      }, 0.6)
-        .to('#partTopStart', { duration: 0.6, ease: 'power1.inOut', morphSVG: '#partTopEnd', opacity: 1 }, 0.4)
-        .to('#partCenterStart', { duration: 0.8, ease: 'power1.inOut', morphSVG: '#partCenterEnd', opacity: 1 }, 0.2)
-        .to('#partBottomStart', { duration: 1, ease: 'power1.inOut', morphSVG: '#partBottomEnd', opacity: 1 }, 0).to('#partBorder', { duration: 1, ease: 'power1.inOut', color: '#D62632' }, 0)
-        .to('#partTopStart', { duration: 0.2, ease: 'power1.inOut', color: '#D62632' }, 0.6)
-        .to('#partTopStart', { duration: 0.2, ease: 'power1.inOut', color: '#FB5532' }, 0.8)
-        .to('#partCenterStart', { duration: 0.2, ease: 'power1.inOut', color: '#FB5532' }, 0.4)
-        .to('#partCenterStart', { duration: 0.4, ease: 'power1.inOut', color: '#FFB245' }, 0.6)
-        .to('#partBottomStart', { duration: 0.4, ease: 'power1.inOut', color: '#FFE562' }, 0).to('#partBorder', { duration: 1, ease: 'power1.inOut', color: '#D62632' }, 0)
-
-      tlRef.current = tl
-    })
-
-    return () => {
-      ctx.revert()
-    }
-  }, [])
-
-  useEffect(() => {
-    playState && tlRef.current?.play()
-  }, [playState])
-
-  const handleMouseOver = () => {
-    if (tlRef.current) {
-      tlRef.current.play()
-    }
-  }
-
-  const handleMouseLeave = () => {
-    if (tlRef.current) {
-      tlRef.current.reverse()
-    }
-  }
+  const { like, ...statuses } = useLike()
+  const { wrapAction } = wrapButtonActionsFunction<PressEvent>()
+  const { modalProps } = useStatusModal({
+    statuses,
+    okMsg: 'Order cancelled',
+    loadingMsg: 'Cancelling order',
+  })
 
   return (
-    <FlameWrapper
-      onMouseOver={!withState ? handleMouseOver : () => {}}
-      onMouseLeave={!withState ? handleMouseLeave : () => {}}
-      style={{ width: `${flameSize || 32}px`, height: `${flameSize || 32}px` }}
-    >
-      <StyledFlameFinal className='flameFinal' />
-      <StyledFlameIconMain className='flame' />
-    </FlameWrapper>
+    <>
+      <BaseModal {...modalProps} />
+      <FlameWrapper
+        onClick={() => {
+          wrapAction(async () => {
+            await like(tokenFullId)
+          })
+        }}
+        onMouseOver={!withState ? handleMouseOver : () => {}}
+        onMouseLeave={!withState ? handleMouseLeave : () => {}}
+        style={{ width: `${flameSize || 32}px`, height: `${flameSize || 32}px` }}
+      >
+        <StyledFlameFinal className='flameFinal' />
+        <StyledFlameIconMain className='flame' />
+      </FlameWrapper>
+    </>
   )
 }
