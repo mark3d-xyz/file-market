@@ -55,12 +55,13 @@ const Title = styled('h1', {
   },
   '@sm': {
     fontSize: 24,
-    '& > br': {
-      display: 'none',
-    },
+
   },
   '@xs': {
     fontSize: 22,
+    '& > br': {
+      display: 'none',
+    },
   },
   maxWidth: '871px',
   marginBottom: 0,
@@ -231,7 +232,12 @@ export default function WelcomeBlock() {
       <WelcomeScreenWrapper>
         <WelcomeInfo>
           <StorageImg src={bgStorage} />
-          <Title>P2P platform for trading any digital goods</Title>
+          <Title>
+            P2P file-sharing platform
+            {' '}
+            <br />
+            for trading any digital goods
+          </Title>
           <FeaturesWrapper >
             <Features />
           </FeaturesWrapper>
