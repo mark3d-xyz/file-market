@@ -1,4 +1,4 @@
-import { useWeb3Modal } from '@web3modal/react'
+import { useConnectModal } from '@rainbow-me/rainbowkit'
 import assert from 'assert'
 import { useCallback, useEffect, useState } from 'react'
 import { useAccount, useSignMessage } from 'wagmi'
@@ -21,7 +21,7 @@ export default function useAppAuthAndConnect(props?: IUseAppAuthAndConnect) {
   const [isACanAuthEffect, setIsACanAuthEffect] = useState<boolean>(false)
   const [addressState, setAddressState] = useState<string | undefined>()
   const { authStore, dialogStore } = useStores()
-  const { open, setDefaultChain } = useWeb3Modal()
+  const { openConnectModal } = useConnectModal()
   const { signMessage } = useSignMessage({
     async onSuccess(data) {
       try {
@@ -52,9 +52,6 @@ export default function useAppAuthAndConnect(props?: IUseAppAuthAndConnect) {
     }
   }, [isConnected, isACanAuthEffect])
 
-  // useErrorWindow(errorConnect?.message)
-  // useErrorWindow(errorSign?.message)
-
   const connect = useCallback(async () => {
     if (isConnected && address && props?.isWithSign) {
       setAddressState(address)
@@ -65,15 +62,11 @@ export default function useAppAuthAndConnect(props?: IUseAppAuthAndConnect) {
         setIsLoading(false)
       })
     } else {
-      void open().then(() => {
-        if (!props?.isWithSign) props?.onSuccess?.()
-        setIsACanAuthEffect(true)
-      })
-        .catch((e) => {
-          setIsLoading(false)
-        })
+      void openConnectModal?.()
+      if (!props?.isWithSign) props?.onSuccess?.()
+      setIsACanAuthEffect(true)
     }
-  }, [isConnected, address, connector, props?.isWithSign, setIsLoading, setAddressState, setIsACanAuthEffect, open])
+  }, [isConnected, address, connector, props?.isWithSign, setIsLoading, setAddressState, setIsACanAuthEffect, openConnectModal])
 
   useEffect(() => {
     if (isLoading) {
@@ -94,5 +87,5 @@ export default function useAppAuthAndConnect(props?: IUseAppAuthAndConnect) {
     }
   }, [isLoading])
 
-  return { connect, isLoading, setDefaultChain }
+  return { connect, isLoading }
 }

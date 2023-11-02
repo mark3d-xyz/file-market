@@ -22,6 +22,28 @@ func (s *GRPCServer) GetUserProfile(ctx context.Context, req *authserver_pb.GetU
 	return profile.ToGRPC(), nil
 }
 
+func (s *GRPCServer) GetUserProfileBulk(ctx context.Context, req *authserver_pb.GetUserProfileBulkRequest) (*authserver_pb.GetUserProfileBulkResponse, error) {
+	ctx, cancel := context.WithTimeout(ctx, s.cfg.RequestTimeout)
+	defer cancel()
+
+	profiles, e := s.service.GetProfileBulk(ctx, req.Addresses)
+	if e != nil {
+		return nil, e.ToGRPC()
+	}
+
+	grpcProfiles := make([]*authserver_pb.UserProfileShort, 0, len(profiles))
+	for _, p := range profiles {
+		grpcProfiles = append(grpcProfiles, &authserver_pb.UserProfileShort{
+			AvatarURL: p.AvatarURL,
+			Name:      p.Name,
+			Username:  p.Username,
+			Address:   p.Address.String(),
+		})
+	}
+
+	return &authserver_pb.GetUserProfileBulkResponse{Profiles: grpcProfiles}, nil
+}
+
 func (s *GRPCServer) EmailExists(ctx context.Context, req *authserver_pb.EmailExistsRequest) (*authserver_pb.EmailExistsResponse, error) {
 	ctx, cancel := context.WithTimeout(ctx, s.cfg.RequestTimeout)
 	defer cancel()
@@ -80,6 +102,7 @@ func (s *GRPCServer) UpdateUserProfile(ctx context.Context, req *authserver_pb.U
 		Twitter:                     &req.Twitter,
 		Discord:                     &req.Discord,
 		Telegram:                    &req.Telegram,
+		Instagram:                   &req.Instagram,
 		IsEmailNotificationsEnabled: req.IsEmailNotificationEnabled,
 		IsPushNotificationsEnabled:  req.IsPushNotificationEnabled,
 	}

@@ -6,6 +6,7 @@ build-contracts:
 	(cd ../sol-contracts && yarn && yarn hardhat compile && cp -r artifacts/contracts/* ../indexer/contracts/build)
 	mkdir -p contracts/access_token
 	mkdir -p contracts/collection
+	mkdir -p contracts/likeEmitter
 	mkdir -p contracts/publicCollection
 	mkdir -p contracts/filebunniesCollection
 	mkdir -p contracts/exchange
@@ -14,6 +15,7 @@ build-contracts:
 	jq ".abi" contracts/build/PublicCollection.sol/PublicCollection.json > contracts/build/PublicCollection.sol/PublicCollection.abi
 	jq ".abi" contracts/build/FileBunniesCollection.sol/FileBunniesCollection.json > contracts/build/FileBunniesCollection.sol/FileBunniesCollection.abi
 	jq ".abi" contracts/build/FilemarketExchangeV2.sol/FilemarketExchangeV2.json > contracts/build/FilemarketExchangeV2.sol/FilemarketExchangeV2.abi
+	jq ".abi" contracts/build/LikeEmitter.sol/LikeEmitter.json > contracts/build/LikeEmitter.sol/LikeEmitter.abi
 	abigen --abi contracts/build/Mark3dAccessTokenV2.sol/Mark3dAccessTokenV2.abi \
 		--pkg access_token \
 		--type Mark3dAccessTokenV2 \
@@ -34,6 +36,10 @@ build-contracts:
         --pkg exchange \
         --type FilemarketExchangeV2 \
         --out contracts/exchange/exchange.go
+	abigen --abi contracts/build/LikeEmitter.sol/LikeEmitter.abi \
+        --pkg likeEmitter \
+        --type LikeEmitter \
+        --out contracts/likeEmitter/likeEmitter.go
 
 build-zk-contracts:
 	mkdir -p contracts/build
@@ -43,11 +49,13 @@ build-zk-contracts:
 	mkdir -p contracts/publicCollection
 	mkdir -p contracts/filebunniesCollection
 	mkdir -p contracts/exchange
+	mkdir -p contracts/likeEmitter
 	jq ".abi" contracts/build/ZkMark3dAccessTokenV2.sol/Mark3dAccessTokenV2.json > contracts/build/ZkMark3dAccessTokenV2.sol/Mark3dAccessTokenV2.abi
 	jq ".abi" contracts/build/ZkFilemarketCollectionV2.sol/FilemarketCollectionV2.json > contracts/build/ZkFilemarketCollectionV2.sol/FilemarketCollectionV2.abi
 	jq ".abi" contracts/build/ZkPublicCollection.sol/PublicCollection.json > contracts/build/ZkPublicCollection.sol/PublicCollection.abi
 	jq ".abi" contracts/build/FileBunniesCollection.sol/FileBunniesCollection.json > contracts/build/FileBunniesCollection.sol/FileBunniesCollection.abi
 	jq ".abi" contracts/build/ZkFilemarketExchangeV2.sol/FilemarketExchangeV2.json > contracts/build/ZkFilemarketExchangeV2.sol/FilemarketExchangeV2.abi
+	jq ".abi" contracts/build/LikeEmitter.sol/LikeEmitter.json > contracts/build/LikeEmitter.sol/LikeEmitter.abi
 	abigen --abi contracts/build/ZkMark3dAccessTokenV2.sol/Mark3dAccessTokenV2.abi \
 		--pkg access_token \
 		--type Mark3dAccessTokenV2 \
@@ -68,6 +76,10 @@ build-zk-contracts:
         --pkg exchange \
         --type FilemarketExchangeV2 \
         --out contracts/exchange/exchange.go
+	abigen --abi contracts/build/LikeEmitter.sol/LikeEmitter.abi \
+        --pkg likeEmitter \
+        --type LikeEmitter \
+        --out contracts/likeEmitter/likeEmitter.go
 
 build-models:
 	docker run --rm --user $(shell id -u):$(shell id -g) -e GOPATH=$(go env GOPATH):/go -v ${HOME}:${HOME} -w $(shell pwd) quay.io/goswagger/swagger generate model --spec=./swagger.yaml

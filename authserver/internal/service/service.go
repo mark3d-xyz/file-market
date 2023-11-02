@@ -26,6 +26,7 @@ type Auth interface {
 type UserProfile interface {
 	GetUserProfileByAddress(ctx context.Context, address common.Address, isPrincipal bool) (*domain.UserProfile, *domain.APIError)
 	GetUserProfileByUsername(ctx context.Context, username string, isPrincipal bool) (*domain.UserProfile, *domain.APIError)
+	GetProfileBulk(ctx context.Context, addresses []string) ([]*domain.UserProfile, *domain.APIError)
 	UsernameExist(ctx context.Context, username string) (bool, *domain.APIError)
 	EmailExist(ctx context.Context, email string) (bool, *domain.APIError)
 	NameExist(ctx context.Context, name string) (bool, *domain.APIError)

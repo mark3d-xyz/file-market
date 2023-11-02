@@ -16,7 +16,8 @@
     "publicCollectionAddress": "0xEA1857fa160f758d3ca8CA61E3A60300F7Dc684d",
     "fileBunniesCollectionAddress": "0x0000000000000000000000000000000000000123",
     "fileBunniesCreatorAddress": "0x0000000000000000000000000000000000000123",
-    "allowedBlockNumberDifference": 20,
+    "likeEmitterAddress": "0xE48c71D68101053bC2E0EE18355f1C7A1Fa919E0",
+    "allowedBlockNumberDifference": 100,
     "healthCheckInterval": 60,
     "sequencer": {
       "keyPrefix": "sequencer",

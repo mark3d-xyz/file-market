@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/mark3d-xyz/mark3d/indexer/contracts/filebunniesCollection"
+	"github.com/mark3d-xyz/mark3d/indexer/contracts/likeEmitter"
 	"github.com/mark3d-xyz/mark3d/indexer/contracts/publicCollection"
 	"github.com/mark3d-xyz/mark3d/indexer/internal/infrastructure/clients"
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/currencyconversion"
@@ -1396,6 +1397,45 @@ func (s *service) processFileMarketCollectionEvents(ctx context.Context, tx pgx.
 	return nil
 }
 
+func (s *service) processLike(ctx context.Context, tx pgx.Tx, t types.Transaction) error {
+	log.Println("processing like tx", t.Hash())
+	receipt, err := s.ethClient.TransactionReceipt(ctx, t.Hash())
+	if err != nil {
+		return err
+	}
+
+	for _, l := range receipt.Logs {
+		if l.Address == s.cfg.LikeEmitterAddress {
+			instance, err := likeEmitter.NewLikeEmitter(l.Address, nil)
+			if err == nil {
+				if err := s.tryProcessLikeEmitterLikeEvent(ctx, tx, l, instance); err != nil {
+					return fmt.Errorf("failed to process Like: %w", err)
+				}
+			}
+		}
+	}
+
+	return nil
+}
+
+func (s *service) tryProcessLikeEmitterLikeEvent(
+	ctx context.Context,
+	tx pgx.Tx,
+	l *eth_types.Log,
+	instance *likeEmitter.LikeEmitter,
+) error {
+	likeEv, err := instance.ParseLike(*l)
+	if err != nil {
+		return err
+	}
+
+	if err := s.onLikeEvent(ctx, tx, likeEv.CollectionAddress, likeEv.TokenId); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (s *service) processBlock(block types.Block) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 600*time.Second)
 	defer cancel()
@@ -1420,6 +1460,8 @@ func (s *service) processBlock(block types.Block) error {
 			err = s.processCollectionTx(ctx, tx, t)
 		} else if *t.To() == s.cfg.FraudDeciderWeb2Address {
 			err = s.processCollectionTx(ctx, tx, t)
+		} else if *t.To() == s.cfg.LikeEmitterAddress {
+			err = s.processLike(ctx, tx, t)
 		} else if isCollectionAddress {
 			err = s.processCollectionTx(ctx, tx, t)
 		}

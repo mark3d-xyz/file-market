@@ -19,6 +19,7 @@ type Token struct {
 	MetaUri           string
 	Metadata          *TokenMetadata
 	BlockNumber       int64
+	LikeCount         int64
 }
 
 func TokenToModel(t *Token) *models.Token {
@@ -27,9 +28,12 @@ func TokenToModel(t *Token) *models.Token {
 		CollectionAddress: t.CollectionAddress.String(),
 		CollectionName:    t.CollectionName,
 		Creator:           t.Creator.String(),
-		Description:       t.Metadata.Description,
-		ExternalLink:      t.Metadata.ExternalLink,
-		HiddenFile:        t.Metadata.HiddenFile,
+		CreatorProfile: &models.UserProfileShort{
+			Address: t.Creator.String(),
+		},
+		Description:  t.Metadata.Description,
+		ExternalLink: t.Metadata.ExternalLink,
+		HiddenFile:   t.Metadata.HiddenFile,
 		HiddenFileMeta: &models.HiddenFileMetaData{
 			Name: t.Metadata.HiddenFileMeta.Name,
 			Size: t.Metadata.HiddenFileMeta.Size,
@@ -44,12 +48,16 @@ func TokenToModel(t *Token) *models.Token {
 		MetaURI:         t.MetaUri,
 		Name:            t.Metadata.Name,
 		Owner:           t.Owner.String(),
-		Properties:      MapSlice(t.Metadata.Properties, MetadataPropertyToModel),
-		Rankings:        MapSlice(t.Metadata.Rankings, MetadataPropertyToModel),
-		Stats:           MapSlice(t.Metadata.Stats, MetadataPropertyToModel),
-		Subcategories:   t.Metadata.Subcategories,
-		Tags:            t.Metadata.Tags,
-		TokenID:         t.TokenId.String(),
+		LikeCount:       t.LikeCount,
+		OwnerProfile: &models.UserProfileShort{
+			Address: t.Owner.String(),
+		},
+		Properties:    MapSlice(t.Metadata.Properties, MetadataPropertyToModel),
+		Rankings:      MapSlice(t.Metadata.Rankings, MetadataPropertyToModel),
+		Stats:         MapSlice(t.Metadata.Stats, MetadataPropertyToModel),
+		Subcategories: t.Metadata.Subcategories,
+		Tags:          t.Metadata.Tags,
+		TokenID:       t.TokenId.String(),
 		Block: &models.TokenBlock{
 			ConfirmationsCount: 1,
 			Number:             t.BlockNumber,

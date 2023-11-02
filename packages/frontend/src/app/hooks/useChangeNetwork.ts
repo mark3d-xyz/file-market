@@ -13,7 +13,7 @@ export const useChangeNetwork = (props?: { onSuccess?: (chainId?: number) => voi
   const multiChainStore = useMultiChainStore()
   const [isCanConnectAfterChange, setIsCanConnectAfterChange] = useState<boolean>(false)
   const { isConnected } = useAccount()
-  const { connect, setDefaultChain } = useAuth()
+  const { connect } = useAuth()
   const rootStore = useStores()
   const { switchNetwork, error, isLoading } = useSwitchNetwork({
     onSuccess: (data) => {
@@ -75,7 +75,6 @@ export const useChangeNetwork = (props?: { onSuccess?: (chainId?: number) => voi
   const changeNetwork = useCallback((chainId: number | undefined, isWarningNetwork?: boolean) => {
     if (!isConnected) {
       if (!!multiChainStore.getChainById(chainId)?.chain) {
-        setDefaultChain(multiChainStore.getChainById(chainId)?.chain)
         setIsCanConnectAfterChange(true)
       } else {
         connect()
