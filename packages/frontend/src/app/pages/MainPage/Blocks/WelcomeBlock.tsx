@@ -55,13 +55,14 @@ const Title = styled('h1', {
   },
   '@sm': {
     fontSize: 24,
-
   },
-  '@xs': {
-    fontSize: 22,
+  '@media (max-width: 440px)': {
     '& > br': {
       display: 'none',
     },
+  },
+  '@xs': {
+    fontSize: 22,
   },
   maxWidth: '871px',
   marginBottom: 0,
@@ -236,9 +237,10 @@ export default function WelcomeBlock() {
             P2P file-sharing platform
             {' '}
             <br />
-            for trading any digital goods
+            {' '}
+            for trading digital goods in web3
           </Title>
-          <FeaturesWrapper >
+          <FeaturesWrapper>
             <Features />
           </FeaturesWrapper>
           <NavigateBlock>
