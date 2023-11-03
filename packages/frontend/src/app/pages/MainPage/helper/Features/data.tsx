@@ -1,4 +1,4 @@
-import { type FeaturesItemProps } from '../../Blocks/Features'
+import { type FeaturesItemProps } from '../../Blocks/Features/Features'
 import InstantPayouts from '../../img/Features/instant-payouts.svg'
 import LowFees from '../../img/Features/low-fees.svg'
 import OnchainProvenance from '../../img/Features/onchain-provenance.svg'

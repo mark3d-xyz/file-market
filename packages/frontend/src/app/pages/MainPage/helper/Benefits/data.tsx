@@ -1,4 +1,4 @@
-import { type BenefitItemProps } from '../../Blocks/Benefits'
+import { type BenefitItemProps } from '../../Blocks/Benefits/Benefits'
 import InstantPayouts from '../../img/Benefits/instant-payouts.svg'
 import LowFees from '../../img/Benefits/low-fees.svg'
 import OnchainProvenance from '../../img/Benefits/onchain-provenance.svg'

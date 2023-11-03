@@ -1,13 +1,6 @@
-import { styled } from '../../../../styles'
-import { FeaturesData } from '../helper/Features/data'
+import { styled } from '../../../../../styles'
 
-export interface FeaturesItemProps {
-  icon: string
-  name: string
-  mobileName?: string
-}
-
-const FeaturesItemWrapper = styled('li', {
+export const StyledFeaturesItemWrapper = styled('li', {
   display: 'flex',
   alignItems: 'center',
   width: '100%',
@@ -34,7 +27,7 @@ const FeaturesItemWrapper = styled('li', {
   },
 })
 
-const FeaturesItemInner = styled('div', {
+export const StyledFeaturesItemInner = styled('div', {
   display: 'flex',
   columnGap: 8,
   alignItems: 'center',
@@ -52,7 +45,7 @@ const FeaturesItemInner = styled('div', {
   },
 })
 
-const FeaturesItemIcon = styled('img', {
+export const StyledFeaturesItemIcon = styled('img', {
   display: 'block',
   width: 24,
   height: 'auto',
@@ -67,7 +60,7 @@ const FeaturesItemIcon = styled('img', {
   },
 })
 
-const FeaturesItemTitle = styled('p', {
+export const StyledFeaturesItemTitle = styled('p', {
   color: '$gray700',
   fontSize: 12,
   fontWeight: 500,
@@ -86,30 +79,7 @@ const FeaturesItemTitle = styled('p', {
   },
 })
 
-const FeaturesItem = (props: FeaturesItemProps) => {
-  const { icon, name, mobileName } = props
-
-  console.log(mobileName)
-
-  return (
-    <FeaturesItemWrapper>
-      <FeaturesItemInner>
-        <FeaturesItemIcon src={icon} aria-hidden="true" />
-        <FeaturesItemTitle>
-          {!mobileName && name}
-          {mobileName && (
-            <>
-              <span className="_desktop">{name}</span>
-              <span className="_mobile">{mobileName}</span>
-            </>
-          )}
-        </FeaturesItemTitle>
-      </FeaturesItemInner>
-    </FeaturesItemWrapper>
-  )
-}
-
-const FeaturesList = styled('ul', {
+export const StyledFeaturesList = styled('ul', {
   display: 'grid',
   gridTemplateColumns: 'repeat(3, 1fr)',
   maxWidth: 618,
@@ -125,20 +95,3 @@ const FeaturesList = styled('ul', {
     gridTemplateColumns: '1fr 1.02fr',
   },
 })
-
-const Features = () => {
-  return (
-    <FeaturesList>
-      {FeaturesData.map((item, index) => {
-        return (
-          <FeaturesItem
-            key={item.name}
-            {...item}
-          />
-        )
-      })}
-    </FeaturesList>
-  )
-}
-
-export default Features

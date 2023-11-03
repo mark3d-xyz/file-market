@@ -1,4 +1,4 @@
-import { type PartnerItemProps } from '../../Blocks/Partners'
+import { type PartnerItemProps } from '../../Blocks/Partners/Partners'
 import Oxscore from '../../img/Partners/partner-0xscore.png'
 import ArrayFi from '../../img/Partners/partner-array-fi.png'
 import Axelar from '../../img/Partners/partner-axelar.png'
