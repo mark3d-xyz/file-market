@@ -1,5 +1,5 @@
 import Title from '../../components/SectionTitle/SectionTitle'
-import EFTProtocolImg from '../img/EFTProtocol/eft-logo.svg'
+import EFTProtocolImg from '../../img/EFTProtocol/eft-logo.svg'
 import { StyledContentWrapper, StyledEFTProtocol, StyledEFTProtocolLogo, StyledEFTProtocolText } from './EFTProtocol.styles'
 
 const EFTProtocol = () => {

@@ -1,7 +1,7 @@
 import Title from '../../components/SectionTitle/SectionTitle'
 import { BenefitsData } from '../../helper/Benefits/data'
-import DotsGradientBottom from '../img/Benefits/dots-gradient-bottom.svg'
-import DotsGradientTop from '../img/Benefits/dots-gradient-top.svg'
+import DotsGradientBottom from '../../img/Benefits/dots-gradient-bottom.svg'
+import DotsGradientTop from '../../img/Benefits/dots-gradient-top.svg'
 import { StyledBenefitItem, StyledBenefitItemDotsGradient, StyledBenefitItemIconMain, StyledBenefitItemIconsWrapper, StyledBenefitItemText, StyledBenefitItemTitle, StyledBenefits, StyledBenefitsList } from './Benefits.styles'
 
 export interface BenefitItemProps {
