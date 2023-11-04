@@ -18,6 +18,7 @@ export interface UseModalOkArgs {
   okMsg: ReactNode
   waitForSign?: boolean
   successNavTo?: string
+  okMsgUnderText?: ReactNode
   // error message is retrieved from error
 }
 
@@ -27,6 +28,7 @@ export function useStatusModal({
   loadingMsg,
   waitForSign = true,
   successNavTo,
+  okMsgUnderText,
 }: UseModalOkArgs) {
   const {
     modalOpen,
@@ -58,6 +60,7 @@ export function useStatusModal({
         setModalBody(
           <SuccessNavBody
             buttonText='Cool'
+            underText={okMsgUnderText}
             mainText={okMsg}
             link={successNavTo}
             onPress={() => {

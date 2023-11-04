@@ -113,7 +113,7 @@ export class CollectionAndTokenListStore implements IActivateDeactivate<[string]
       imageURL: token.image ? getHttpLinkFromIpfsString(token.image) : gradientPlaceholderImg,
       title: token.name ?? '—',
       categories: token.categories?.[0],
-      likesCount: 123123213213,
+      likesCount: token.likeCount,
       tokenFullId: {
         collectionAddress: token?.collectionAddress ?? '',
         tokenId: token?.tokenId ?? '',
@@ -126,6 +126,10 @@ export class CollectionAndTokenListStore implements IActivateDeactivate<[string]
       button: {
         text: 'Go to page',
         link: `/collection/${this.currentBlockChainStore.chain?.name}/${token.collectionAddress}/${token.tokenId}`,
+      },
+      onFlameSuccess: () => {
+        const tokenFind = this.data.tokens?.find(item => item.tokenId === token.tokenId && item.collectionAddress === token.collectionAddress)
+        if (tokenFind) tokenFind.likeCount = tokenFind.likeCount !== undefined ? tokenFind.likeCount++ : 0
       },
     }))
   }

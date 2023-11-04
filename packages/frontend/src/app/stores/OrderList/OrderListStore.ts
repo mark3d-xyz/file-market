@@ -91,6 +91,12 @@ export class OpenOrderListStore implements IStoreRequester, IActivateDeactivate 
     this.request()
   }
 
+  increaseLikeCount(index: number) {
+    const tokenFind = this.data.items?.[index]
+    console.log(tokenFind)
+    if (tokenFind?.token) tokenFind.token.likeCount = tokenFind.token.likeCount !== undefined ? tokenFind.token.likeCount + 1 : 0
+  }
+
   get hasMoreData() {
     const { total = 0, items = [] } = this.data
 
@@ -105,7 +111,7 @@ export class OpenOrderListStore implements IStoreRequester, IActivateDeactivate 
       .map(({ token, order }) => ({
         collectionName: token?.collectionName ?? '',
         categories: token?.categories?.[0],
-        // likesCount: 13232343,
+        likesCount: token?.likeCount,
         hiddenFileMeta: token?.hiddenFileMeta,
         imageURL: token?.image ? getHttpLinkFromIpfsString(token.image) : gradientPlaceholderImg,
         title: token?.name ?? '—',

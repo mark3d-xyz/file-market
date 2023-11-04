@@ -115,7 +115,7 @@ export class CollectionTokenListStore implements IActivateDeactivate<[string, st
       collectionName: this.data.collection?.name ?? '',
       imageURL: token.image ? getHttpLinkFromIpfsString(token.image) : gradientPlaceholderImg,
       title: token.name ?? '—',
-      likesCount: 13232343,
+      likesCount: token.likeCount,
       user: {
         img: getProfileImageUrl(token.owner ?? ''),
         address: reduceAddress(this.data.collection?.owner ?? ''),
@@ -132,6 +132,11 @@ export class CollectionTokenListStore implements IActivateDeactivate<[string, st
       hiddenFileMeta: token.hiddenFileMeta,
       chainName: this.currentBlockChainStore.chain?.name,
       chainImg: this.currentBlockChainStore.configChain?.imgGray,
+      onFlameSuccess: () => {
+        console.log('SUCCCCCCCESESESE')
+        const tokenFind = this.data.tokens?.find(item => item.tokenId === token.tokenId && item.collectionAddress === token.collectionAddress)
+        if (tokenFind) tokenFind.likeCount = tokenFind.likeCount !== undefined ? tokenFind.likeCount++ : 0
+      },
     }))
   }
 }

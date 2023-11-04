@@ -1,3 +1,4 @@
+export * from './useCallContract'
 export * from './useCollectionAndTokenList'
 export * from './useDOMRef'
 export * from './useSaleAmountWillReceived'

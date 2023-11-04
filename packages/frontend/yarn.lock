@@ -14262,6 +14262,7 @@ __metadata:
     react-stately: ^3.18.0
     reseter.css: ^2.0.0
     screenfull: ^6.0.2
+    sharethis-reactjs: ^1.6.0
     swagger-typescript-api: ^12.0.2
     swiper: ^8.4.4
     typescript: ^5.2.2
@@ -22380,6 +22381,13 @@ __metadata:
   dependencies:
     kind-of: ^6.0.2
   checksum: 39b3dd9630a774aba288a680e7d2901f5c0eae7b8387fc5c8ea559918b29b3da144b7bdb990d7ccd9e11be05508ac9e459ce51d01fd65e583282f6ffafcba2e7
+  languageName: node
+  linkType: hard
+
+"sharethis-reactjs@npm:^1.6.0":
+  version: 1.6.0
+  resolution: "sharethis-reactjs@npm:1.6.0"
+  checksum: 87a64496af75557c648d9595f28c3e22115a14472e878fdc2adb5f14dec685c5bbcdcefcf83c749653e6be381f64b24ea08f64b6f68231cbf6a969918f4ec648
   languageName: node
   linkType: hard
 

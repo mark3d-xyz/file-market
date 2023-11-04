@@ -22,7 +22,7 @@ export const typeOptions: Record<typeFiles, string[]> = {
 }
 
 export const CategoriesImg: Record<string, string> = {
-  '3D Models': GlbImg,
+  '3D models': GlbImg,
   another: DocsImg,
   Graphics: GraphicImg,
   Photos: PhotosImg,
