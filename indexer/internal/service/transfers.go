@@ -445,6 +445,11 @@ func (s *service) GetTransfersHistoryV2(
 		fillCollectionUserProfiles(d.Collection, profilesMap)
 		fillTokenUserProfiles(d.Token, profilesMap)
 	}
+	for _, d := range outgoing {
+		fillTransferUserProfiles(d.Transfer, profilesMap)
+		fillCollectionUserProfiles(d.Collection, profilesMap)
+		fillTokenUserProfiles(d.Token, profilesMap)
+	}
 
 	return &models.TransfersResponseV2{
 		Incoming:      incoming,
