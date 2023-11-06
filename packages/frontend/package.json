@@ -12,7 +12,7 @@
     "swagger": "yarn swagger-typescript-api -p ../../indexer/swagger.yaml -o ./src/swagger",
     "abi": "cd ../../sol-contracts && yarn && yarn hardhat compile && cd ../packages/frontend && node prepare-abi.mjs",
     "prepare": "yarn swagger && yarn abi",
-    "start": "vite",
+    "start": "vite --host",
     "start:prod": "VITE_IS_MAINNET=true vite -c vite.prod.config",
     "build": "tsc && vite build",
     "preview": "vite preview",
