@@ -39,7 +39,7 @@ func (s *service) GetToken(ctx context.Context, address common.Address,
 	}
 
 	t := domain.TokenToModel(token)
-	fillTokenUserProfiles(t, profilesMap[t.Owner], profilesMap[t.Creator])
+	fillTokenUserProfiles(t, profilesMap)
 
 	return t, nil
 }
@@ -109,7 +109,7 @@ func (s *service) GetCollectionTokens(
 
 	modelsTokens := domain.MapSlice(tokens, domain.TokenToModel)
 	for _, t := range modelsTokens {
-		fillTokenUserProfiles(t, profilesMap[t.Owner], profilesMap[t.Creator])
+		fillTokenUserProfiles(t, profilesMap)
 	}
 
 	return &models.TokensByCollectionResponse{
@@ -179,7 +179,7 @@ func (s *service) GetTokensByAddress(
 			log.Println("get token active transfer failed: ", err)
 			return nil, internalError
 		}
-		fillTokenUserProfiles(tokensRes[i], profilesMap[tokensRes[i].Owner], profilesMap[tokensRes[i].Creator])
+		fillTokenUserProfiles(tokensRes[i], profilesMap)
 		tokensRes[i].PendingTransferID, tokensRes[i].PendingOrderID = transfer.Id, transfer.OrderId
 	}
 
@@ -209,7 +209,7 @@ func (s *service) GetTokensByAddress(
 				res.Stats = append(res.Stats, &models.CollectionStat{Name: s.Name, Value: s.Value})
 			}
 		}
-		fillCollectionUserProfiles(res, profilesMap[res.Owner], profilesMap[res.Creator])
+		fillCollectionUserProfiles(res, profilesMap)
 		collectionsRes[i] = res
 	}
 
@@ -247,7 +247,10 @@ func (s *service) getTokenCurrentState(ctx context.Context, address common.Addre
 	defer s.repository.RollbackTransaction(ctx, tx)
 
 	token, err := s.repository.GetToken(ctx, tx, address, tokenId)
-	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, nil, nil, nil
+		}
 		logger.Error("failed to get token", err, nil)
 		return nil, nil, nil, err
 	}
