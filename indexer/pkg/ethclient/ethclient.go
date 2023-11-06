@@ -214,6 +214,13 @@ func (e *ethClient) Shutdown() {
 	}
 }
 
+var body struct {
+	Hash         common.Hash                 `json:"hash"`
+	Number       string                      `json:"number"`
+	Time         string                      `json:"timestamp"`
+	Transactions []*types.DefaultTransaction `json:"transactions"`
+}
+
 // // Zk specific staff
 func getZkBlock(ctx context.Context, c *rpc.Client, args ...any) (types.Block, error) {
 	var raw json.RawMessage
@@ -222,13 +229,6 @@ func getZkBlock(ctx context.Context, c *rpc.Client, args ...any) (types.Block, e
 		return nil, err
 	} else if len(raw) == 0 {
 		return nil, ethereum.NotFound
-	}
-
-	var body struct {
-		Hash         common.Hash                 `json:"hash"`
-		Number       string                      `json:"number"`
-		Time         string                      `json:"timestamp"`
-		Transactions []*types.DefaultTransaction `json:"transactions"`
 	}
 
 	if err := json.Unmarshal(raw, &body); err != nil {

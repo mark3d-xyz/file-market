@@ -1480,20 +1480,30 @@ func (s *service) ListenBlockchain() error {
 	lastBlock, err := s.repository.GetLastBlock(ctx)
 	if err != nil {
 		if err == redis.Nil {
+			// FIXME
+			t := time.Now()
 			blockNum, err := s.ethClient.GetLatestBlockNumber(context.Background())
 			if err != nil {
 				return err
 			}
+			logger.Info("GetLatestBlockNumber took", log2.Fields{"time": time.Since(t)})
 			lastBlock = blockNum
 		} else {
 			return err
 		}
 	}
 
+	delay := 2500 * time.Millisecond
+	if strings.Contains(s.cfg.Mode, "era") {
+		delay = 500 * time.Millisecond
+	}
+
 	lastNotificationTime := time.Now().Add(-1 * time.Hour)
 	for {
 		select {
-		case <-time.After(2500 * time.Millisecond):
+		case <-time.After(delay):
+			// FIXME
+			t := time.Now()
 			current, err := s.checkBlock(lastBlock)
 			if err != nil {
 				err = fmt.Errorf("process block failed: %w", err)
@@ -1508,6 +1518,7 @@ func (s *service) ListenBlockchain() error {
 					}
 				}
 			}
+			logger.Info("checkBlock took", log2.Fields{"time": time.Since(t), "num": lastBlock})
 			if lastBlock.Cmp(current) != 0 {
 				s.SendBlockNumberSubscriptionUpdate(current)
 			}
@@ -1521,19 +1532,26 @@ func (s *service) ListenBlockchain() error {
 func (s *service) checkBlock(latest *big.Int) (*big.Int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
+
+	// FIXME
+	t := time.Now()
 	blockNum, err := s.ethClient.GetLatestBlockNumber(ctx)
 	if err != nil {
 		log.Println("get latest block failed", err)
 		return latest, err
 	}
+	logger.Info("checkBlock GetLatestBlockNumber", log2.Fields{"time": time.Since(t), "num": latest})
 	if blockNum.Cmp(latest) != 0 {
 		log.Println("processing block difference", latest, blockNum)
 	}
 	for blockNum.Cmp(latest) != 0 {
+		// FIXME
+		t = time.Now()
 		latest, err = s.checkSingleBlock(latest)
 		if err != nil {
 			return latest, err
 		}
+		logger.Info("checkBlock checkSingleBlock", log2.Fields{"time": time.Since(t), "num": latest})
 	}
 	return latest, nil
 }
@@ -1542,18 +1560,27 @@ func (s *service) checkSingleBlock(latest *big.Int) (*big.Int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	pending := big.NewInt(0).Add(latest, big.NewInt(1))
+	// FIXME
+	t := time.Now()
 	block, err := s.ethClient.BlockByNumber(ctx, pending)
+	logger.Info("checkBlock checkSingleBlock ethClient.BlockByNumber", log2.Fields{"time": time.Since(t), "num": latest})
+
 	if err != nil {
 		log.Println("get pending block failed", pending.String(), err)
 		if !strings.Contains(err.Error(), "want 512 for Bloom") && !strings.Contains(err.Error(), "requested epoch was a null round") {
 			return latest, err
 		}
 	} else {
-		if err := s.processBlock(block); err != nil {
+		// FIXME
+		t = time.Now()
+		err := s.processBlock(block)
+		logger.Info("checkBlock checkSingleBlock processBlock", log2.Fields{"time": time.Since(t), "num": latest})
+		if err != nil {
 			log.Println("process block failed", err)
 			return latest, err
 		}
 	}
+
 	ctx = context.WithValue(context.Background(), "mode", s.cfg.Mode)
 	if err := s.repository.SetLastBlock(ctx, pending); err != nil {
 		log.Println("set last block failed: ", err)

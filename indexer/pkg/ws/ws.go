@@ -33,7 +33,9 @@ func (c *conn) listen() {
 	for {
 		kind, data, err := c.conn.ReadMessage()
 		if err != nil {
-			log.Println("listen failed", c.id, err)
+			if !websocket.IsUnexpectedCloseError(err) {
+				log.Println("listen failed", c.id, err)
+			}
 			break
 		}
 		if kind == websocket.TextMessage {
