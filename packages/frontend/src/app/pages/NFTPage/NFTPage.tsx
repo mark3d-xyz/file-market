@@ -14,7 +14,9 @@ import { PageLayout } from '../../UIkit'
 import { getHttpLinkFromIpfsString } from '../../utils/nfts/getHttpLinkFromIpfsString'
 import { type Params } from '../../utils/router'
 import { transferPermissions } from '../../utils/transfer/status'
+import { PanelInfo } from './components/PanelInfo/PanelInfo'
 import { PreviewNFTFlow } from './components/PreviewNFTFlow'
+import { useViewFile } from './helper/hooks/useViewFile'
 import { GridBlock } from './helper/styles/style'
 import BaseInfoSection from './section/BaseInfo/BaseInfoSection'
 import ControlSection from './section/Contol/ControlSection'
@@ -63,8 +65,8 @@ const MainInfo = styled(PageLayout, {
   columnGap: '$4',
   minHeight: '100%',
   height: 'max-content',
-  borderRadius: '$6 $6 0 0',
-  top: '-$6',
+  borderRadius: '12px 12px 0 0',
+  top: 'calc(-$6 - 25px)',
   boxShadow: '$footer',
   zIndex: '7',
   position: 'relative',
@@ -139,6 +141,20 @@ const NFTPage: React.FC = observer(() => {
     return categories
   }, [tokenStore.data?.categories, tokenStore.data?.subcategories])
 
+  const {
+    isCanViewFile,
+    onViewFileButtonClick,
+    isViewFile,
+    previewState,
+    is3D,
+    typeFile,
+    isLoadingFile,
+  } = useViewFile({
+    getFile: files[0]?.getFile,
+    hiddenFile: tokenStore.data?.hiddenFileMeta,
+    canViewFile: isOwner || canViewHiddenFiles,
+  })
+
   const md = useMediaQuery('(max-width:900px)')
   const MainInfoSectionWrapper = md ? Fragment : GridBlockSection
 
@@ -152,13 +168,27 @@ const NFTPage: React.FC = observer(() => {
         />
         <NFTPreviewContent>
           <PreviewNFTFlow
-            getFile={files[0]?.getFile}
-            hiddenFile={tokenStore.data?.hiddenFileMeta}
-            canViewFile={isOwner || canViewHiddenFiles}
+            isCanView={isCanViewFile}
+            is3D={is3D}
             imageURL={getHttpLinkFromIpfsString(tokenStore.data?.image ?? '')}
+            previewState={previewState}
+            isLoading={isLoadingFile}
+            isViewFile={isViewFile}
           />
         </NFTPreviewContent>
       </NFTPreviewContainer>
+      <PanelInfo
+        isLoadingFile={isLoadingFile}
+        isCanViewFile={isCanViewFile}
+        isViewFile={isViewFile}
+        typeFile={typeFile}
+        onViewFileClick={onViewFileButtonClick}
+        likesCount={tokenStore.data?.likeCount ?? 0}
+        tokenFullId={{
+          collectionAddress: collectionAddress ?? '',
+          tokenId: tokenId ?? '',
+        }}
+      />
       <MainInfo>
         <GridLayout>
           <MainInfoSectionWrapper>

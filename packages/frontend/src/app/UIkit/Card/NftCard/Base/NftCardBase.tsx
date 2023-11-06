@@ -1,8 +1,8 @@
-import React, { type MouseEventHandler, type PropsWithChildren, type ReactNode } from 'react'
+import { observer } from 'mobx-react-lite'
+import React, { type MouseEventHandler, type PropsWithChildren, type ReactNode, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { CardFlame } from '../../../../components/MarketCard/Flames/CardFlame/CardFlame'
-import { StyledFlamesCardContainer } from '../../../../components/MarketCard/Flames/CardFlame/CardFlame.styles'
+import { CardFlame, StyledFlamesCardContainer } from '../../../../components/MarketCard/Flames'
 import { type TokenFullId } from '../../../../processing/types'
 import { cutNumber } from '../../../../utils/number'
 import { Flex } from '../../../Flex'
@@ -29,6 +29,7 @@ interface NftCardProps extends PropsWithChildren {
   title?: ReactNode
   collectionName?: ReactNode
   tokenFullId: TokenFullId
+  onFlameSuccess?: () => void
   button: {
     onClick?: MouseEventHandler<HTMLAnchorElement>
     text: string
@@ -38,7 +39,7 @@ interface NftCardProps extends PropsWithChildren {
   chainName?: string
 }
 
-export const NftCardBase: React.FC<NftCardProps> = ({
+export const NftCardBase: React.FC<NftCardProps> = observer(({
   to,
   className,
   tokenFullId,
@@ -51,8 +52,10 @@ export const NftCardBase: React.FC<NftCardProps> = ({
   button,
   chainImg,
   chainName,
+  onFlameSuccess,
 }) => {
   const navigate = useNavigate()
+  const [flameState, setFlameState] = useState<'in' | 'out' | undefined>()
 
   return (
     <StyledCard
@@ -84,8 +87,17 @@ export const NftCardBase: React.FC<NftCardProps> = ({
             </Flex>
             <StyledButtonWrapper>
               <StyledBottomContentContainer>
-                <StyledFlamesCardContainer>
-                  <CardFlame tokenFullId={tokenFullId} />
+                <StyledFlamesCardContainer
+                  onMouseOver={() => { setFlameState('in') }}
+                  onMouseLeave={() => { setFlameState('out') }}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <CardFlame
+                    tokenFullId={tokenFullId}
+                    mouseState={flameState}
+                    withState
+                    onSuccess={onFlameSuccess}
+                  />
                   {likesCount !== undefined && (
                     <Txt primary1 style={{ fontSize: '14px', lineHeight: '20px', color: '#6B6F76' }}>
                       {cutNumber(likesCount, 0)}
@@ -108,4 +120,4 @@ export const NftCardBase: React.FC<NftCardProps> = ({
       </StyledCardBorder>
     </StyledCard>
   )
-}
+})

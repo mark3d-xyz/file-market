@@ -16,8 +16,8 @@ export const StyledChainAndFileTypeWrapper = styled('div', {
 
 export const StyledChain = styled('div', {
   '& img': {
-    width: '21px',
-    height: '21px',
+    width: '16px',
+    height: '16px',
   },
   display: 'flex',
   alignItems: 'center',

@@ -1,16 +1,9 @@
 import { useCallback } from 'react'
 import { type TransactionReceipt } from 'viem'
 
-import { useStatusState } from '../../hooks'
-import { useCallContract } from '../../hooks/useCallContract'
+import { useCallContract, useStatusState } from '../../hooks'
 import { useConfig } from '../../hooks/useConfig'
 import { assertCollection, assertConfig, assertTokenId } from '../utils'
-
-/**
- * Calls Mark3dExchange contract to cancel an order
- * @param collectionAddress
- * @param tokenId assigned to a token by the mint function
- */
 
 interface IUseLikeProps {
   collectionAddress?: string
@@ -25,6 +18,8 @@ export function useLike() {
     assertCollection(collectionAddress)
     assertTokenId(tokenId)
     assertConfig(config)
+
+    console.log(config.likesToken.address)
 
     return callContract({
       callContractConfig: {

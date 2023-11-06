@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react-lite'
 import React from 'react'
 
 import { type HiddenFileMetaData } from '../../../../swagger/Api'
@@ -13,6 +14,7 @@ export interface NFTCardProps {
   categories?: string
   likesCount?: number
   tokenFullId: TokenFullId
+  onFlameSuccess: () => void
   user: {
     img: string
     address: string
@@ -28,12 +30,13 @@ export interface NFTCardProps {
   chainImg?: string
 }
 
-export const NFTCard: React.FC<NFTCardProps> = ({
+export const NFTCard: React.FC<NFTCardProps> = observer(({
   collectionName,
   likesCount,
   button,
   categories,
   tokenFullId,
+  onFlameSuccess,
   imageURL,
   hiddenFileMeta,
   title,
@@ -49,6 +52,7 @@ export const NFTCard: React.FC<NFTCardProps> = ({
     <NftCardBase
       to={button.link}
       title={title}
+      onFlameSuccess={onFlameSuccess}
       likesCount={likesCount}
       tokenFullId={tokenFullId}
       collectionName={collectionName}
@@ -70,4 +74,4 @@ export const NFTCard: React.FC<NFTCardProps> = ({
       )}
     </NftCardBase>
   )
-}
+})

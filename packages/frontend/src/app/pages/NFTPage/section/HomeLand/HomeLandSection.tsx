@@ -1,3 +1,4 @@
+import { observer } from 'mobx-react-lite'
 import React, { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
@@ -21,9 +22,17 @@ const BadgesContainer = styled('div', {
   },
 })
 
-const HomeLandSection = () => {
+const HomeLandSection = observer(() => {
   const { collectionAddress, tokenId, chainName } = useParams<Params>()
-  const { data: token } = useTokenStore(collectionAddress, tokenId)
+  const {
+    data: token,
+    creatorHasImg,
+    ownerHasImg,
+    creatorImg,
+    creatorName,
+    ownerImg,
+    ownerName,
+  } = useTokenStore(collectionAddress, tokenId)
   const { collection } = useCollectionStore(collectionAddress, chainName)
 
   const { collectionImgUrl, collectionName } = useMemo(() => {
@@ -66,16 +75,16 @@ const HomeLandSection = () => {
         </NavLink>
         <NavLink
           lgFullWidth
-          to={collection?.creator ? `/profile/${collection?.creator}` : location.pathname}
+          to={creatorName ? `/profile/${creatorName}` : location.pathname}
         >
           <Badge
             image={{
               borderRadius: 'circle',
-              url: getProfileImageUrl(collection?.creator ?? ''),
+              url: creatorHasImg ? getHttpLinkFromIpfsString(creatorImg ?? '') : getProfileImageUrl(token?.creator ?? ''),
             }}
             content={{
               title: 'Creator',
-              value: reduceAddress(collection?.creator ?? ''),
+              value: reduceAddress(creatorName ?? ''),
             }}
             wrapperProps={{
               nftPage: true,
@@ -84,16 +93,16 @@ const HomeLandSection = () => {
         </NavLink>
         <NavLink
           lgFullWidth
-          to={token?.owner ? `/profile/${token?.owner}` : location.pathname}
+          to={ownerName ? `/profile/${ownerName}` : location.pathname}
         >
           <Badge
             image={{
               borderRadius: 'circle',
-              url: getProfileImageUrl(token?.owner ?? ''),
+              url: ownerHasImg ? getHttpLinkFromIpfsString(ownerImg ?? '') : getProfileImageUrl(token?.owner ?? ''),
             }}
             content={{
               title: 'Owner',
-              value: reduceAddress(token?.owner ?? ''),
+              value: reduceAddress(ownerName ?? ''),
             }}
             wrapperProps={{
               nftPage: true,
@@ -103,6 +112,6 @@ const HomeLandSection = () => {
       </BadgesContainer>
     </GridBlock>
   )
-}
+})
 
 export default HomeLandSection

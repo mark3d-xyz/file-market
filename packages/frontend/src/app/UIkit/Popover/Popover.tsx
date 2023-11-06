@@ -7,6 +7,9 @@ export const PopoverTrigger = NextUIPopover.Trigger
 export const PopoverContent = styled(NextUIPopover.Content, {
   paddingTB: '$4',
   paddingLR: '30px',
+  display: 'flex',
+  flexWrap: 'wrap',
+  height: '500px',
   '@md': {
     padding: '$3',
   },
