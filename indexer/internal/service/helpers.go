@@ -142,7 +142,7 @@ func fillCollectionUserProfiles(
 	c *models.Collection,
 	profilesMap map[string]*authserver_pb.UserProfileShort,
 ) {
-	if c != nil {
+	if c == nil {
 		return
 	}
 	owner := profilesMap[strings.ToLower(c.Owner)]
@@ -166,7 +166,7 @@ func fillTokenUserProfiles(
 	t *models.Token,
 	profilesMap map[string]*authserver_pb.UserProfileShort,
 ) {
-	if t != nil {
+	if t == nil {
 		return
 	}
 	owner := profilesMap[strings.ToLower(t.Owner)]
