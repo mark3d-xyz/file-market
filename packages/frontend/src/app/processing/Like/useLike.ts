@@ -19,6 +19,8 @@ export function useLike() {
     assertTokenId(tokenId)
     assertConfig(config)
 
+    console.log(config.likesToken.address)
+
     return callContract({
       callContractConfig: {
         address: config.likesToken.address,

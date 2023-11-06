@@ -102,6 +102,12 @@ export class CollectionTokenListStore implements IActivateDeactivate<[string, st
     this.request()
   }
 
+  increaseLikeCount(index: number) {
+    const tokenFind = this.data.tokens?.[index]
+    console.log(tokenFind)
+    if (tokenFind) tokenFind.likeCount = tokenFind.likeCount !== undefined ? tokenFind.likeCount + 1 : 1
+  }
+
   get hasMoreData() {
     const { total = 0, tokens = [] } = this.data
 
@@ -117,8 +123,10 @@ export class CollectionTokenListStore implements IActivateDeactivate<[string, st
       title: token.name ?? '—',
       likesCount: token.likeCount,
       user: {
-        img: getProfileImageUrl(token.owner ?? ''),
-        address: reduceAddress(this.data.collection?.owner ?? ''),
+        img: !!token.ownerProfile?.avatarUrl
+          ? getHttpLinkFromIpfsString(token.ownerProfile?.avatarUrl ?? '')
+          : getProfileImageUrl(token.owner ?? ''),
+        address: reduceAddress(token.ownerProfile?.name ?? token.owner ?? ''),
       },
       button: {
         link: `/collection/${this.currentBlockChainStore.chain?.name}/${token.collectionAddress}/${token.tokenId}`,

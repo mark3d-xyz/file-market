@@ -94,7 +94,7 @@ export class OpenOrderListStore implements IStoreRequester, IActivateDeactivate 
   increaseLikeCount(index: number) {
     const tokenFind = this.data.items?.[index]
     console.log(tokenFind)
-    if (tokenFind?.token) tokenFind.token.likeCount = tokenFind.token.likeCount !== undefined ? tokenFind.token.likeCount + 1 : 0
+    if (tokenFind?.token) tokenFind.token.likeCount = tokenFind.token.likeCount !== undefined ? tokenFind.token.likeCount + 1 : 1
   }
 
   get hasMoreData() {
@@ -120,8 +120,10 @@ export class OpenOrderListStore implements IStoreRequester, IActivateDeactivate 
           tokenId: token?.tokenId ?? '',
         },
         user: {
-          img: getProfileImageUrl(token?.owner ?? ''),
-          address: reduceAddress(token?.owner ?? ''),
+          img: !!token?.ownerProfile?.avatarUrl
+            ? getHttpLinkFromIpfsString(token?.ownerProfile?.avatarUrl ?? '')
+            : getProfileImageUrl(token?.owner ?? ''),
+          address: reduceAddress(token?.ownerProfile?.name ?? token?.owner ?? ''),
         },
         button: {
           link: `/collection/${this.currentBlockChainStore.chain?.name}/${token?.collectionAddress}/${token?.tokenId}`,

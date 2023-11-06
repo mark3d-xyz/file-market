@@ -29,7 +29,7 @@ interface NftCardProps extends PropsWithChildren {
   title?: ReactNode
   collectionName?: ReactNode
   tokenFullId: TokenFullId
-  onFlameSuccess: () => void
+  onFlameSuccess?: () => void
   button: {
     onClick?: MouseEventHandler<HTMLAnchorElement>
     text: string

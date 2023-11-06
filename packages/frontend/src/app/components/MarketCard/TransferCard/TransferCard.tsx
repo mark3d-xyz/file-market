@@ -14,7 +14,6 @@ export interface TransferCardProps {
   categories?: string
   likesCount?: number
   tokenFullId: TokenFullId
-  onFlameSuccess: () => void
   user: {
     img: string
     address: string
@@ -39,7 +38,6 @@ export const TransferCard: React.FC<TransferCardProps> = ({
   user,
   price,
   likesCount,
-  onFlameSuccess,
   status,
   button,
   chainName,
@@ -52,7 +50,6 @@ export const TransferCard: React.FC<TransferCardProps> = ({
       title={title}
       likesCount={likesCount}
       tokenFullId={tokenFullId}
-      onFlameSuccess={onFlameSuccess}
       collectionName={collectionName}
       fileType={<FileType categories={categories} hiddenFileMeta={hiddenFileMeta} />}
       button={{ to: button.link, text: button.text }}

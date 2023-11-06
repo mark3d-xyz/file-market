@@ -24,12 +24,34 @@ export const Share = () => {
             labels: 'cta', // button labels (cta, counts, null)
             language: 'en', // which language to use (see LANGUAGES)
             networks: [ // which networks to include (see SHARING NETWORKS)
-              'whatsapp',
-              'linkedin',
-              'messenger',
+              'blogger',
+              'delicious',
+              'digg',
+              'email',
               'facebook',
+              'flipboard',
+              'google',
+              'linkedin',
+              'livejournal',
+              'mailru',
+              'meneame',
+              'messenger',
+              'oknoklassniki',
+              'pinterest',
+              'print',
+              'reddit',
+              'sharethis',
+              'sms',
+              'stumbleupon',
+              'tumblr',
               'twitter',
+              'vk',
+              'wechat',
+              'weibo',
+              'whatsapp',
+              'xing',
             ],
+            show_total: false,
             padding: 12, // padding within buttons (INTEGER)
             radius: 4, // the corner radius on each button (INTEGER)
             size: 40, // the size of each button (INTEGER)
