@@ -163,7 +163,7 @@ func (s *service) getProfilesMap(ctx context.Context, addresses []string) (map[s
 
 	profilesMap := make(map[string]*authserver_pb.UserProfileShort)
 	for _, p := range ownersProfile.Profiles {
-		profilesMap[p.Address] = p
+		profilesMap[strings.ToLower(p.Address)] = p
 	}
 	return profilesMap, nil
 }
