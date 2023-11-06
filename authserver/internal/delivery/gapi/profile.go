@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"log"
+	"strings"
 )
 
 func (s *GRPCServer) GetUserProfile(ctx context.Context, req *authserver_pb.GetUserProfileRequest) (*authserver_pb.UserProfile, error) {
@@ -37,7 +38,7 @@ func (s *GRPCServer) GetUserProfileBulk(ctx context.Context, req *authserver_pb.
 			AvatarURL: p.AvatarURL,
 			Name:      p.Name,
 			Username:  p.Username,
-			Address:   p.Address.String(),
+			Address:   strings.ToLower(p.Address.String()),
 		})
 	}
 
