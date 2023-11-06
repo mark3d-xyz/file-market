@@ -50,7 +50,7 @@ func CollectionToModel(c *Collection) *models.Collection {
 		},
 		Creator: c.Creator.String(),
 		CreatorProfile: &models.UserProfileShort{
-			Address: c.Address.String(),
+			Address: c.Creator.String(),
 		},
 		Description: c.Description,
 		Image:       c.Image,
@@ -58,7 +58,7 @@ func CollectionToModel(c *Collection) *models.Collection {
 		Name:        c.Name,
 		Owner:       c.Owner.String(),
 		OwnerProfile: &models.UserProfileShort{
-			Address: c.Address.String(),
+			Address: c.Owner.String(),
 		},
 		TokenID:     c.TokenId.String(),
 		ChainID:     cfg.Service.ChainID,

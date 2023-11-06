@@ -145,17 +145,17 @@ func fillCollectionUserProfiles(
 	if c != nil {
 		return
 	}
-	owner := profilesMap[c.Owner]
+	owner := profilesMap[strings.ToLower(c.Owner)]
 	c.OwnerProfile = &models.UserProfileShort{
-		Address:   owner.Address,
+		Address:   strings.ToLower(owner.Address),
 		AvatarURL: owner.AvatarURL,
 		Name:      owner.Name,
 		Username:  owner.Username,
 	}
 
-	creator := profilesMap[c.Creator]
+	creator := profilesMap[strings.ToLower(c.Creator)]
 	c.CreatorProfile = &models.UserProfileShort{
-		Address:   creator.Address,
+		Address:   strings.ToLower(creator.Address),
 		AvatarURL: creator.AvatarURL,
 		Name:      creator.Name,
 		Username:  creator.Username,
@@ -169,17 +169,17 @@ func fillTokenUserProfiles(
 	if t != nil {
 		return
 	}
-	owner := profilesMap[t.Owner]
+	owner := profilesMap[strings.ToLower(t.Owner)]
 	t.OwnerProfile = &models.UserProfileShort{
-		Address:   owner.Address,
+		Address:   strings.ToLower(owner.Address),
 		AvatarURL: owner.AvatarURL,
 		Name:      owner.Name,
 		Username:  owner.Username,
 	}
 
-	creator := profilesMap[t.Creator]
+	creator := profilesMap[strings.ToLower(t.Creator)]
 	t.CreatorProfile = &models.UserProfileShort{
-		Address:   creator.Address,
+		Address:   strings.ToLower(creator.Address),
 		AvatarURL: creator.AvatarURL,
 		Name:      creator.Name,
 		Username:  creator.Username,
@@ -193,17 +193,17 @@ func fillTransferUserProfiles(
 	if t == nil {
 		return
 	}
-	to := profilesMap[t.To]
+	to := profilesMap[strings.ToLower(t.To)]
 	t.ToProfile = &models.UserProfileShort{
-		Address:   to.Address,
+		Address:   strings.ToLower(to.Address),
 		AvatarURL: to.AvatarURL,
 		Name:      to.Name,
 		Username:  to.Username,
 	}
 
-	from := profilesMap[t.From]
+	from := profilesMap[strings.ToLower(t.From)]
 	t.FromProfile = &models.UserProfileShort{
-		Address:   from.Address,
+		Address:   strings.ToLower(from.Address),
 		AvatarURL: from.AvatarURL,
 		Name:      from.Name,
 		Username:  from.Username,
