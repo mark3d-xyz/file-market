@@ -67,10 +67,10 @@ func (s *service) GetTransfers(
 	incomingRes := domain.MapSlice(incomingTransfers, domain.TransferToModel)
 	outgoingRes := domain.MapSlice(outgoingTransfers, domain.TransferToModel)
 	for _, t := range incomingRes {
-		fillTransferUserProfiles(t, profilesMap[t.To], profilesMap[t.From])
+		fillTransferUserProfiles(t, profilesMap)
 	}
 	for _, t := range outgoingRes {
-		fillTransferUserProfiles(t, profilesMap[t.To], profilesMap[t.From])
+		fillTransferUserProfiles(t, profilesMap)
 	}
 
 	return &models.TransfersResponse{
@@ -134,10 +134,10 @@ func (s *service) GetTransfersHistory(
 	incomingRes := domain.MapSlice(incomingTransfers, domain.TransferToModel)
 	outgoingRes := domain.MapSlice(outgoingTransfers, domain.TransferToModel)
 	for _, t := range incomingRes {
-		fillTransferUserProfiles(t, profilesMap[t.To], profilesMap[t.From])
+		fillTransferUserProfiles(t, profilesMap)
 	}
 	for _, t := range outgoingRes {
-		fillTransferUserProfiles(t, profilesMap[t.To], profilesMap[t.From])
+		fillTransferUserProfiles(t, profilesMap)
 	}
 
 	return &models.TransfersResponse{
@@ -172,7 +172,7 @@ func (s *service) GetTransfer(ctx context.Context, address common.Address,
 	}
 
 	res := domain.TransferToModel(transfer)
-	fillTransferUserProfiles(res, profilesMap[res.To], profilesMap[res.From])
+	fillTransferUserProfiles(res, profilesMap)
 
 	return res, nil
 }
@@ -309,9 +309,9 @@ func (s *service) GetTransfersV2(
 		return nil, e
 	}
 	for _, d := range incoming {
-		fillTransferUserProfiles(d.Transfer, profilesMap[d.Transfer.To], profilesMap[d.Transfer.From])
-		fillCollectionUserProfiles(d.Collection, profilesMap[d.Collection.Owner], profilesMap[d.Collection.Creator])
-		fillTokenUserProfiles(d.Token, profilesMap[d.Token.Owner], profilesMap[d.Token.Creator])
+		fillTransferUserProfiles(d.Transfer, profilesMap)
+		fillCollectionUserProfiles(d.Collection, profilesMap)
+		fillTokenUserProfiles(d.Token, profilesMap)
 	}
 
 	return &models.TransfersResponseV2{
@@ -441,9 +441,9 @@ func (s *service) GetTransfersHistoryV2(
 		return nil, e
 	}
 	for _, d := range incoming {
-		fillTransferUserProfiles(d.Transfer, profilesMap[d.Transfer.To], profilesMap[d.Transfer.From])
-		fillCollectionUserProfiles(d.Collection, profilesMap[d.Collection.Owner], profilesMap[d.Collection.Creator])
-		fillTokenUserProfiles(d.Token, profilesMap[d.Token.Owner], profilesMap[d.Token.Creator])
+		fillTransferUserProfiles(d.Transfer, profilesMap)
+		fillCollectionUserProfiles(d.Collection, profilesMap)
+		fillTokenUserProfiles(d.Token, profilesMap)
 	}
 
 	return &models.TransfersResponseV2{
@@ -513,9 +513,9 @@ func (s *service) GetTransferV2(
 	tokenRes := domain.TokenToModel(token)
 	transferRes := domain.TransferToModel(transfer)
 
-	fillTransferUserProfiles(transferRes, profilesMap[transferRes.To], profilesMap[transferRes.From])
-	fillCollectionUserProfiles(collectionRes, profilesMap[collectionRes.Owner], profilesMap[collectionRes.Creator])
-	fillTokenUserProfiles(tokenRes, profilesMap[tokenRes.Owner], profilesMap[tokenRes.Creator])
+	fillTransferUserProfiles(transferRes, profilesMap)
+	fillCollectionUserProfiles(collectionRes, profilesMap)
+	fillTokenUserProfiles(tokenRes, profilesMap)
 
 	return &models.TransferWithData{
 		Collection: collectionRes,
