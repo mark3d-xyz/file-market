@@ -4,11 +4,15 @@ import { useNavigate } from 'react-router-dom'
 import { styled } from '../../../../styles'
 import { Button, Container, textVariant } from '../../../UIkit'
 import { MainBlock } from '../../GetAccessPage/GetAccessPage'
+import GiftLabel from '../components/GiftLabel/GiftLabel'
 import HowToGetStart from '../components/HowToGetStart/HowToGetStart'
 import bgStorage from '../img/BgStorageNew.svg'
-import sunGreen from '../img/SunGreen.svg'
 import Achievements from './Achievements'
+import Benefits from './Benefits/Benefits'
+import EFTProtocol from './EFTProtocol/EFTProtocol'
+import Features from './Features/Features'
 import KeepTouchBlock from './KeepTouchBlock'
+import Partners from './Partners/Partners'
 import Publications from './Publications/Publications'
 import SupportedBy from './SupportedBy'
 
@@ -35,7 +39,8 @@ const WelcomeScreenWrapper = styled('section', {
     },
   },
   '@xl': {
-    backgroundPosition: 'top $$topPad right 4.5%, top 188px right 0, top -68px left -10px',
+    backgroundPosition:
+      'top $$topPad right 4.5%, top 188px right 0, top -68px left -10px',
   },
   '@lg': {
     background: 'none',
@@ -50,6 +55,8 @@ const Title = styled('h1', {
   },
   '@sm': {
     fontSize: 24,
+  },
+  '@media (max-width: 440px)': {
     '& > br': {
       display: 'none',
     },
@@ -59,33 +66,6 @@ const Title = styled('h1', {
   },
   maxWidth: '871px',
   marginBottom: 0,
-})
-
-const Description = styled('p', {
-  ...textVariant('body1').true,
-  fontWeight: 400,
-  fontSize: '19px',
-  color: '$gray700',
-  maxWidth: 776,
-  marginTop: '24px',
-  paddingBottom: '64px',
-  '@lg': {
-    paddingBottom: '58px',
-  },
-  '@md': {
-    fontSize: '18px',
-    paddingBottom: '54px',
-    marginTop: '20px',
-  },
-  '@sm': {
-    fontSize: '16px',
-    marginTop: '16px',
-  },
-  '@xs': {
-    fontSize: '14px',
-    paddingBottom: '48px',
-    marginTop: '12px',
-  },
 })
 
 export const ToolCardContent = styled('div', {
@@ -127,7 +107,18 @@ export const ToolDescription = styled('p', {
   },
 })
 
+const FeaturesWrapper = styled('section', {
+  marginBottom: '32px',
+  '@md': {
+    marginBottom: '40px',
+  },
+  '@sm': {
+    marginBottom: '35px',
+  },
+})
+
 const NavigateBlock = styled(MainBlock, {
+  position: 'relative',
   maxWidth: 616,
   padding: '48px',
   flexDirection: 'column',
@@ -170,6 +161,23 @@ const NavigateBlock = styled(MainBlock, {
   },
 })
 
+const GiftLabelWrapper = styled('div', {
+  position: 'absolute',
+  top: -15,
+  left: -14,
+  transform: 'rotate(-10deg)',
+  '@md': {
+    top: -22,
+    left: -16,
+  },
+  '@sm': {
+    top: -33,
+    left: 'auto',
+    right: -1,
+    transform: 'rotate(10deg)',
+  },
+})
+
 const NavigateTitle = styled('h4', {
   ...textVariant('fourfold3').true,
   lineHeight: '1',
@@ -200,7 +208,7 @@ const WelcomeInfo = styled(Container, {
 
 const StorageImg = styled('img', {
   position: 'absolute',
-  top: '102px',
+  top: '150px',
   left: '55%',
   '@xl': {
     left: '65%',
@@ -223,27 +231,37 @@ export default function WelcomeBlock() {
   return (
     <BackgroundContainer>
       <WelcomeScreenWrapper>
-        <img src={sunGreen} className={'greenSun'} />
         <WelcomeInfo>
           <StorageImg src={bgStorage} />
           <Title>
-            P2P platform for trading any digital goods
+            P2P file-sharing platform
+            {' '}
+            <br />
+            {' '}
+            for trading digital goods in web3
           </Title>
-          <Description>
-            Experience true ownership and complete privacy with brand new Encrypted FileToken (EFT) standard, offering
-            on-chain provenance on the secondary market with royalties, low fees, instant payouts, and decentralized
-            storage for your valuable content.
-          </Description>
+          <FeaturesWrapper>
+            <Features />
+          </FeaturesWrapper>
           <NavigateBlock>
+            <GiftLabelWrapper>
+              <GiftLabel />
+            </GiftLabelWrapper>
+
             <NavigateTitle>
-              Upload your data, protect it, then start earning by selling access!
+              Upload your data, protect it, then start earning by selling
+              access!
             </NavigateTitle>
             <div className='buttonContainer'>
               <Button
                 mediumMxWidth
                 whiteWithBlueBlindsMd
                 bigHg
-                style={{ height: '64px', padding: '28px 59px', whiteSpace: 'nowrap' }}
+                style={{
+                  height: '64px',
+                  padding: '28px 59px',
+                  whiteSpace: 'nowrap',
+                }}
                 onClick={() => {
                   navigate('/create/eft')
                 }}
@@ -254,7 +272,11 @@ export default function WelcomeBlock() {
                 mediumMxWidth
                 whiteWithBlueBlindsMd
                 bigHg
-                style={{ height: '64px', padding: '28px 59px', whiteSpace: 'nowrap' }}
+                style={{
+                  height: '64px',
+                  padding: '28px 59px',
+                  whiteSpace: 'nowrap',
+                }}
                 onClick={() => {
                   navigate('/market')
                 }}
@@ -265,8 +287,11 @@ export default function WelcomeBlock() {
           </NavigateBlock>
           <SupportedBy />
           <HowToGetStart />
+          <Benefits />
+          <EFTProtocol />
           <Achievements />
           <Publications />
+          <Partners />
           <KeepTouchBlock />
         </WelcomeInfo>
       </WelcomeScreenWrapper>
