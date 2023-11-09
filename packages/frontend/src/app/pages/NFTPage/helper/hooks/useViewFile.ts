@@ -39,7 +39,7 @@ export const useViewFile = ({ hiddenFile, canViewFile, getFile }: IUseViewFilePr
     return (tokenMetaStore.isLoading || tokenStore.isLoading || (!seed && isConnected))
   }, [tokenMetaStore.isLoading, tokenStore.isLoading, !seed, isConnected])
 
-  const isCanView: boolean = useMemo(() => {
+  const isCanView: boolean | undefined = useMemo(() => {
     if (!getFile) return false
     const availableExtensions3D: string[] = ['glb', 'gltf']
     const availableExtensionsImage: string[] = ['jpg', 'jpeg', 'png', 'gif', 'bmp']

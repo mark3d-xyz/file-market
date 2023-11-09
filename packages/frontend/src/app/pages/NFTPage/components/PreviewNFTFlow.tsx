@@ -47,7 +47,7 @@ interface PreviewNFTFlowProps {
   imageURL: string
   isCanView?: boolean
   is3D?: boolean
-  previewState: {
+  previewState?: {
     state: PreviewState
     data?: string
   }
