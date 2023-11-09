@@ -1,0 +1,29 @@
+<svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_7373_16350)">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M42.7035 12.9226C40.8787 14.0965 39.7715 16.1382 39.7715 18.3321V39.9908L45.3356 36.4128C47.1603 35.238 48.2676 33.1972 48.2676 31.0024V9.34375L42.7035 12.9226Z" fill="url(#paint0_linear_7373_16350)"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M9.93289 18.0787C8.10642 19.2525 7 21.2959 7 23.4896V45.1471L12.5633 41.5693C14.3898 40.3945 15.4962 38.3521 15.4962 36.1575V14.5L9.93289 18.0787Z" fill="url(#paint1_linear_7373_16350)"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M31.8819 0.242188L26.3177 3.81489C24.4921 4.98771 23.3857 7.0259 23.3857 9.2169V26.0342L28.9489 22.4615C30.7755 21.2887 31.8819 19.2514 31.8819 17.0604V0.242188Z" fill="url(#paint2_linear_7373_16350)"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M26.3177 32.6431C24.4921 33.8159 23.3857 35.854 23.3857 38.0451V54.8623L28.9489 51.2896C30.7755 50.1168 31.8819 48.0795 31.8819 45.8886V29.0703L26.3177 32.6431Z" fill="url(#paint3_linear_7373_16350)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_7373_16350" x1="543.444" y1="-210.946" x2="-1361.64" y2="3043.05" gradientUnits="userSpaceOnUse">
+<stop stop-color="#2185FF"/>
+<stop offset="1" stop-color="#0048F2"/>
+</linearGradient>
+<linearGradient id="paint1_linear_7373_16350" x1="575.557" y1="-1647.66" x2="-1329.48" y2="1606.06" gradientUnits="userSpaceOnUse">
+<stop stop-color="#2185FF"/>
+<stop offset="1" stop-color="#0048F2"/>
+</linearGradient>
+<linearGradient id="paint2_linear_7373_16350" x1="534.964" y1="-73.5894" x2="-1388.81" y2="3206.71" gradientUnits="userSpaceOnUse">
+<stop stop-color="#2185FF"/>
+<stop offset="1" stop-color="#0048F2"/>
+</linearGradient>
+<linearGradient id="paint3_linear_7373_16350" x1="670.182" y1="-2169.54" x2="-1253.59" y2="1110.75" gradientUnits="userSpaceOnUse">
+<stop stop-color="#2185FF"/>
+<stop offset="1" stop-color="#0048F2"/>
+</linearGradient>
+<clipPath id="clip0_7373_16350">
+<rect width="41.3333" height="56" fill="white" transform="translate(7)"/>
+</clipPath>
+</defs>
+</svg>

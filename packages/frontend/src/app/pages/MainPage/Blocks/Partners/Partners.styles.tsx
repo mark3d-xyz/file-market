@@ -55,7 +55,7 @@ export const StyledPartnersList = styled('ul', {
   display: 'flex',
   gap: 2,
   flexWrap: 'wrap',
-  minWidth: 1770,
+  minWidth: 1960,
 })
 
 export const StyledPartnersScrollWrapper = styled('div', {
