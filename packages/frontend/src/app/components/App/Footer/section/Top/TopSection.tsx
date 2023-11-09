@@ -201,7 +201,7 @@ export const Cards: Array<{ img: string, blackImg: string, text: string, url: st
   },
 ]
 
-const TopSection = () => {
+export const TopSection = () => {
   const { smValue, mdValue, xlValue, lgValue } = useMediaMui()
   const collectionPosition = useMemo(() => {
     if (smValue) return 1900
@@ -393,5 +393,3 @@ const TopSection = () => {
     </TopSectionStyle>
   )
 }
-
-export default TopSection

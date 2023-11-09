@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { type FC, type PropsWithChildren } from 'react'
 import { WagmiConfig } from 'wagmi'
 
-import { DialogManager } from './app/components/DialogManager/DialogManager'
+import { DialogManager } from './app/components/DialogManager'
 import { BlockNumberWatcher } from './app/components/Web3/BlockNumberWatcher/BlockNumberWatcher'
 import { FileWalletConnectWatcher } from './app/components/Web3/FileWalletConnectWatcher'
 import { chains, wagmiConfig } from './app/config/web3Modal'
