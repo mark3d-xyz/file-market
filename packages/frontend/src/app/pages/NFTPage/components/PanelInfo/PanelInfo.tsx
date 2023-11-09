@@ -13,7 +13,7 @@ interface IPanelInfoProps {
   isCanViewFile?: boolean
   isLoadingFile?: boolean
   isViewFile?: boolean
-  typeFile: typeFiles
+  typeFile?: typeFiles
   onViewFileClick: () => void
 }
 
