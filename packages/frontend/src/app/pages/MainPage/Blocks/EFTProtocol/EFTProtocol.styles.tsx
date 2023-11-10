@@ -58,6 +58,22 @@ export const StyledEFTProtocolLogo = styled('img', {
     right: 'calc(50% - 40vw - 100px)',
   },
   '@md': {
-    display: 'none',
+    top: 'auto',
+    width: 220,
+    bottom: -135,
+    right: 0,
+    transform: 'none',
+  },
+  '@sm': {
+    width: 200,
+    bottom: -120,
+  },
+  '@xs': {
+    width: 170,
+    bottom: -90,
+  },
+  '@media (max-width: 350px)': {
+    width: 130,
+    bottom: -80,
   },
 })
