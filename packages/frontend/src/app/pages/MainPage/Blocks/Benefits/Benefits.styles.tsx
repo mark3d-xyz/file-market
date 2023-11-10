@@ -16,12 +16,25 @@ export const StyledBenefitItemIconsWrapper = styled('div', {
   flexDirection: 'column',
   alignItems: 'center',
   rowGap: 4,
+  '@sm': {
+    alignSelf: 'center',
+  },
 })
 
 export const StyledBenefitItemIconMain = styled('img', {
   minWidth: 40,
   maxWidth: 40,
   height: 'auto',
+  '@md': {
+    minWidth: 32,
+    maxWidth: 32,
+  },
+  '@sm': {
+    height: 34,
+  },
+  '@xs': {
+    height: 36,
+  },
 })
 
 export const StyledBenefitItemTitle = styled('h4', {
@@ -42,6 +55,15 @@ export const StyledBenefitItemText = styled('p', {
 export const StyledBenefitItemDotsGradient = styled('img', {
   height: 44,
   width: 'auto',
+  '@md': {
+    height: 34,
+  },
+  '@sm': {
+    height: 36,
+  },
+  '@xs': {
+    height: 38,
+  },
 })
 
 export const StyledBenefits = styled('section', {
