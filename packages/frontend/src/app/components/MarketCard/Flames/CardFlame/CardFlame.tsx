@@ -17,7 +17,6 @@ import { useCardFlameAnimation } from './useCardFlameAnimation'
 gsap.registerPlugin(MorphSVGPlugin)
 
 interface CardFlameProps {
-  flameSize?: number
   withState?: boolean
   playState?: boolean
   tokenFullId: TokenFullId
@@ -81,7 +80,7 @@ const StyledFlameFinal = styled(FlameFinalSub, {
   height: '100%',
 })
 
-export const CardFlame = observer(({ flameSize, withState, playState, tokenFullId, mouseState, onSuccess }: CardFlameProps) => {
+export const CardFlame = observer(({ withState, playState, tokenFullId, mouseState, onSuccess }: CardFlameProps) => {
   const tlRef = useRef<GSAPTimeline | null>(null)
 
   const { handleMouseLeave, handleMouseOver } = useCardFlameAnimation({ tlRef, playState })
@@ -129,7 +128,6 @@ export const CardFlame = observer(({ flameSize, withState, playState, tokenFullI
         }
         onMouseOver={!withState ? handleMouseOver : () => {}}
         onMouseLeave={!withState ? handleMouseLeave : () => {}}
-        style={{ width: `${flameSize || 32}px`, height: `${flameSize || 32}px` }}
       >
         <StyledFlameFinal className='flameFinal' />
         <StyledFlameIconMain className='flame' />

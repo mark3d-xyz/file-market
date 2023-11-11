@@ -15,21 +15,22 @@ export const useCardFlameAnimation = ({ tlRef, playState }: IUseCardFlameAnimati
       tl.pause()
 
       tl.to(flameFinal, {
-        duration: 0.5,
+        duration: 0.3,
         opacity: 1,
         scaleX: 1,
         ease: 'power1.inOut',
-      }, 0.6)
-        .to('#partTopStart', { duration: 0.6, ease: 'power1.inOut', morphSVG: '#partTopEnd', opacity: 1 }, 0.4)
-        .to('#partCenterStart', { duration: 0.8, ease: 'power1.inOut', morphSVG: '#partCenterEnd', opacity: 1 }, 0.2)
-        .to('#partBottomStart', { duration: 1, ease: 'power1.inOut', morphSVG: '#partBottomEnd', opacity: 1 }, 0).to('#partBorder', { duration: 1, ease: 'power1.inOut', color: '#D62632' }, 0)
-        .to('#partTopStart', { duration: 0.2, ease: 'power1.inOut', color: '#D62632' }, 0.6)
-        .to('#partTopStart', { duration: 0.2, ease: 'power1.inOut', color: '#FB5532' }, 0.8)
-        .to('#partCenterStart', { duration: 0.2, ease: 'power1.inOut', color: '#FB5532' }, 0.4)
-        .to('#partCenterStart', { duration: 0.4, ease: 'power1.inOut', color: '#FFB245' }, 0.6)
-        .to('#partBottomStart', { duration: 0.4, ease: 'power1.inOut', color: '#FFE562' }, 0).to('#partBorder', { duration: 1, ease: 'power1.inOut', color: '#D62632' }, 0)
+      }, 0.3)
+        .to('#partTopStart', { duration: 0.3, ease: 'power1.inOut', morphSVG: '#partTopEnd', opacity: 1 }, 0.3)
+        .to('#partCenterStart', { duration: 0.4, ease: 'power1.inOut', morphSVG: '#partCenterEnd', opacity: 1 }, 0.1)
+        .to('#partBottomStart', { duration: 0.5, ease: 'power1.inOut', morphSVG: '#partBottomEnd', opacity: 1 }, 0)
+        .to('#partTopStart', { duration: 0.1, ease: 'power1.inOut', color: '#FFB245' }, 0)
+        .to('#partTopStart', { duration: 0.1, ease: 'power1.inOut', color: '#FB5532' }, 0.25)
+        .to('#partCenterStart', { duration: 0.1, ease: 'power1.inOut', color: '#FFE562' }, 0)
+        .to('#partCenterStart', { duration: 0.1, ease: 'power1.inOut', color: '#FFB245' }, 0.05)
+        .to('#partBottomStart', { duration: 0.1, ease: 'power1.inOut', color: '#FFE562' }, 0).to('#partBorder', { duration: 0.45, ease: 'power1.inOut', color: '#CC102B' }, 0.15)
 
       tlRef.current = tl
+      tlRef.current.timeScale(2.5)
     })
 
     return () => {
