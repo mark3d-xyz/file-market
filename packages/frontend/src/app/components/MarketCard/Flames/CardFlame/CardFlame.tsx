@@ -17,11 +17,12 @@ import { useCardFlameAnimation } from './useCardFlameAnimation'
 gsap.registerPlugin(MorphSVGPlugin)
 
 interface CardFlameProps {
-  withState?: boolean
-  playState?: boolean
+  isModal?: boolean
+  modalLoadFinished?: boolean
   tokenFullId: TokenFullId
   onSuccess?: () => void
   mouseState?: 'in' | 'out'
+  successState: boolean
 }
 
 const FlameWrapper = styled(Button, {
@@ -34,6 +35,24 @@ const FlameWrapper = styled(Button, {
   minWidth: 'initial',
   background: 'none',
   padding: '0',
+  variants: {
+    modal: {
+      true: {
+        width: 200,
+        height: 200,
+        alignItems: 'center',
+        '.flame, .flameFinal': {
+          width: 120,
+          height: 120,
+        },
+        '.flameFinal': {
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+        },
+      },
+    },
+  },
 })
 
 const StyledFlameIconMain = styled(FlameIconMain, {
@@ -56,7 +75,6 @@ const StyledFlameIconMain = styled(FlameIconMain, {
   },
   '#partTopEnd': {
     color: '#EAEAEC',
-
   },
   '#partCenterEnd': {
     color: '#C9CBCF',
@@ -80,58 +98,73 @@ const StyledFlameFinal = styled(FlameFinalSub, {
   height: '100%',
 })
 
-export const CardFlame = observer(({ withState, playState, tokenFullId, mouseState, onSuccess }: CardFlameProps) => {
-  const tlRef = useRef<GSAPTimeline | null>(null)
+export const CardFlame = observer(
+  ({
+    isModal,
+    modalLoadFinished,
+    tokenFullId,
+    mouseState,
+    onSuccess,
+    successState,
+  }: CardFlameProps) => {
+    const tlBurningRef = useRef<GSAPTimeline | null>(null)
+    const tlGlowingRef = useRef<GSAPTimeline | null>(null)
 
-  const { handleMouseLeave, handleMouseOver } = useCardFlameAnimation({ tlRef, playState })
+    const { handleMouseLeave, handleMouseOver } = useCardFlameAnimation({
+      tlBurningRef,
+      isModal,
+      modalLoadFinished,
+      tlGlowingRef,
+      successState,
+    })
 
-  const { like, ...statuses } = useLike()
+    const { like, ...statuses } = useLike()
 
-  const { modalProps } = useStatusModal({
-    statuses,
-    okMsg: 'Thank you for your engagement!',
-    okMsgUnderText: 'Your little flame will warm the heart of the EFT owner and increase its chances of sale.',
-    loadingMsg: 'Your flame is igniting in the blockchain, \n' +
-      'please wait',
-  })
+    const { modalProps } = useStatusModal({
+      statuses,
+      okMsg: 'Thank you for your engagement!',
+      okMsgUnderText:
+        'Your little flame will warm the heart of the EFT owner and increase its chances of sale.',
+      loadingMsg: 'Your flame is igniting in the blockchain, \n' + 'please wait',
+    })
 
-  useAfterDidMountEffect(() => {
-    if (!mouseState) return
+    useAfterDidMountEffect(() => {
+      if (!mouseState) return
 
-    if (mouseState === 'in') {
-      handleMouseOver()
+      if (mouseState === 'in') {
+        handleMouseOver()
 
-      return
-    }
+        return
+      }
 
-    handleMouseLeave()
-  }, [mouseState])
+      handleMouseLeave()
+    }, [mouseState])
 
-  useEffect(() => {
-    if (!statuses.result) return
+    useEffect(() => {
+      if (!statuses.result) return
 
-    console.log(onSuccess)
+      console.log(onSuccess)
 
-    console.log('SUCCESSDASDAS')
+      console.log('SUCCESSDASDAS')
 
-    onSuccess?.()
-  }, [statuses.result])
+      onSuccess?.()
+    }, [statuses.result])
 
-  return (
-    <>
-      <BaseModal {...modalProps} />
-      <FlameWrapper
-        onPress={
-          async () => {
+    return (
+      <>
+        <BaseModal {...modalProps} />
+        <FlameWrapper
+          onPress={async () => {
             await like(tokenFullId)
-          }
-        }
-        onMouseOver={!withState ? handleMouseOver : () => {}}
-        onMouseLeave={!withState ? handleMouseLeave : () => {}}
-      >
-        <StyledFlameFinal className='flameFinal' />
-        <StyledFlameIconMain className='flame' />
-      </FlameWrapper>
-    </>
-  )
-})
+          }}
+          onMouseOver={!isModal ? handleMouseOver : () => {}}
+          onMouseLeave={!isModal ? handleMouseLeave : () => {}}
+          modal={isModal}
+        >
+          <StyledFlameFinal className='flameFinal' />
+          <StyledFlameIconMain className='flame' />
+        </FlameWrapper>
+      </>
+    )
+  },
+)

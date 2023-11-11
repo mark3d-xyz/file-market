@@ -2,11 +2,20 @@ import { gsap } from 'gsap'
 import { type MutableRefObject, useEffect } from 'react'
 
 interface IUseCardFlameAnimationProps {
-  tlRef: MutableRefObject<gsap.core.Timeline | null>
-  playState?: boolean
+  tlBurningRef: MutableRefObject<gsap.core.Timeline | null>
+  isModal?: boolean
+  modalLoadFinished?: boolean
+  tlGlowingRef: MutableRefObject<gsap.core.Timeline | null>
+  successState?: boolean
 }
 
-export const useCardFlameAnimation = ({ tlRef, playState }: IUseCardFlameAnimationProps) => {
+export const useCardFlameAnimation = ({
+  tlBurningRef,
+  isModal = false,
+  modalLoadFinished,
+  tlGlowingRef,
+  successState,
+}: IUseCardFlameAnimationProps) => {
   useEffect(() => {
     const flameFinal = gsap.utils.toArray('.flameFinal')
 
@@ -29,8 +38,8 @@ export const useCardFlameAnimation = ({ tlRef, playState }: IUseCardFlameAnimati
         .to('#partCenterStart', { duration: 0.1, ease: 'power1.inOut', color: '#FFB245' }, 0.05)
         .to('#partBottomStart', { duration: 0.1, ease: 'power1.inOut', color: '#FFE562' }, 0).to('#partBorder', { duration: 0.45, ease: 'power1.inOut', color: '#CC102B' }, 0.15)
 
-      tlRef.current = tl
-      tlRef.current.timeScale(2.5)
+      tlBurningRef.current = tl
+      tlBurningRef.current.timeScale(1.5)
     })
 
     return () => {
@@ -39,20 +48,61 @@ export const useCardFlameAnimation = ({ tlRef, playState }: IUseCardFlameAnimati
   }, [])
 
   useEffect(() => {
-    playState && tlRef.current?.play()
-  }, [playState])
+    const ctx = gsap.context(() => {
+      isModal && gsap.set('feGaussianBlur', {
+        attr: { stdDeviation: 6 },
+      })
+
+      const tl = gsap.timeline({ repeat: -1, yoyo: true })
+      tl.pause()
+
+      tl.to('feGaussianBlur', {
+        attr: { stdDeviation: 1.5 },
+        duration: 1.2,
+        ease: 'power1.inOut',
+      })
+
+      tlGlowingRef.current = tl
+    })
+
+    return () => {
+      ctx.revert()
+    }
+  }, [])
+
+  useEffect(() => {
+    isModal && tlBurningRef.current?.progress(1)
+    isModal && tlGlowingRef.current?.play()
+  }, [isModal])
 
   const handleMouseOver = () => {
-    if (tlRef.current) {
-      tlRef.current.play()
+    if (tlBurningRef.current) {
+      tlBurningRef.current.play()
     }
   }
 
   const handleMouseLeave = () => {
-    if (tlRef.current) {
-      tlRef.current.reverse()
+    if (tlBurningRef.current) {
+      tlBurningRef.current.reverse()
     }
   }
+
+  useEffect(() => {
+    if (isModal && successState && tlGlowingRef.current) {
+      tlGlowingRef.current.pause()
+      const flameGlowingHandlers = gsap.utils.toArray('feGaussianBlur') as HTMLElement[]
+      const currentStdDeviation = gsap.getProperty(flameGlowingHandlers[0], 'stdDeviation') as number
+
+      const targetStdDeviation = 6
+      const originalDuration = 1.2
+
+      gsap.to(flameGlowingHandlers, {
+        attr: { stdDeviation: 6 },
+        duration: () => originalDuration * (targetStdDeviation - currentStdDeviation) / (targetStdDeviation - 1.5),
+        ease: 'power1.inOut',
+      })
+    }
+  }, [successState])
 
   return {
     handleMouseOver,
