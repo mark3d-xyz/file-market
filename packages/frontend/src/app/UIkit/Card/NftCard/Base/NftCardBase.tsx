@@ -1,10 +1,9 @@
 import { observer } from 'mobx-react-lite'
-import React, { type MouseEventHandler, type PropsWithChildren, type ReactNode, useState } from 'react'
+import React, { type MouseEventHandler, type PropsWithChildren, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { CardFlame, StyledFlamesCardContainer } from '../../../../components/MarketCard/Flames'
+import { CardFlame } from '../../../../components/MarketCard/Flames'
 import { type TokenFullId } from '../../../../processing/types'
-import { cutNumber } from '../../../../utils/number'
 import { Flex } from '../../../Flex'
 import { Txt } from '../../../Txt'
 import { CardImg } from '../../CardImg'
@@ -55,7 +54,6 @@ export const NftCardBase: React.FC<NftCardProps> = observer(({
   onFlameSuccess,
 }) => {
   const navigate = useNavigate()
-  const [flameState, setFlameState] = useState<'in' | 'out' | undefined>()
 
   return (
     <StyledCard
@@ -87,23 +85,12 @@ export const NftCardBase: React.FC<NftCardProps> = observer(({
             </Flex>
             <StyledButtonWrapper>
               <StyledBottomContentContainer>
-                <StyledFlamesCardContainer
-                  onMouseOver={() => { setFlameState('in') }}
-                  onMouseLeave={() => { setFlameState('out') }}
-                  style={{ cursor: 'pointer' }}
-                >
-                  <CardFlame
-                    tokenFullId={tokenFullId}
-                    mouseState={flameState}
-                    withState
-                    onSuccess={onFlameSuccess}
-                  />
-                  {likesCount !== undefined && (
-                    <Txt primary1 style={{ fontSize: '14px', lineHeight: '20px', color: '#6B6F76' }}>
-                      {cutNumber(likesCount, 0)}
-                    </Txt>
-                  )}
-                </StyledFlamesCardContainer>
+                <CardFlame
+                  tokenFullId={tokenFullId}
+                  onSuccess={onFlameSuccess}
+                  likesCount={likesCount}
+                  color={'rgb(107, 111, 118)'}
+                />
                 <StyledButton
                   primary
                   small

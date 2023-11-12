@@ -188,6 +188,10 @@ const NFTPage: React.FC = observer(() => {
           collectionAddress: collectionAddress ?? '',
           tokenId: tokenId ?? '',
         }}
+        onFlameSuccess={() => {
+          tokenStore.increaseLikeCount()
+        }}
+        chainName={chainName}
       />
       <MainInfo>
         <GridLayout>

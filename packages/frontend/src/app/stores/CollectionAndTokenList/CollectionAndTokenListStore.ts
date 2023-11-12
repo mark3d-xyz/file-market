@@ -129,6 +129,7 @@ export class CollectionAndTokenListStore implements IActivateDeactivate<[string]
           ? getHttpLinkFromIpfsString(token.ownerProfile?.avatarUrl ?? '')
           : getProfileImageUrl(token.owner ?? ''),
         address: reduceAddress(token.ownerProfile?.name ?? token.owner ?? ''),
+        url: token.ownerProfile?.username ?? token.owner,
       },
       hiddenFileMeta: token.hiddenFileMeta,
       button: {

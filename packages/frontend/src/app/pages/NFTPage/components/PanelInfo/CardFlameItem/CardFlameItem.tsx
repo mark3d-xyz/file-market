@@ -9,9 +9,10 @@ import { StyledPanelInfoItem } from '../Item/PanelInfoItem.styles'
 interface ICardFlameItemProps {
   tokenFullId: TokenFullId
   likesCount: number
+  onFlameSuccess?: () => void
 }
 
-export const CardFlameItem = ({ tokenFullId, likesCount }: ICardFlameItemProps) => {
+export const CardFlameItem = ({ tokenFullId, likesCount, onFlameSuccess }: ICardFlameItemProps) => {
   const [flameState, setFlameState] = useState<'in' | 'out' | undefined>()
 
   return (
@@ -20,7 +21,12 @@ export const CardFlameItem = ({ tokenFullId, likesCount }: ICardFlameItemProps) 
       onMouseLeave={() => { setFlameState('out') }}
       style={{ cursor: 'pointer' }}
     >
-      <CardFlame tokenFullId={tokenFullId} withState mouseState={flameState} />
+      <CardFlame
+        tokenFullId={tokenFullId}
+        withState
+        mouseState={flameState}
+        onSuccess={onFlameSuccess}
+      />
       <Txt primary1 style={{ fontSize: '14px', lineHeight: '32px', color: '#C9CBCF' }}>
         { likesCount > 0 ? `${cutNumber(likesCount, 0)} Flames` : 'Flames' }
       </Txt>

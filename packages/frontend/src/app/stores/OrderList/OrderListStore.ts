@@ -124,6 +124,7 @@ export class OpenOrderListStore implements IStoreRequester, IActivateDeactivate 
             ? getHttpLinkFromIpfsString(token?.ownerProfile?.avatarUrl ?? '')
             : getProfileImageUrl(token?.owner ?? ''),
           address: reduceAddress(token?.ownerProfile?.name ?? token?.owner ?? ''),
+          url: token?.ownerProfile?.username ?? token?.owner,
         },
         button: {
           link: `/collection/${this.currentBlockChainStore.chain?.name}/${token?.collectionAddress}/${token?.tokenId}`,

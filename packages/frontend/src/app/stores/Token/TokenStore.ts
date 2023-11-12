@@ -76,6 +76,19 @@ export class TokenStore implements IStoreRequester,
     console.log('Reload')
   }
 
+  increaseLikeCount() {
+    console.log('INCREASE')
+    if (this.data) this.data.likeCount = this.data.likeCount !== undefined ? this.data.likeCount + 1 : 1
+  }
+
+  get creatorUrl() {
+    return this.data?.creatorProfile?.username ?? this.data?.creator
+  }
+
+  get ownerUrl() {
+    return this.data?.ownerProfile?.username ?? this.data?.owner
+  }
+
   get creatorName() {
     return this.data?.creatorProfile?.name ?? this.data?.creator
   }
