@@ -21,9 +21,8 @@ import { useCardFlameAnimation } from './useCardFlameAnimation'
 gsap.registerPlugin(MorphSVGPlugin)
 
 interface CardFlameProps {
-  flameSize?: number
-  withState?: boolean
-  playState?: boolean
+  isModal?: boolean
+  modalLoadFinished?: boolean
   tokenFullId: TokenFullId
   onSuccess?: () => void
   mouseState?: 'in' | 'out'
@@ -31,6 +30,7 @@ interface CardFlameProps {
   likesCount?: number
   color?: string
   chainName?: string
+  successState: boolean
 }
 
 const FlameWrapper = styled('div', {
@@ -40,6 +40,27 @@ const FlameWrapper = styled('div', {
   position: 'relative',
   width: 32,
   height: 32,
+  minWidth: 'initial',
+  background: 'none',
+  padding: '0',
+  variants: {
+    modal: {
+      true: {
+        width: 200,
+        height: 200,
+        alignItems: 'center',
+        '.flame, .flameFinal': {
+          width: 120,
+          height: 120,
+        },
+        '.flameFinal': {
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+        },
+      },
+    },
+  },
 })
 
 const StyledFlameIconMain = styled(FlameIconMain, {
@@ -62,7 +83,6 @@ const StyledFlameIconMain = styled(FlameIconMain, {
   },
   '#partTopEnd': {
     color: '#EAEAEC',
-
   },
   '#partCenterEnd': {
     color: '#C9CBCF',
@@ -100,24 +120,31 @@ const StyledFlameContainer = styled(Button, {
 })
 
 export const CardFlame = observer(({
-  flameSize,
-  withState,
-  playState,
+  isModal,
+  modalLoadFinished,
   tokenFullId,
   mouseState,
   onSuccess,
+  successState,
   isHasFlameText,
   likesCount,
   chainName,
   color = '#C9CBCF',
 }: CardFlameProps) => {
-  const tlRef = useRef<GSAPTimeline | null>(null)
+  const tlBurningRef = useRef<GSAPTimeline | null>(null)
+  const tlGlowingRef = useRef<GSAPTimeline | null>(null)
 
   const [isTooltipVisible, setIsTooltipVisible] = useState<boolean>(false)
 
   const multiChainStore = useMultiChainStore()
 
-  const { handleMouseLeave, handleMouseOver } = useCardFlameAnimation({ tlRef, playState })
+  const { handleMouseLeave, handleMouseOver } = useCardFlameAnimation({
+    tlBurningRef,
+    isModal,
+    modalLoadFinished,
+    tlGlowingRef,
+    successState,
+  })
 
   const { like, ...statuses } = useLike()
 
@@ -187,14 +214,14 @@ export const CardFlame = observer(({
               await like(tokenFullId)
             }
           }
-          onMouseOver={!withState ? () => {
+          onMouseOver={!isModal ? () => {
             handleMouseOver()
             setIsTooltipVisible(true)
           }
             : () => {
               setIsTooltipVisible(true)
             }}
-          onMouseLeave={!withState ? () => {
+          onMouseLeave={!isModal ? () => {
             handleMouseLeave()
             setIsTooltipVisible(false)
           }
@@ -203,7 +230,7 @@ export const CardFlame = observer(({
             }}
         >
           <FlameWrapper
-            style={{ minWidth: `${flameSize || 32}px`, height: `${flameSize || 32}px` }}
+            modal={isModal}
           >
             <StyledFlameFinal className='flameFinal' />
             <StyledFlameIconMain className='flame' />
