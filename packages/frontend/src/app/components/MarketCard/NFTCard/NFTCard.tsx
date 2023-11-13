@@ -1,7 +1,9 @@
+import { observer } from 'mobx-react-lite'
 import React from 'react'
 
 import { type HiddenFileMetaData } from '../../../../swagger/Api'
 import { useCurrency } from '../../../hooks/useCurrency'
+import { type TokenFullId } from '../../../processing/types'
 import { NftCardBase, NftCardUserInfo, PriceBadge } from '../../../UIkit'
 import { FileType } from '../FileType/FileType'
 
@@ -9,6 +11,10 @@ export interface NFTCardProps {
   imageURL: string
   title: string
   collectionName: string
+  categories?: string
+  likesCount?: number
+  tokenFullId: TokenFullId
+  onFlameSuccess: () => void
   user: {
     img: string
     address: string
@@ -24,9 +30,13 @@ export interface NFTCardProps {
   chainImg?: string
 }
 
-export const NFTCard: React.FC<NFTCardProps> = ({
+export const NFTCard: React.FC<NFTCardProps> = observer(({
   collectionName,
+  likesCount,
   button,
+  categories,
+  tokenFullId,
+  onFlameSuccess,
   imageURL,
   hiddenFileMeta,
   title,
@@ -42,8 +52,11 @@ export const NFTCard: React.FC<NFTCardProps> = ({
     <NftCardBase
       to={button.link}
       title={title}
+      onFlameSuccess={onFlameSuccess}
+      likesCount={likesCount}
+      tokenFullId={tokenFullId}
       collectionName={collectionName}
-      fileType={<FileType hiddenFileMeta={hiddenFileMeta} />}
+      fileType={<FileType categories={categories} hiddenFileMeta={hiddenFileMeta} />}
       imgSrc={imageURL}
       button={{
         to: button.link,
@@ -61,4 +74,4 @@ export const NFTCard: React.FC<NFTCardProps> = ({
       )}
     </NftCardBase>
   )
-}
+})

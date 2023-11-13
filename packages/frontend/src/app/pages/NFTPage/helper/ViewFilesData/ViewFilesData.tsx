@@ -1,6 +1,6 @@
 import { type typeFiles } from '../../../../components/MarketCard/helper/data'
 import ThirdDView from '../../img/3DView.svg'
-import ImgView from '../../img/ImageView.svg'
+import ImgView from '../../img/ImageView.png'
 
 export const ViewFilesImage: Record<typeFiles, string> = {
   '3D': ThirdDView,

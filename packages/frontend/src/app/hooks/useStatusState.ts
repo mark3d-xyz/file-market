@@ -1,14 +1,31 @@
 import { useCallback, useState } from 'react'
+import { useAccount } from 'wagmi'
 
 import { stringifyError } from '../utils/error'
+import { useAuth } from './useAuth'
 
-export function useStatusState<ResultType, Arguments = void>() {
+interface IUseStatusStateProps {
+  isNotNeedAuth?: boolean
+}
+
+export function useStatusState<ResultType, Arguments = void>(props?: IUseStatusStateProps) {
+  const { isConnected } = useAccount()
+  const { connect } = useAuth()
+
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string>()
   const [result, setResult] = useState<ResultType>()
 
   const wrapPromise = useCallback((call: (args: Arguments) => Promise<ResultType>) => {
     return async (args: Arguments) => {
+      if (!isConnected && !props?.isNotNeedAuth) {
+        connect()
+
+        setIsLoading(false)
+
+        return
+      }
+      console.log('OPOAAAA')
       setIsLoading(true)
       setError(undefined)
       setResult(undefined)
@@ -24,7 +41,7 @@ export function useStatusState<ResultType, Arguments = void>() {
         throw err
       }
     }
-  }, [])
+  }, [connect, isConnected, props?.isNotNeedAuth])
 
   return {
     statuses: {

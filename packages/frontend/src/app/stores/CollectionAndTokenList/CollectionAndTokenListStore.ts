@@ -99,6 +99,12 @@ export class CollectionAndTokenListStore implements IActivateDeactivate<[string]
     this.request()
   }
 
+  increaseLikeCount(index: number) {
+    const tokenFind = this.data.tokens?.[index]
+    console.log(tokenFind)
+    if (tokenFind) tokenFind.likeCount = tokenFind.likeCount !== undefined ? tokenFind.likeCount + 1 : 1
+  }
+
   get hasMoreData() {
     const { tokens = [], tokensTotal = 0 } = this.data
 
@@ -112,14 +118,28 @@ export class CollectionAndTokenListStore implements IActivateDeactivate<[string]
       collectionName: token.collectionName ?? '',
       imageURL: token.image ? getHttpLinkFromIpfsString(token.image) : gradientPlaceholderImg,
       title: token.name ?? '—',
+      categories: token.categories?.[0],
+      likesCount: token.likeCount,
+      tokenFullId: {
+        collectionAddress: token?.collectionAddress ?? '',
+        tokenId: token?.tokenId ?? '',
+      },
       user: {
-        img: getProfileImageUrl(token.owner ?? ''),
-        address: reduceAddress(token.owner ?? ''),
+        img: !!token.ownerProfile?.avatarUrl
+          ? getHttpLinkFromIpfsString(token.ownerProfile?.avatarUrl ?? '')
+          : getProfileImageUrl(token.owner ?? ''),
+        address: reduceAddress(token.ownerProfile?.name ?? token.owner ?? ''),
       },
       hiddenFileMeta: token.hiddenFileMeta,
       button: {
         text: 'Go to page',
         link: `/collection/${this.currentBlockChainStore.chain?.name}/${token.collectionAddress}/${token.tokenId}`,
+      },
+      chainName: this.currentBlockChainStore.chain?.name,
+      chainImg: this.currentBlockChainStore.configChain?.imgGray,
+      onFlameSuccess: () => {
+        const tokenFind = this.data.tokens?.find(item => item.tokenId === token.tokenId && item.collectionAddress === token.collectionAddress)
+        if (tokenFind) tokenFind.likeCount = tokenFind.likeCount !== undefined ? tokenFind.likeCount++ : 0
       },
     }))
   }

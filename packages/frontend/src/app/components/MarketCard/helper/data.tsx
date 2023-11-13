@@ -1,11 +1,12 @@
-import GlbImg from './img/3D.svg'
-import AnotherImg from './img/Another.svg'
-import CodeImg from './img/Code.svg'
-import DocumentImg from './img/Document.svg'
-import MusicImg from './img/Music.svg'
-import PictureImg from './img/Picture.svg'
-import RarImg from './img/Rar.svg'
-import VideoImg from './img/Video.svg'
+import ArchivesImg from './img/Archives.png'
+import DocsImg from './img/Docs.png'
+import GlbImg from './img/GlobModels.png'
+import GraphicImg from './img/Graphic.png'
+import MusicImg from './img/Music.png'
+import PhotosImg from './img/Photos.png'
+import PromocodesImg from './img/Promocodes.png'
+import SoundsImg from './img/Sounds.png'
+import VideosImg from './img/Videos.png'
 
 export type typeFiles = 'document' | 'music' | 'rar' | 'picture' | '3D' | 'video' | 'code' | 'another'
 
@@ -20,13 +21,15 @@ export const typeOptions: Record<typeFiles, string[]> = {
   video: ['.mp4', '.avi', '.mov', '.mkv', '.wmv', '.flv', '.mpeg', '.mpg', '.3gp', '.webm'],
 }
 
-export const typeImg: Record<typeFiles, string> = {
-  '3D': GlbImg,
-  another: AnotherImg,
-  code: CodeImg,
-  document: DocumentImg,
-  music: MusicImg,
-  picture: PictureImg,
-  rar: RarImg,
-  video: VideoImg,
+export const CategoriesImg: Record<string, string> = {
+  '3D models': GlbImg,
+  another: DocsImg,
+  Graphics: GraphicImg,
+  Photos: PhotosImg,
+  Videos: VideosImg,
+  Music: MusicImg,
+  Sounds: SoundsImg,
+  Docs: DocsImg,
+  Promocodes: PromocodesImg,
+  Archives: ArchivesImg,
 }

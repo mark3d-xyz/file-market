@@ -63,7 +63,7 @@ func (s *service) GetCollection(
 		logger.Error("failed to call GetUserProfile", errors.New(e.Message), nil)
 		return nil, e
 	}
-	fillCollectionUserProfiles(c, profilesMap[c.Owner], profilesMap[c.Creator])
+	fillCollectionUserProfiles(c, profilesMap)
 
 	res := models.CollectionResponse{
 		Collection: c,
@@ -131,7 +131,7 @@ func (s *service) GetCollections(
 			FileExtensions: fileTypes,
 			Subcategories:  subcategories,
 		}
-		fillCollectionUserProfiles(c, profilesMap[c.Owner], profilesMap[c.Creator])
+		fillCollectionUserProfiles(c, profilesMap)
 
 		if collection.Address == s.cfg.FileBunniesCollectionAddress {
 			stats, err := s.repository.GetFileBunniesStats(ctx, tx)
@@ -163,7 +163,7 @@ func (s *service) getProfilesMap(ctx context.Context, addresses []string) (map[s
 
 	profilesMap := make(map[string]*authserver_pb.UserProfileShort)
 	for _, p := range ownersProfile.Profiles {
-		profilesMap[p.Address] = p
+		profilesMap[strings.ToLower(p.Address)] = p
 	}
 	return profilesMap, nil
 }
@@ -224,7 +224,7 @@ func (s *service) GetCollectionWithTokens(
 		FileExtensions: fileTypes,
 		Subcategories:  subcategories,
 	}
-	fillCollectionUserProfiles(c, profilesMap[c.Owner], profilesMap[c.Creator])
+	fillCollectionUserProfiles(c, profilesMap)
 
 	if collection.Address == s.cfg.FileBunniesCollectionAddress {
 		stats, err := s.repository.GetFileBunniesStats(ctx, tx)
@@ -238,7 +238,7 @@ func (s *service) GetCollectionWithTokens(
 	}
 	modelsTokens := domain.MapSlice(tokens, domain.TokenToModel)
 	for _, t := range modelsTokens {
-		fillTokenUserProfiles(t, profilesMap[t.Owner], profilesMap[t.Creator])
+		fillTokenUserProfiles(t, profilesMap)
 	}
 
 	return &models.CollectionData{

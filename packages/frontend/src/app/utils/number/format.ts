@@ -11,11 +11,11 @@ export const formatNumber = (number?: string | number, toFixed?: number): string
   return parts.join('.')
 }
 
-export const cutNumber = (number?: string | number): string => {
+export const cutNumber = (number?: string | number, countFixedNumber = 2): string => {
   if (!number && number !== 0) return ''
 
   if (+number < 1000) return number.toString()
-  if (+number < 1000000) return parseFloat((+number / 1000).toFixed(2)).toString() + 'K'
+  if (+number < 1000000) return parseFloat((+number / 1000).toFixed(countFixedNumber)).toString() + 'K'
 
-  return parseFloat((+number / 10000000).toFixed(2)).toString() + 'M'
+  return parseFloat((+number / 10000000).toFixed(countFixedNumber)).toString() + 'M'
 }

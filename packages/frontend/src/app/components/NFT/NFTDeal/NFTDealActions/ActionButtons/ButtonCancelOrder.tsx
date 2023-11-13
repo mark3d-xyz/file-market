@@ -34,6 +34,7 @@ export const ButtonCancelOrder: FC<ButtonCancelOrderProps> = ({ tokenFullId, isD
         borderRadiusSecond
         isDisabled={isLoading || isDisabled}
         onPress={wrapAction(async () => {
+          console.log('START1')
           const receipt = await cancelOrder(tokenFullId)
           if (receipt?.blockNumber) {
             transferStore.onTransferCancellation(BigInt(tokenFullId.tokenId), receipt?.blockNumber)

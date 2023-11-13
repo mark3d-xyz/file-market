@@ -68,13 +68,14 @@ func (s *service) onCollectionTransferEvent(
 		}
 	}
 
-	msg := domain.EFTSubMessage{
+	msg := &models.EFTSubscriptionMessage{
 		Event:    "Transfer",
-		Token:    token,
+		Token:    domain.TokenToModel(token),
 		Transfer: nil,
 		Order:    nil,
 	}
-	s.SendEFTSubscriptionUpdate(token.CollectionAddress, token.TokenId, &msg)
+	s.fillUserProfilesForEftSubMessage(msg)
+	s.SendEFTSubscriptionUpdate(token.CollectionAddress, token.TokenId, msg)
 
 	return nil
 }
@@ -98,13 +99,14 @@ func (s *service) onFileBunniesCollectionTransferEvent(
 		return err
 	}
 
-	msg := domain.EFTSubMessage{
+	msg := &models.EFTSubscriptionMessage{
 		Event:    "Transfer",
-		Token:    token,
+		Token:    domain.TokenToModel(token),
 		Transfer: nil,
 		Order:    nil,
 	}
-	s.SendEFTSubscriptionUpdate(token.CollectionAddress, token.TokenId, &msg)
+	s.fillUserProfilesForEftSubMessage(msg)
+	s.SendEFTSubscriptionUpdate(token.CollectionAddress, token.TokenId, msg)
 
 	return nil
 }
@@ -278,13 +280,14 @@ func (s *service) onCollectionTransferInitEvent(
 		return err
 	}
 	transfer.Statuses = append([]*domain.TransferStatus{&status}, transfer.Statuses...)
-	msg := domain.EFTSubMessage{
+	msg := &models.EFTSubscriptionMessage{
 		Event:    "TransferInit",
-		Token:    token,
-		Transfer: transfer,
+		Token:    domain.TokenToModel(token),
+		Transfer: domain.TransferToModel(transfer),
 		Order:    nil,
 	}
-	s.SendEFTSubscriptionUpdate(token.CollectionAddress, token.TokenId, &msg)
+	s.fillUserProfilesForEftSubMessage(msg)
+	s.SendEFTSubscriptionUpdate(token.CollectionAddress, token.TokenId, msg)
 
 	return nil
 }
@@ -431,13 +434,16 @@ func (s *service) onTransferDraftEvent(
 	}
 	o.Statuses = append([]*domain.OrderStatus{&orderStatus}, o.Statuses...)
 
-	msg := domain.EFTSubMessage{
+	s.fillOrderUsdPrice(o)
+
+	msg := &models.EFTSubscriptionMessage{
 		Event:    "TransferDraft",
-		Token:    token,
-		Transfer: transfer,
-		Order:    o,
+		Token:    domain.TokenToModel(token),
+		Transfer: domain.TransferToModel(transfer),
+		Order:    domain.OrderToModel(o),
 	}
-	s.SendEFTSubscriptionUpdate(token.CollectionAddress, token.TokenId, &msg)
+	s.fillUserProfilesForEftSubMessage(msg)
+	s.SendEFTSubscriptionUpdate(token.CollectionAddress, token.TokenId, msg)
 
 	return nil
 }
@@ -516,6 +522,7 @@ func (s *service) onTransferDraftCompletionEvent(
 		return err
 	}
 	order.Statuses = append([]*domain.OrderStatus{&orderStatus}, order.Statuses...)
+	s.fillOrderUsdPrice(order)
 
 	if token.CollectionAddress == s.cfg.FileBunniesCollectionAddress {
 		var suffix string
@@ -531,13 +538,14 @@ func (s *service) onTransferDraftCompletionEvent(
 		}
 	}
 
-	msg := domain.EFTSubMessage{
+	msg := &models.EFTSubscriptionMessage{
 		Event:    "TransferDraftCompletion",
-		Token:    token,
-		Transfer: transfer,
-		Order:    order,
+		Token:    domain.TokenToModel(token),
+		Transfer: domain.TransferToModel(transfer),
+		Order:    domain.OrderToModel(order),
 	}
-	s.SendEFTSubscriptionUpdate(token.CollectionAddress, token.TokenId, &msg)
+	s.fillUserProfilesForEftSubMessage(msg)
+	s.SendEFTSubscriptionUpdate(token.CollectionAddress, token.TokenId, msg)
 
 	// Send email notification to owner
 	buyer, e := s.GetUserProfile(ctx, transfer.ToAddress.String(), true)
@@ -637,15 +645,16 @@ func (s *service) onPublicKeySetEvent(
 			return fmt.Errorf("failed to get active order: %w", err)
 		}
 	}
+	s.fillOrderUsdPrice(order)
 
-	msg := domain.EFTSubMessage{
+	msg := &models.EFTSubscriptionMessage{
 		Event:    "TransferPublicKeySet",
-		Token:    token,
-		Transfer: transfer,
-		Order:    order,
+		Token:    domain.TokenToModel(token),
+		Transfer: domain.TransferToModel(transfer),
+		Order:    domain.OrderToModel(order),
 	}
-
-	s.SendEFTSubscriptionUpdate(token.CollectionAddress, token.TokenId, &msg)
+	s.fillUserProfilesForEftSubMessage(msg)
+	s.SendEFTSubscriptionUpdate(token.CollectionAddress, token.TokenId, msg)
 
 	return nil
 }
@@ -702,13 +711,16 @@ func (s *service) onPasswordSetEvent(
 			return fmt.Errorf("failed to get active order: %w", err)
 		}
 	}
-	msg := domain.EFTSubMessage{
+	s.fillOrderUsdPrice(order)
+
+	msg := &models.EFTSubscriptionMessage{
 		Event:    "TransferPasswordSet",
-		Token:    token,
-		Transfer: transfer,
-		Order:    order,
+		Token:    domain.TokenToModel(token),
+		Transfer: domain.TransferToModel(transfer),
+		Order:    domain.OrderToModel(order),
 	}
-	s.SendEFTSubscriptionUpdate(token.CollectionAddress, token.TokenId, &msg)
+	s.fillUserProfilesForEftSubMessage(msg)
+	s.SendEFTSubscriptionUpdate(token.CollectionAddress, token.TokenId, msg)
 
 	// Send email notification
 	owner, e := s.GetUserProfile(ctx, transfer.FromAddress.String(), true)
@@ -809,6 +821,7 @@ func (s *service) onTransferFinishEvent(
 		}
 
 		order.Statuses = append([]*domain.OrderStatus{&orderStatus}, order.Statuses...)
+		s.fillOrderUsdPrice(order)
 	}
 
 	token, err = s.repository.GetToken(ctx, tx, l.Address, tokenId)
@@ -821,13 +834,14 @@ func (s *service) onTransferFinishEvent(
 		return err
 	}
 
-	msg := domain.EFTSubMessage{
+	msg := &models.EFTSubscriptionMessage{
 		Event:    "TransferFinished",
-		Token:    token,
+		Token:    domain.TokenToModel(token),
 		Transfer: nil,
-		Order:    order,
+		Order:    domain.OrderToModel(order),
 	}
-	s.SendEFTSubscriptionUpdate(token.CollectionAddress, token.TokenId, &msg)
+	s.fillUserProfilesForEftSubMessage(msg)
+	s.SendEFTSubscriptionUpdate(token.CollectionAddress, token.TokenId, msg)
 
 	return nil
 }
@@ -870,18 +884,20 @@ func (s *service) onTransferFraudReportedEvent(
 			return fmt.Errorf("failed to get active order: %w", err)
 		}
 	}
+	s.fillOrderUsdPrice(order)
 	if err := s.repository.InsertTransferStatus(ctx, tx, transfer.Id, &transferStatus); err != nil {
 		return err
 	}
 	transfer.Statuses = append([]*domain.TransferStatus{&transferStatus}, transfer.Statuses...)
 
-	msg := domain.EFTSubMessage{
+	msg := &models.EFTSubscriptionMessage{
 		Event:    "TransferFraudReported",
-		Token:    token,
-		Transfer: transfer,
-		Order:    order,
+		Token:    domain.TokenToModel(token),
+		Transfer: domain.TransferToModel(transfer),
+		Order:    domain.OrderToModel(order),
 	}
-	s.SendEFTSubscriptionUpdate(token.CollectionAddress, token.TokenId, &msg)
+	s.fillUserProfilesForEftSubMessage(msg)
+	s.SendEFTSubscriptionUpdate(token.CollectionAddress, token.TokenId, msg)
 
 	return nil
 }
@@ -947,6 +963,7 @@ func (s *service) onTransferFraudDecidedEvent(
 		}
 
 		order.Statuses = append([]*domain.OrderStatus{&status}, order.Statuses...)
+		s.fillOrderUsdPrice(order)
 	}
 	if approved {
 		transfer.FraudApproved = true
@@ -966,13 +983,14 @@ func (s *service) onTransferFraudDecidedEvent(
 		}
 	}
 
-	msg := domain.EFTSubMessage{
+	msg := &models.EFTSubscriptionMessage{
 		Event:    "TransferFraudDecided",
-		Token:    token,
-		Transfer: transfer,
-		Order:    order,
+		Token:    domain.TokenToModel(token),
+		Transfer: domain.TransferToModel(transfer),
+		Order:    domain.OrderToModel(order),
 	}
-	s.SendEFTSubscriptionUpdate(token.CollectionAddress, token.TokenId, &msg)
+	s.fillUserProfilesForEftSubMessage(msg)
+	s.SendEFTSubscriptionUpdate(token.CollectionAddress, token.TokenId, msg)
 
 	return nil
 }
@@ -1031,15 +1049,17 @@ func (s *service) onTransferCancel(
 		}
 
 		order.Statuses = append([]*domain.OrderStatus{&status}, order.Statuses...)
+		s.fillOrderUsdPrice(order)
 	}
 
-	msg := domain.EFTSubMessage{
+	msg := &models.EFTSubscriptionMessage{
 		Event:    "TransferCancellation",
-		Token:    token,
+		Token:    domain.TokenToModel(token),
 		Transfer: nil,
-		Order:    order,
+		Order:    domain.OrderToModel(order),
 	}
-	s.SendEFTSubscriptionUpdate(token.CollectionAddress, token.TokenId, &msg)
+	s.fillUserProfilesForEftSubMessage(msg)
+	s.SendEFTSubscriptionUpdate(token.CollectionAddress, token.TokenId, msg)
 
 	return nil
 }

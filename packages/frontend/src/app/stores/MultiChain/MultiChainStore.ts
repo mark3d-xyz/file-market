@@ -5,6 +5,7 @@ import multichainConfig from '../../../../../../config/multiChainConfig.json'
 import fileBunniesCollection from '../../../abi/FileBunniesCollection'
 import collectionToken from '../../../abi/FilemarketCollectionV2'
 import exchangeToken from '../../../abi/FilemarketExchangeV2'
+import likeToken from '../../../abi/LikeEmitter'
 import accessToken from '../../../abi/Mark3dAccessTokenV2'
 import { Api } from '../../../swagger/Api'
 import { type IMultiChainConfig } from '../../config/multiChainConfigType'
@@ -104,6 +105,11 @@ export class MultiChainStore implements IStoreRequester, IActivateDeactivate {
         address: chain.exchangeTokenAddress,
         abi: exchangeToken.abi,
         name: exchangeToken.contractName,
+      },
+      likesToken: {
+        address: chain.likeEmitterAddress,
+        abi: likeToken.abi,
+        name: likeToken.contractName,
       },
       collectionToken: {
       // address is created when a new collection is minted
