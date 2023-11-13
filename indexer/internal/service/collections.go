@@ -203,10 +203,14 @@ func (s *service) GetCollectionWithTokens(
 		return nil, internalError
 	}
 
-	addresses := make(map[string]struct{})
+	var (
+		addresses = make(map[string]struct{})
+		tokenIds  = make([]string, 0, len(tokens))
+	)
 	for _, t := range tokens {
 		addresses[strings.ToLower(t.Owner.String())] = struct{}{}
 		addresses[strings.ToLower(t.Creator.String())] = struct{}{}
+		tokenIds = append(tokenIds, t.TokenId.String())
 	}
 	addresses[strings.ToLower(collection.Owner.String())] = struct{}{}
 	addresses[strings.ToLower(collection.Creator.String())] = struct{}{}
@@ -214,6 +218,11 @@ func (s *service) GetCollectionWithTokens(
 	profilesMap, e := s.getProfilesMap(ctx, utils.SetToSlice(addresses))
 	if e != nil {
 		return nil, e
+	}
+	orders, err := s.repository.GetActiveOrdersByTokenIds(ctx, tx, address, tokenIds)
+	if err != nil {
+		logger.Errorf("failed to get orders", err, nil)
+		return nil, internalError
 	}
 
 	c := domain.CollectionToModel(collection)
@@ -239,14 +248,21 @@ func (s *service) GetCollectionWithTokens(
 			c.Stats = append(c.Stats, &models.CollectionStat{Name: s.Name, Value: s.Value})
 		}
 	}
-	modelsTokens := domain.MapSlice(tokens, domain.TokenToModel)
-	for _, t := range modelsTokens {
-		fillTokenUserProfiles(t, profilesMap)
+
+	tokensWithOrders := make([]*models.TokenWithOrder, len(tokens))
+	for i, t := range tokens {
+		orderModel := domain.OrderToModel(orders[t.TokenId.String()])
+		tokenModel := domain.TokenToModel(t)
+		fillTokenUserProfiles(tokenModel, profilesMap)
+		tokensWithOrders[i] = &models.TokenWithOrder{
+			Token: tokenModel,
+			Order: orderModel,
+		}
 	}
 
 	return &models.CollectionData{
 		Collection: c,
-		Tokens:     modelsTokens,
+		Tokens:     tokensWithOrders,
 		Total:      total,
 	}, nil
 }
