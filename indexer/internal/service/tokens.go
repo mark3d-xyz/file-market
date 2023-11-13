@@ -33,7 +33,10 @@ func (s *service) GetToken(ctx context.Context, address common.Address,
 		return nil, internalError
 	}
 
-	profilesMap, e := s.getProfilesMap(ctx, []string{token.Owner.String(), token.Creator.String()})
+	profilesMap, e := s.getProfilesMap(ctx, []string{
+		strings.ToLower(token.Owner.String()),
+		strings.ToLower(token.Creator.String()),
+	})
 	if e != nil {
 		return nil, e
 	}

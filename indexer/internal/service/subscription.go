@@ -109,12 +109,12 @@ func (s *service) fillUserProfilesForEftSubMessage(msg *models.EFTSubscriptionMe
 	}
 	addresses := make(map[string]struct{})
 	if msg.Token != nil {
-		addresses[msg.Token.Owner] = struct{}{}
-		addresses[msg.Token.Creator] = struct{}{}
+		addresses[strings.ToLower(msg.Token.Owner)] = struct{}{}
+		addresses[strings.ToLower(msg.Token.Creator)] = struct{}{}
 	}
 	if msg.Transfer != nil {
-		addresses[msg.Transfer.To] = struct{}{}
-		addresses[msg.Transfer.From] = struct{}{}
+		addresses[strings.ToLower(msg.Transfer.To)] = struct{}{}
+		addresses[strings.ToLower(msg.Transfer.From)] = struct{}{}
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)

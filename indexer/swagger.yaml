@@ -1624,7 +1624,7 @@ definitions:
       tokens:
         type: array
         items:
-          $ref: "#/definitions/Token"
+          $ref: "#/definitions/TokenWithOrder"
       total:
         type: number
         x-omitempty: false
@@ -1898,6 +1898,14 @@ definitions:
             type: number
             format: int64
             description: Hardcoded 1
+  TokenWithOrder:
+    type: object
+    description: Токен и активный ордер
+    properties:
+      token:
+        $ref: "#/definitions/Token"
+      order:
+        $ref: "#/definitions/Order"
   TransferWithData:
     type: object
     description: Данные трансфера (Трансфер, токен, ордер если есть)
