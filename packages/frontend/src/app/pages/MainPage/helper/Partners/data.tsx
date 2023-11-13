@@ -126,6 +126,11 @@ export const PartnersData: PartnerItemProps[] = [
     link: 'https://salad.ventures/',
   },
   {
+    name: 'Resolutio',
+    icon: Resolutio,
+    link: 'https://resolutio.ai/',
+  },
+  {
     name: 'placeholder',
     link: 'placeholder',
   },
@@ -217,11 +222,6 @@ export const PartnersData: PartnerItemProps[] = [
     name: 'Glif',
     icon: Glif,
     link: 'https://glif.io/en',
-  },
-  {
-    name: 'Resolutio',
-    icon: Resolutio,
-    link: 'https://resolutio.ai/',
   },
   {
     name: 'Collectif DAO',
