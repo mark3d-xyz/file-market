@@ -478,7 +478,59 @@ export const subcategory: Record<category, ComboBoxOption[]> = {
       id: '10',
     },
   ],
-  Archives: [],
+  Archives: [{
+    title: 'Actions',
+    id: '0',
+  },
+  {
+    title: 'Add-ons',
+    id: '1',
+  },
+  {
+    title: 'Bundles',
+    id: '2',
+  },
+  {
+    title: 'Brushes',
+    id: '3',
+  },
+  {
+    title: 'Collections',
+    id: '4',
+  },
+  {
+    title: 'Fonts',
+    id: '5',
+  },
+  {
+    title: 'Games',
+    id: '6',
+  },
+  {
+    title: 'Kits',
+    id: '7',
+  },
+  {
+    title: 'Mockups',
+    id: '8',
+  },
+  {
+    title: 'Plugins',
+    id: '9',
+  },
+  {
+    title: 'Presets',
+    id: '10',
+  },
+  {
+    title: 'Software',
+    id: '11',
+  },
+  {
+    title: 'Themes',
+    id: '12',
+  },
+  ],
 }
 
 export const licenseOptions: ComboBoxOption[] = [

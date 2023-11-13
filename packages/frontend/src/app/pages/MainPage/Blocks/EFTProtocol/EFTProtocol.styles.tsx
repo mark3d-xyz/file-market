@@ -6,13 +6,13 @@ export const StyledEFTProtocol = styled('div', {
     marginBottom: 100,
   },
   '@md': {
-    marginBottom: 85,
+    marginBottom: 50,
   },
   '@sm': {
-    marginBottom: 70,
+    marginBottom: 40,
   },
   '@xs': {
-    marginBottom: 55,
+    marginBottom: 35,
   },
 })
 
@@ -36,6 +36,9 @@ export const StyledEFTProtocolText = styled('p', {
   },
   '& + &': {
     marginTop: 12,
+    '@md': {
+      marginBottom: 16,
+    },
   },
 })
 
@@ -58,6 +61,18 @@ export const StyledEFTProtocolLogo = styled('img', {
     right: 'calc(50% - 40vw - 100px)',
   },
   '@md': {
-    display: 'none',
+    display: 'block',
+    margin: '0 auto',
+    position: 'relative',
+    top: 'auto',
+    right: 'auto',
+    width: 400,
+    transform: 'none',
+  },
+  '@sm': {
+    width: 360,
+  },
+  '@xs': {
+    width: 320,
   },
 })
