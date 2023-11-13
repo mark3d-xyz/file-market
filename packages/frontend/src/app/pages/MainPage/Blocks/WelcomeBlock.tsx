@@ -1,7 +1,9 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAccount } from 'wagmi'
 
 import { styled } from '../../../../styles'
+import { useAuth } from '../../../hooks/useAuth'
 import { Button, Container, textVariant } from '../../../UIkit'
 import { MainBlock } from '../../GetAccessPage/GetAccessPage'
 import GiftLabel from '../components/GiftLabel/GiftLabel'
@@ -227,6 +229,8 @@ const StorageImg = styled('img', {
 
 export default function WelcomeBlock() {
   const navigate = useNavigate()
+  const { isConnected } = useAccount()
+  const { connect } = useAuth()
 
   return (
     <BackgroundContainer>
@@ -263,7 +267,12 @@ export default function WelcomeBlock() {
                   whiteSpace: 'nowrap',
                 }}
                 onClick={() => {
-                  navigate('/create/eft')
+                  if (isConnected) {
+                    navigate('/create/eft')
+
+                    return
+                  }
+                  connect()
                 }}
               >
                 Upload & sell a file
