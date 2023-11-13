@@ -177,7 +177,7 @@ func (h *handler) handleGetTransfersHistoryV2(w http.ResponseWriter, r *http.Req
 	ctx, cancel := context.WithTimeout(r.Context(), h.cfg.RequestTimeout)
 	defer cancel()
 
-	tokens, e := h.service.GetTransfersHistoryV2(
+	res, e := h.service.GetTransfersHistoryV2(
 		ctx,
 		common.HexToAddress(address),
 		lastIncomingTransferId,
@@ -189,7 +189,7 @@ func (h *handler) handleGetTransfersHistoryV2(w http.ResponseWriter, r *http.Req
 		sendResponse(w, e.Code, e)
 		return
 	}
-	sendResponse(w, 200, tokens)
+	sendResponse(w, 200, res)
 }
 
 func (h *handler) handleGetTransferV2(w http.ResponseWriter, r *http.Request) {

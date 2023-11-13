@@ -2,9 +2,12 @@ package service
 
 import (
 	"bytes"
+	"context"
 	"encoding/base64"
 	"fmt"
+	"github.com/mark3d-xyz/mark3d/indexer/internal/domain"
 	"github.com/mark3d-xyz/mark3d/indexer/models"
+	"github.com/mark3d-xyz/mark3d/indexer/pkg/currencyconversion"
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/mail"
 	authserver_pb "github.com/mark3d-xyz/mark3d/indexer/proto"
 	"google.golang.org/grpc/codes"
@@ -14,6 +17,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
+	"time"
 )
 
 func grpcErrToHTTP(err error) *models.ErrorResponse {
@@ -135,57 +140,94 @@ func renderHTMLToString(tmpl *template.Template, data any) (string, error) {
 
 func fillCollectionUserProfiles(
 	c *models.Collection,
-	owner *authserver_pb.UserProfileShort,
-	creator *authserver_pb.UserProfileShort,
+	profilesMap map[string]*authserver_pb.UserProfileShort,
 ) {
-	if owner != nil {
-		c.OwnerProfile = &models.UserProfileShort{}
-		c.OwnerProfile.Username = owner.Username
-		c.OwnerProfile.Name = owner.Name
-		c.OwnerProfile.AvatarURL = owner.AvatarURL
+	if c == nil {
+		return
 	}
-	if creator != nil {
-		c.CreatorProfile = &models.UserProfileShort{}
-		c.CreatorProfile.Username = creator.Username
-		c.CreatorProfile.Name = creator.Name
-		c.CreatorProfile.AvatarURL = creator.AvatarURL
+	if owner, ok := profilesMap[strings.ToLower(c.Owner)]; ok {
+		c.OwnerProfile = &models.UserProfileShort{
+			Address:   strings.ToLower(owner.Address),
+			AvatarURL: owner.AvatarURL,
+			Name:      owner.Name,
+			Username:  owner.Username,
+		}
+	}
+
+	if creator, ok := profilesMap[strings.ToLower(c.Creator)]; ok {
+		c.CreatorProfile = &models.UserProfileShort{
+			Address:   strings.ToLower(creator.Address),
+			AvatarURL: creator.AvatarURL,
+			Name:      creator.Name,
+			Username:  creator.Username,
+		}
 	}
 }
 
 func fillTokenUserProfiles(
 	t *models.Token,
-	owner *authserver_pb.UserProfileShort,
-	creator *authserver_pb.UserProfileShort,
+	profilesMap map[string]*authserver_pb.UserProfileShort,
 ) {
-	if owner != nil {
-		t.OwnerProfile = &models.UserProfileShort{}
-		t.OwnerProfile.Username = owner.Username
-		t.OwnerProfile.Name = owner.Name
-		t.OwnerProfile.AvatarURL = owner.AvatarURL
+	if t == nil {
+		return
 	}
-	if creator != nil {
-		t.CreatorProfile = &models.UserProfileShort{}
-		t.CreatorProfile.Username = creator.Username
-		t.CreatorProfile.Name = creator.Name
-		t.CreatorProfile.AvatarURL = creator.AvatarURL
+	if owner, ok := profilesMap[strings.ToLower(t.Owner)]; ok {
+		t.OwnerProfile = &models.UserProfileShort{
+			Address:   strings.ToLower(owner.Address),
+			AvatarURL: owner.AvatarURL,
+			Name:      owner.Name,
+			Username:  owner.Username,
+		}
+	}
+	if creator, ok := profilesMap[strings.ToLower(t.Creator)]; ok {
+		t.CreatorProfile = &models.UserProfileShort{
+			Address:   strings.ToLower(creator.Address),
+			AvatarURL: creator.AvatarURL,
+			Name:      creator.Name,
+			Username:  creator.Username,
+		}
 	}
 }
 
 func fillTransferUserProfiles(
 	t *models.Transfer,
-	to *authserver_pb.UserProfileShort,
-	from *authserver_pb.UserProfileShort,
+	profilesMap map[string]*authserver_pb.UserProfileShort,
 ) {
-	if to != nil {
-		t.ToProfile = &models.UserProfileShort{}
-		t.ToProfile.Username = to.Username
-		t.ToProfile.Name = to.Name
-		t.ToProfile.AvatarURL = to.AvatarURL
+	if t == nil {
+		return
 	}
-	if from != nil {
-		t.FromProfile = &models.UserProfileShort{}
-		t.FromProfile.Username = from.Username
-		t.FromProfile.Name = from.Name
-		t.FromProfile.AvatarURL = from.AvatarURL
+	if to, ok := profilesMap[strings.ToLower(t.To)]; ok {
+		t.ToProfile = &models.UserProfileShort{
+			Address:   strings.ToLower(to.Address),
+			AvatarURL: to.AvatarURL,
+			Name:      to.Name,
+			Username:  to.Username,
+		}
 	}
+
+	if from, ok := profilesMap[strings.ToLower(t.From)]; ok {
+		t.FromProfile = &models.UserProfileShort{
+			Address:   strings.ToLower(from.Address),
+			AvatarURL: from.AvatarURL,
+			Name:      from.Name,
+			Username:  from.Username,
+		}
+	}
+}
+
+func (s *service) fillOrderUsdPrice(o *domain.Order) {
+	currency := "FIL"
+	if strings.Contains(s.cfg.Mode, "era") {
+		currency = "ETH"
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	rate, err := s.currencyConverter.GetExchangeRate(ctx, currency, "USD")
+	if err != nil {
+		log.Println("failed to get conversion rate: ", err)
+		rate = 0
+	}
+	o.PriceUsd = currencyconversion.Convert(rate, o.Price)
 }

@@ -16,13 +16,12 @@ export const StyledChainAndFileTypeWrapper = styled('div', {
 
 export const StyledChain = styled('div', {
   '& img': {
-    width: '21px',
-    height: '21px',
+    width: '16px',
+    height: '16px',
   },
-  '& > div': {
-    display: 'flex',
-    alignItems: 'center',
-  },
+  display: 'flex',
+  alignItems: 'center',
+  gap: '4px',
 })
 
 export const StyledFileTypeContainer = styled('div', {
@@ -73,14 +72,27 @@ export const StyledCollectionName = styled(Txt, {
 export const StyledButtonWrapper = styled('div', {
   width: '100%',
   position: 'relative',
+  display: 'flex',
+  gap: '12px',
+})
+
+export const StyledBottomContentContainer = styled('div', {
+  transition: 'all 0.25s ease-in-out',
+  left: 0,
+  top: 12,
+  position: 'absolute',
+  borderRadius: '8px',
+  width: '100%',
+  display: 'flex',
+  gap: '12px',
 })
 
 export const StyledButton = styled(NavButton, {
-  transition: 'all 0.25s ease-in-out',
-  left: 0,
-  top: 44,
-  position: 'absolute',
-  borderRadius: '8px',
+  // transition: 'all 0.25s ease-in-out',
+  // left: 0,
+  // top: 44,
+  // position: 'absolute',
+  // borderRadius: '8px',
 })
 
 export const StyledCardInner = styled('div', {
@@ -119,9 +131,6 @@ export const StyledCard = styled('span', {
     backgroundColor: 'transparent',
     borderRadius: '$3',
   },
-  [`&:hover ${StyledButton.selector}`]: {
-    top: 8,
-  },
   [`&:hover ${StyledImgContainer.selector}`]: {
     '&::after': {
       opacity: 1,
@@ -131,4 +140,11 @@ export const StyledCard = styled('span', {
     boxShadow: '0px -10px 25px rgba(0, 0, 0, 0.25)',
     transform: 'translate(-1px, -40px)',
   },
+})
+
+export const StyledTypeAndChainContainer = styled('div', {
+  width: '100%',
+  display: 'flex',
+  justifyContent: 'space-between',
+  padding: '8px 12px 0',
 })

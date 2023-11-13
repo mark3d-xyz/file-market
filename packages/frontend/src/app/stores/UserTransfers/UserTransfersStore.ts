@@ -116,13 +116,19 @@ export class UserTransferStore implements IActivateDeactivate<[string]>, IStoreR
         link: `/collection/${chain?.name}/${transfer.collection?.address}/${transfer.token?.tokenId}`,
         text: 'Go to page',
       },
+      tokenFullId: {
+        collectionAddress: transfer?.collection?.address ?? '',
+        tokenId: transfer?.token?.tokenId ?? '',
+      },
       collectionName: transfer.collection?.name ?? '',
       imageURL: getHttpLinkFromIpfsString(transfer.token?.image ?? ''),
       title: transfer.token?.name ?? '',
       hiddenFileMeta: transfer.token?.hiddenFileMeta,
       user: {
-        address: reduceAddress(transfer.token?.owner ?? '—'),
-        img: getProfileImageUrl(transfer.token?.owner ?? ''),
+        img: !!transfer.token?.ownerProfile?.avatarUrl
+          ? getHttpLinkFromIpfsString(transfer.token?.ownerProfile?.avatarUrl ?? '')
+          : getProfileImageUrl(transfer.token?.owner ?? ''),
+        address: reduceAddress(transfer.token?.ownerProfile?.name ?? transfer.token?.owner ?? ''),
       },
       price: transfer.order?.price ? formatCurrency(transfer.order?.price, chain) : undefined,
     })

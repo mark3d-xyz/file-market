@@ -17,6 +17,7 @@ import KeepTouchBlock from './KeepTouchBlock'
 import Partners from './Partners/Partners'
 import Publications from './Publications/Publications'
 import SupportedBy from './SupportedBy'
+import WhatCanBeSold from './WhatCanBeSold/WhatCanBeSold'
 
 const BackgroundContainer = styled('section', {
   width: '100%',
@@ -295,6 +296,7 @@ export default function WelcomeBlock() {
             </div>
           </NavigateBlock>
           <SupportedBy />
+          <WhatCanBeSold />
           <HowToGetStart />
           <Benefits />
           <EFTProtocol />

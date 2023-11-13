@@ -48,7 +48,15 @@ const NftSection = observer(() => {
         currentItemCount={collectionTokenListStore.nftCards.length}
         fetchMore={() => { collectionTokenListStore.requestMore() }}
         render={({ index }) => {
-          return <NFTCard {...collectionTokenListStore.nftCards[index]} key={index} />
+          return (
+            <NFTCard
+              {...collectionTokenListStore.nftCards[index]}
+              onFlameSuccess={() => {
+                collectionTokenListStore.increaseLikeCount(index)
+              }}
+              key={index}
+            />
+          )
         }}
         listCss={nftCardListCss}
       />
