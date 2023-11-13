@@ -449,7 +449,7 @@ func (p *postgres) GetActiveOrdersByTokenIds(ctx context.Context, tx pgx.Tx, con
 		WHERE lts.rank = 1 AND
 		      lts.status IN ('Created', 'Drafted') AND
 		      t.collection_address=$1 AND
-		      t.token_id = ANY($2) AND
+		      t.token_id = ANY($2::VARCHAR[]) AND
 		      o.visibility = 'Visible' AND                                        -- TODO: delete all occurrences
 		      o.exchange_address != '0x' AND                                      -- was used to temporarily hide orders
 			  NOT (t.collection_address=$3 AND t.number=1) AND                    -- exclude file bunnies first orders
