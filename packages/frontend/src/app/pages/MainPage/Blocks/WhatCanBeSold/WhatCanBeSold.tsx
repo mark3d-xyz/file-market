@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom'
+import { useAccount } from 'wagmi'
 
+import { useAuth } from '../../../../hooks/useAuth'
 import Title from '../../components/SectionTitle/SectionTitle'
 import { WhatCanBeSoldData } from '../../helper/WhatCanBeSold/data'
 import SellableItem from './SellableItem/SellableItem'
@@ -7,6 +9,8 @@ import { StyledExploreButton, StyledInfo, StyledSellableItemsList, StyledStartSe
 
 const WhatCanBeSold = () => {
   const navigate = useNavigate()
+  const { isConnected } = useAccount()
+  const { connect } = useAuth()
 
   return (
     <StyledWhatCanBeSold>
@@ -47,7 +51,12 @@ const WhatCanBeSold = () => {
         primary
         bigHg
         onClick={() => {
-          navigate('/market')
+          if (isConnected) {
+            navigate('/create/eft')
+
+            return
+          }
+          connect()
         }}
       >
         Start Selling
