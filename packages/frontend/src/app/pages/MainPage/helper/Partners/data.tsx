@@ -210,10 +210,6 @@ export const PartnersData: PartnerItemProps[] = [
     link: 'https://otcmarsbase.io/',
   },
   {
-    name: 'placeholder',
-    link: 'placeholder',
-  },
-  {
     name: 'Glif',
     icon: Glif,
     link: 'https://glif.io/en',
