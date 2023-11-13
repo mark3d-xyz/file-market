@@ -47,7 +47,7 @@ export const StyledBenefitItemTitle = styled('h4', {
 
 export const StyledBenefitItemText = styled('p', {
   color: '$gray700',
-  fontSize: 12,
+  fontSize: 14,
   fontWeight: 400,
   lineHeight: '20px',
 })
