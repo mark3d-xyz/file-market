@@ -80,6 +80,7 @@ type Transfers interface {
 type Orders interface {
 	GetAllActiveOrders(ctx context.Context, tx pgx.Tx, lastOrderId *int64, limit int) ([]*domain.Order, error)
 	GetAllActiveOrdersTotal(ctx context.Context, tx pgx.Tx) (uint64, error)
+	GetActiveOrdersByTokenIds(ctx context.Context, tx pgx.Tx, contractAddress common.Address, tokenIds []string) (map[string]*domain.Order, error)
 	GetIncomingOrdersByAddress(ctx context.Context, tx pgx.Tx, address common.Address) ([]*domain.Order, error)
 	GetOutgoingOrdersByAddress(ctx context.Context, tx pgx.Tx, address common.Address) ([]*domain.Order, error)
 	GetActiveIncomingOrdersByAddress(ctx context.Context, tx pgx.Tx, address common.Address) ([]*domain.Order, error)
