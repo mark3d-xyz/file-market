@@ -459,9 +459,9 @@ func (p *postgres) GetActiveOrdersByTokenIds(ctx context.Context, tx pgx.Tx, con
 	rows, err := tx.Query(
 		ctx,
 		query,
-		strings.ToLower(p.cfg.fileBunniesCollectionAddress.String()),
 		strings.ToLower(contractAddress.String()),
 		tokenIds,
+		strings.ToLower(p.cfg.fileBunniesCollectionAddress.String()),
 	)
 	if err != nil {
 		return nil, err

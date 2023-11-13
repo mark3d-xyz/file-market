@@ -7,6 +7,7 @@ import (
 	"github.com/jackc/pgx/v4"
 	"github.com/mark3d-xyz/mark3d/indexer/internal/domain"
 	"github.com/mark3d-xyz/mark3d/indexer/models"
+	"github.com/mark3d-xyz/mark3d/indexer/pkg/currencyconversion"
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/utils"
 	authserver_pb "github.com/mark3d-xyz/mark3d/indexer/proto"
 	"log"
@@ -249,9 +250,23 @@ func (s *service) GetCollectionWithTokens(
 		}
 	}
 
+	currency := "FIL"
+	if strings.Contains(s.cfg.Mode, "era") {
+		currency = "ETH"
+	}
+	rate, err := s.currencyConverter.GetExchangeRate(ctx, currency, "USD")
+	if err != nil {
+		log.Println("failed to get conversion rate: ", err)
+		rate = 0
+	}
+
 	tokensWithOrders := make([]*models.TokenWithOrder, len(tokens))
 	for i, t := range tokens {
-		orderModel := domain.OrderToModel(orders[t.TokenId.String()])
+		order, ok := orders[t.TokenId.String()]
+		if ok {
+			order.PriceUsd = currencyconversion.Convert(rate, order.Price)
+		}
+		orderModel := domain.OrderToModel(order)
 		tokenModel := domain.TokenToModel(t)
 		fillTokenUserProfiles(tokenModel, profilesMap)
 		tokensWithOrders[i] = &models.TokenWithOrder{
