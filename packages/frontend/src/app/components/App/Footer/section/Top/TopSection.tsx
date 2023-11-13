@@ -2,17 +2,13 @@ import React, { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 
 import FileMarketIcon from '../../../../../../assets/FileMarketLogoFooter.svg'
-import DiscordBlackImg from '../../../../../../assets/img/DiscordBlack.svg'
+import DeBankImg from '../../../../../../assets/img/DeBankImg.svg'
 import DiscordImg from '../../../../../../assets/img/DiscordImg.svg'
-import LinkedinBlackImg from '../../../../../../assets/img/LinkedinBlack.svg'
+import InstagramImg from '../../../../../../assets/img/InstagramImg.svg'
 import LinkedinImg from '../../../../../../assets/img/LinkedinImg.svg'
-import MediumBlackImg from '../../../../../../assets/img/MediumBlack.svg'
 import MediumImg from '../../../../../../assets/img/MediumImg.svg'
-import TelegramBlackImg from '../../../../../../assets/img/TelegramBlack.svg'
 import TelegramImg from '../../../../../../assets/img/TelegramImg.svg'
-import TwitterBlackImg from '../../../../../../assets/img/TwitterBlack.svg'
 import TwitterImg from '../../../../../../assets/img/TwitterImg.svg'
-import YoutubeBlackImg from '../../../../../../assets/img/YoutubeBlack.svg'
 import YoutubeImg from '../../../../../../assets/img/YoutubeImg.svg'
 import { styled } from '../../../../../../styles'
 import { useMediaMui } from '../../../../../hooks/useMediaMui'
@@ -66,6 +62,7 @@ const TopSectionStyle = styled('div', {
 })
 const styleLink = {
   ...textVariant('secondary2').true,
+  fontFamily: '$body',
   fontWeight: '500',
   color: 'white',
   textDecoration: 'none',
@@ -93,7 +90,7 @@ export const TextLinkMock = styled(Link, {
 
 export const Text = styled('span', {
   ...textVariant('primary2').true,
-  fontWeight: '400',
+  fontWeight: '500',
   fontSize: '14px',
   color: 'white',
   textDecoration: 'none',
@@ -108,6 +105,7 @@ export const Text = styled('span', {
 
 const HeaderText = styled('h4', {
   ...textVariant('secondary2').true,
+  fontFamily: '$body',
   fontWeight: '700',
   color: '#7B7C7E',
 })
@@ -115,7 +113,7 @@ const HeaderText = styled('h4', {
 const SecondContent = styled('div', {
   display: 'flex',
   flexDirection: 'column',
-  gap: '4px',
+  gap: '6px',
 })
 
 const ThirdContent = styled('div', {
@@ -130,11 +128,16 @@ export const Card = styled('a', {
   width: '49%',
   height: '44px',
   display: 'flex',
-  justifyContent: 'center',
+  justifyContent: 'flex-start',
   alignItems: 'center',
-  gap: '7px',
+  gap: '4px',
   borderRadius: '8px',
   textDecoration: 'none',
+  paddingLeft: 16,
+  paddingRight: 16,
+  '@lg': {
+    justifyContent: 'center',
+  },
   '&:hover': {
     background: '#393B3E',
   },
@@ -162,42 +165,50 @@ interface ILink {
   onClick?: () => void
 }
 
-export const Cards: Array<{ img: string, blackImg: string, text: string, url: string }> = [
+export const Cards: Array<{
+  img: string
+  text: string
+  url: string
+}> = [
   {
     img: TwitterImg,
-    blackImg: TwitterBlackImg,
-    text: 'Twitter',
+    text: '(Twitter)',
     url: 'https://twitter.com/filemarket_xyz',
   },
   {
     img: DiscordImg,
-    blackImg: DiscordBlackImg,
     text: 'Discord',
     url: 'https://discord.gg/filemarket',
   },
   {
     img: TelegramImg,
-    blackImg: TelegramBlackImg,
     text: 'Telegram',
     url: 'https://t.me/FileMarketChat',
   },
   {
     img: YoutubeImg,
-    blackImg: YoutubeBlackImg,
     text: 'Youtube',
     url: 'https://www.youtube.com/@filemarket_xyz',
   },
   {
     img: MediumImg,
-    blackImg: MediumBlackImg,
     text: 'Medium',
     url: 'https://medium.com/filemarket-xyz',
   },
   {
     img: LinkedinImg,
-    blackImg: LinkedinBlackImg,
     text: 'LinkedIn',
     url: 'https://www.linkedin.com/company/filemarketxyz/',
+  },
+  {
+    img: InstagramImg,
+    text: 'Instagram',
+    url: 'https://instagram.com/filemarket_xyz',
+  },
+  {
+    img: DeBankImg,
+    text: 'DeBank',
+    url: 'https://debank.com/official-account/111822',
   },
 ]
 
@@ -243,26 +254,27 @@ export const TopSection = () => {
       url: '',
     },
   ]
-  const Links: ILink[] = [{
-    text: 'EFT Protocol',
-    url: 'https://medium.com/filemarket-xyz/how-to-attach-an-encrypted-file-to-your-nft-7d6232fd6d34',
-  },
-  {
-    text: 'SDK',
-    url: '',
-  },
-  {
-    text: 'DAO',
-    url: 'https://discord.gg/filemarket',
-  },
-  {
-    text: 'GitHub',
-    url: 'https://github.com/Filemarket-xyz/file-market',
-  },
-  {
-    text: 'Blogs',
-    url: 'https://medium.com/filemarket-xyz',
-  },
+  const Links: ILink[] = [
+    {
+      text: 'EFT Protocol',
+      url: 'https://medium.com/filemarket-xyz/how-to-attach-an-encrypted-file-to-your-nft-7d6232fd6d34',
+    },
+    {
+      text: 'SDK',
+      url: '',
+    },
+    {
+      text: 'DAO',
+      url: 'https://discord.gg/filemarket',
+    },
+    {
+      text: 'GitHub',
+      url: 'https://github.com/Filemarket-xyz/file-market',
+    },
+    {
+      text: 'Blogs',
+      url: 'https://medium.com/filemarket-xyz',
+    },
   ]
   const Company: ILink[] = [
     {
@@ -290,96 +302,105 @@ export const TopSection = () => {
 
   return (
     <TopSectionStyle>
-      <div className="section first">
-        <Link to={'/mainpage'}><img src={FileMarketIcon} alt="" /></Link>
-        <Text style={{ lineHeight: '24px', fontSize: '16px' }}>FileMarket is a multi-chain marketplace specializing in the tokenization and monetization of pivotal public data through perpetual decentralized storage with a privacy layer, opening the data economy to the mass market.</Text>
+      <div className='section first'>
+        <Link to={'/mainpage'}>
+          <img src={FileMarketIcon} alt='' />
+        </Link>
+        <Text style={{ lineHeight: '24px', fontSize: '16px' }}>
+          FileMarket is a multi-chain marketplace specializing in the
+          tokenization and monetization of pivotal public data through perpetual
+          decentralized storage with a privacy layer, opening the data economy
+          to the mass market.
+        </Text>
       </div>
-      <div className="section second">
+      <div className='section second'>
         <HeaderText>Platform</HeaderText>
         <SecondContent>
           {MarketPlaceItems.map((item, index) => {
-            return (
-              item.isMock ? (
-                <TextLinkMock
-                  key={index}
-                  to={item.url}
-                  onClick={() => { item.onClick?.() }}
-                >
-                  {item.text}
-                </TextLinkMock>
-              )
-                : (
-                  <TextLink
-                    key={index}
-                    href={item.url}
-                    target={'_blank'}
-                    onClick={() => { item.onClick?.() }}
-                  >
-                    {item.text}
-                  </TextLink>
-                )
+            return item.isMock ? (
+              <TextLinkMock
+                key={index}
+                to={item.url}
+                onClick={() => {
+                  item.onClick?.()
+                }}
+              >
+                {item.text}
+              </TextLinkMock>
+            ) : (
+              <TextLink
+                key={index}
+                href={item.url}
+                target={'_blank'}
+                onClick={() => {
+                  item.onClick?.()
+                }}
+              >
+                {item.text}
+              </TextLink>
             )
-          },
-          )}
+          })}
         </SecondContent>
       </div>
-      <div className="section second">
+      <div className='section second'>
         <HeaderText>Links</HeaderText>
         <SecondContent>
           {Links.map((item, index) => {
-            return (
-              item.isMock ? (
-                <TextLinkMock
-                  key={index}
-                  to={item.url}
-                  onClick={() => { item.onClick?.() }}
-                >
-                  {item.text}
-                </TextLinkMock>
-              )
-                : (
-                  <TextLink
-                    key={index}
-                    href={item.url}
-                    target={'_blank'}
-                    onClick={() => { item.onClick?.() }}
-                  >
-                    {item.text}
-                  </TextLink>
-                )
+            return item.isMock ? (
+              <TextLinkMock
+                key={index}
+                to={item.url}
+                onClick={() => {
+                  item.onClick?.()
+                }}
+              >
+                {item.text}
+              </TextLinkMock>
+            ) : (
+              <TextLink
+                key={index}
+                href={item.url}
+                target={'_blank'}
+                onClick={() => {
+                  item.onClick?.()
+                }}
+              >
+                {item.text}
+              </TextLink>
             )
           })}
         </SecondContent>
       </div>
-      <div className="section second">
+      <div className='section second'>
         <HeaderText>Company</HeaderText>
         <SecondContent>
           {Company.map((item, index) => {
-            return (
-              item.isMock ? (
-                <TextLinkMock
-                  key={index}
-                  to={item.url}
-                  onClick={() => { item.onClick?.() }}
-                >
-                  {item.text}
-                </TextLinkMock>
-              )
-                : (
-                  <TextLink
-                    key={index}
-                    href={item.url}
-                    target={'_blank'}
-                    onClick={() => { item.onClick?.() }}
-                  >
-                    {item.text}
-                  </TextLink>
-                )
+            return item.isMock ? (
+              <TextLinkMock
+                key={index}
+                to={item.url}
+                onClick={() => {
+                  item.onClick?.()
+                }}
+              >
+                {item.text}
+              </TextLinkMock>
+            ) : (
+              <TextLink
+                key={index}
+                href={item.url}
+                target={'_blank'}
+                onClick={() => {
+                  item.onClick?.()
+                }}
+              >
+                {item.text}
+              </TextLink>
             )
           })}
         </SecondContent>
       </div>
-      <div className="section third">
+      <div className='section third'>
         <HeaderText>Join our community</HeaderText>
         <ThirdContent>
           {Cards.map((item, index) => (

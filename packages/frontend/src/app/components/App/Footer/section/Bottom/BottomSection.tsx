@@ -57,7 +57,7 @@ export const BottomSection = () => {
   return (
     <BottomSectionStyle>
       <Info>
-        <Txt secondary1 css={{ fontSize: 14, color: '#A7A8A9' }}>
+        <Txt secondary1 css={{ fontSize: 14, fontFamily: '$body', color: '#A7A8A9' }}>
           ©
           {' '}
           {date.getFullYear()}
@@ -72,7 +72,7 @@ export const BottomSection = () => {
       </Info>
       <Email>
         <img src={EmailImg} />
-        <Txt secondary1 css={{ fontSize: 14 }}>
+        <Txt secondary1 css={{ fontSize: 14, fontFamily: '$body' }}>
           genesis@filemarket.xyz
         </Txt>
       </Email>
