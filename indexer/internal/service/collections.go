@@ -58,7 +58,10 @@ func (s *service) GetCollection(
 		}
 	}
 
-	profilesMap, e := s.getProfilesMap(ctx, []string{collection.Owner.String(), collection.Creator.String()})
+	profilesMap, e := s.getProfilesMap(ctx, []string{
+		strings.ToLower(collection.Owner.String()),
+		strings.ToLower(collection.Creator.String()),
+	})
 	if e != nil {
 		logger.Error("failed to call GetUserProfile", errors.New(e.Message), nil)
 		return nil, e
@@ -208,7 +211,7 @@ func (s *service) GetCollectionWithTokens(
 	addresses[strings.ToLower(collection.Owner.String())] = struct{}{}
 	addresses[strings.ToLower(collection.Creator.String())] = struct{}{}
 
-	profilesMap, e := s.getProfilesMap(ctx, []string{})
+	profilesMap, e := s.getProfilesMap(ctx, utils.SetToSlice(addresses))
 	if e != nil {
 		return nil, e
 	}

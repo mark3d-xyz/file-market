@@ -192,10 +192,10 @@ func (s *service) GetAllActiveOrders(
 			return nil, internalError
 		}
 
-		addresses[transfer.ToAddress.String()] = struct{}{}
-		addresses[transfer.FromAddress.String()] = struct{}{}
-		addresses[token.Creator.String()] = struct{}{}
-		addresses[token.Owner.String()] = struct{}{}
+		addresses[strings.ToLower(transfer.ToAddress.String())] = struct{}{}
+		addresses[strings.ToLower(transfer.FromAddress.String())] = struct{}{}
+		addresses[strings.ToLower(token.Creator.String())] = struct{}{}
+		addresses[strings.ToLower(token.Owner.String())] = struct{}{}
 
 		ordersWithToken = append(ordersWithToken, &models.OrderWithToken{
 			Order:    domain.OrderToModel(o),

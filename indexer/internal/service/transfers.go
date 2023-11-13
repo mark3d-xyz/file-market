@@ -166,7 +166,10 @@ func (s *service) GetTransfer(ctx context.Context, address common.Address,
 		return nil, internalError
 	}
 
-	profilesMap, e := s.getProfilesMap(ctx, []string{transfer.ToAddress.String(), transfer.FromAddress.String()})
+	profilesMap, e := s.getProfilesMap(ctx, []string{
+		strings.ToLower(transfer.ToAddress.String()),
+		strings.ToLower(transfer.FromAddress.String()),
+	})
 	if e != nil {
 		return nil, e
 	}
@@ -250,12 +253,12 @@ func (s *service) GetTransfersV2(
 			order.PriceUsd = currencyconversion.Convert(rate, order.Price)
 		}
 
-		addresses[token.Owner.String()] = struct{}{}
-		addresses[token.Creator.String()] = struct{}{}
-		addresses[collection.Owner.String()] = struct{}{}
-		addresses[collection.Creator.String()] = struct{}{}
-		addresses[t.FromAddress.String()] = struct{}{}
-		addresses[t.ToAddress.String()] = struct{}{}
+		addresses[strings.ToLower(token.Owner.String())] = struct{}{}
+		addresses[strings.ToLower(token.Creator.String())] = struct{}{}
+		addresses[strings.ToLower(collection.Owner.String())] = struct{}{}
+		addresses[strings.ToLower(collection.Creator.String())] = struct{}{}
+		addresses[strings.ToLower(t.FromAddress.String())] = struct{}{}
+		addresses[strings.ToLower(t.ToAddress.String())] = struct{}{}
 
 		incoming[i] = &models.TransferWithData{
 			Collection: domain.CollectionToModel(collection),
@@ -289,12 +292,12 @@ func (s *service) GetTransfersV2(
 			order.PriceUsd = currencyconversion.Convert(rate, order.Price)
 		}
 
-		addresses[token.Owner.String()] = struct{}{}
-		addresses[token.Creator.String()] = struct{}{}
-		addresses[collection.Owner.String()] = struct{}{}
-		addresses[collection.Creator.String()] = struct{}{}
-		addresses[t.FromAddress.String()] = struct{}{}
-		addresses[t.ToAddress.String()] = struct{}{}
+		addresses[strings.ToLower(token.Owner.String())] = struct{}{}
+		addresses[strings.ToLower(token.Creator.String())] = struct{}{}
+		addresses[strings.ToLower(collection.Owner.String())] = struct{}{}
+		addresses[strings.ToLower(collection.Creator.String())] = struct{}{}
+		addresses[strings.ToLower(t.FromAddress.String())] = struct{}{}
+		addresses[strings.ToLower(t.ToAddress.String())] = struct{}{}
 
 		outgoing[i] = &models.TransferWithData{
 			Collection: domain.CollectionToModel(collection),
@@ -388,12 +391,12 @@ func (s *service) GetTransfersHistoryV2(
 			order.PriceUsd = currencyconversion.Convert(rate, order.Price)
 		}
 
-		addresses[token.Owner.String()] = struct{}{}
-		addresses[token.Creator.String()] = struct{}{}
-		addresses[collection.Owner.String()] = struct{}{}
-		addresses[collection.Creator.String()] = struct{}{}
-		addresses[t.FromAddress.String()] = struct{}{}
-		addresses[t.ToAddress.String()] = struct{}{}
+		addresses[strings.ToLower(token.Owner.String())] = struct{}{}
+		addresses[strings.ToLower(token.Creator.String())] = struct{}{}
+		addresses[strings.ToLower(collection.Owner.String())] = struct{}{}
+		addresses[strings.ToLower(collection.Creator.String())] = struct{}{}
+		addresses[strings.ToLower(t.FromAddress.String())] = struct{}{}
+		addresses[strings.ToLower(t.ToAddress.String())] = struct{}{}
 
 		incoming[i] = &models.TransferWithData{
 			Collection: domain.CollectionToModel(collection),
@@ -421,12 +424,12 @@ func (s *service) GetTransfersHistoryV2(
 			order.PriceUsd = currencyconversion.Convert(rate, order.Price)
 		}
 
-		addresses[token.Owner.String()] = struct{}{}
-		addresses[token.Creator.String()] = struct{}{}
-		addresses[collection.Owner.String()] = struct{}{}
-		addresses[collection.Creator.String()] = struct{}{}
-		addresses[t.FromAddress.String()] = struct{}{}
-		addresses[t.ToAddress.String()] = struct{}{}
+		addresses[strings.ToLower(token.Owner.String())] = struct{}{}
+		addresses[strings.ToLower(token.Creator.String())] = struct{}{}
+		addresses[strings.ToLower(collection.Owner.String())] = struct{}{}
+		addresses[strings.ToLower(collection.Creator.String())] = struct{}{}
+		addresses[strings.ToLower(t.FromAddress.String())] = struct{}{}
+		addresses[strings.ToLower(t.ToAddress.String())] = struct{}{}
 
 		outgoing[i] = &models.TransferWithData{
 			Collection: domain.CollectionToModel(collection),
@@ -502,12 +505,12 @@ func (s *service) GetTransferV2(
 	}
 
 	addresses := make(map[string]struct{})
-	addresses[token.Owner.String()] = struct{}{}
-	addresses[token.Creator.String()] = struct{}{}
-	addresses[collection.Owner.String()] = struct{}{}
-	addresses[collection.Creator.String()] = struct{}{}
-	addresses[transfer.FromAddress.String()] = struct{}{}
-	addresses[transfer.ToAddress.String()] = struct{}{}
+	addresses[strings.ToLower(token.Owner.String())] = struct{}{}
+	addresses[strings.ToLower(token.Creator.String())] = struct{}{}
+	addresses[strings.ToLower(collection.Owner.String())] = struct{}{}
+	addresses[strings.ToLower(collection.Creator.String())] = struct{}{}
+	addresses[strings.ToLower(transfer.FromAddress.String())] = struct{}{}
+	addresses[strings.ToLower(transfer.ToAddress.String())] = struct{}{}
 
 	profilesMap, e := s.getProfilesMap(ctx, utils.SetToSlice(addresses))
 	if e != nil {
