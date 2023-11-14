@@ -219,7 +219,7 @@ export const CreateEFTSection: React.FC = observer(() => {
       <PageLayout
         isHasSelectBlockChain
         style={{
-          height: '100vh',
+          minHeight: '100vh',
         }}
       >
         <Form onSubmit={handleSubmit(onSubmit)}>
