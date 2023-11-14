@@ -22,6 +22,8 @@ const Spacer = styled('div', {
 const IconWrapper = styled('div', {
   background: '$white',
   dflex: 'center',
+  width: '100%',
+  height: '100%',
 })
 
 export const AppAccountMenu: FC = () => {
@@ -64,7 +66,7 @@ export const AppAccountMenu: FC = () => {
                   color: 'var(--colors-red)',
                 }}
               />
-            ) : (avatar ? <img src={getHttpLinkFromIpfsString(avatar)} /> : (
+            ) : (avatar ? <img style={{ width: '100%', height: '100%' }} src={getHttpLinkFromIpfsString(avatar)} /> : (
               <AddressIcon
                 address={address ?? ''}
                 size={36}

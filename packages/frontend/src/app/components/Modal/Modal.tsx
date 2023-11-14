@@ -12,6 +12,8 @@ export interface InProcessBodyProps {
   text: ReactNode
   mainText?: ReactNode
   waitForSign?: boolean
+  srcIcon?: string
+  icon?: ReactNode
 }
 
 const Loading = styled('img', {
@@ -20,9 +22,15 @@ const Loading = styled('img', {
   marginBottom: '20px',
 })
 
-export const InProgressBody: React.FC<InProcessBodyProps> = ({ text, mainText, waitForSign = true }) => (
+export const InProgressBody: React.FC<InProcessBodyProps> = ({
+  text,
+  mainText,
+  waitForSign = true,
+  srcIcon = LoadingIcon,
+  icon,
+}) => (
   <>
-    <Loading src={LoadingIcon} />
+    { icon ?? <Loading src={srcIcon} /> }
     <ModalTitle>{text}</ModalTitle>
     {waitForSign && <ModalP style={{ fontSize: '16px' }}>{mainText ?? 'Please check your wallet and sign the transaction'}</ModalP>}
   </>
@@ -67,6 +75,8 @@ export interface SuccessOkBodyProps {
   handleClose?: () => void
   isSuccessImg?: boolean
   buttonText?: string
+  icon?: ReactNode
+  underText?: ReactNode
 }
 
 export const SuccessOkBody: FC<SuccessOkBodyProps> = ({
@@ -74,10 +84,19 @@ export const SuccessOkBody: FC<SuccessOkBodyProps> = ({
   handleClose,
   isSuccessImg = true,
   buttonText,
+  icon,
+  underText,
 }) => (
   <>
-    {isSuccessImg && <ModalTitle style={{ marginBottom: '40px' }}><img src={SuccessfullImg} /></ModalTitle>}
-    <ModalP style={{ marginBottom: '40px' }}>{description}</ModalP>
+    {isSuccessImg && (
+      <ModalTitle style={{ marginBottom: '40px' }}>
+        { icon ?? <img src={SuccessfullImg} />}
+      </ModalTitle>
+    )}
+    <ModalTitle style={{ marginBottom: '12px', fontSize: '20px' }}>
+      { description }
+    </ModalTitle>
+    <ModalP style={{ marginBottom: '40px', fontSize: '14px', fontWeight: '400' }}>{underText}</ModalP>
     {handleClose && (
       <ModalButtonContainer style={{ justifyContent: 'center' }}>
         <ButtonGlowing whiteWithBlue modalButton onPress={handleClose}>{buttonText ?? 'Cool'}</ButtonGlowing>

@@ -30,7 +30,15 @@ const TransfersSection: React.FC = observer(() => {
         fetchMore={() => { userTransferStore.requestMore() }}
         isLoading={userTransferStore.isLoading}
         currentItemCount={userTransferStore.transferCards.length}
-        render={({ index }) => <TransferCard {...userTransferStore.transferCards[index]} key={index} />}
+        render={({ index }) => (
+          <TransferCard
+            {...userTransferStore.transferCards[index]}
+            onFlameSuccess={() => {
+              userTransferStore.increaseLikeCount(index)
+            }}
+            key={index}
+          />
+        )}
         listCss={nftCardListCss}
       />
       {!userTransferStore.transferCards.length && !userTransferStore.isLoading && (

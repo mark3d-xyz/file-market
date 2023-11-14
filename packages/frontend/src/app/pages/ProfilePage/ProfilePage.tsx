@@ -159,6 +159,7 @@ const ProfilePage: React.FC = observer(() => {
             })(),
             discord: user?.discord,
             telegram: user?.telegram,
+            instagram: user?.instagram,
           }}
           />
         </BioAndLinks>

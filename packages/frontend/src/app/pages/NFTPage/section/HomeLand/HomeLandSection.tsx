@@ -30,8 +30,10 @@ const HomeLandSection = observer(() => {
     ownerHasImg,
     creatorImg,
     creatorName,
+    creatorUrl,
     ownerImg,
     ownerName,
+    ownerUrl,
   } = useTokenStore(collectionAddress, tokenId)
   const { collection } = useCollectionStore(collectionAddress, chainName)
 
@@ -75,7 +77,7 @@ const HomeLandSection = observer(() => {
         </NavLink>
         <NavLink
           lgFullWidth
-          to={creatorName ? `/profile/${creatorName}` : location.pathname}
+          to={creatorName ? `/profile/${creatorUrl}` : location.pathname}
         >
           <Badge
             image={{
@@ -93,7 +95,7 @@ const HomeLandSection = observer(() => {
         </NavLink>
         <NavLink
           lgFullWidth
-          to={ownerName ? `/profile/${ownerName}` : location.pathname}
+          to={ownerName ? `/profile/${ownerUrl}` : location.pathname}
         >
           <Badge
             image={{

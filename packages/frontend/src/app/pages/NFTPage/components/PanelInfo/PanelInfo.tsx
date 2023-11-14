@@ -1,10 +1,10 @@
 import React from 'react'
 
+import { CardFlame } from '../../../../components/MarketCard/Flames'
 import { type typeFiles } from '../../../../components/MarketCard/helper/data'
 import { Share } from '../../../../components/Share/Share'
 import { type TokenFullId } from '../../../../processing/types'
 import ViewFile from '../ViewFile/ViewFile'
-import { CardFlameItem } from './CardFlameItem/CardFlameItem'
 import { StyledPanelInfo, StyledPanelInfoContainer } from './PanelInfo.styles'
 
 interface IPanelInfoProps {
@@ -15,6 +15,8 @@ interface IPanelInfoProps {
   isViewFile?: boolean
   typeFile?: typeFiles
   onViewFileClick: () => void
+  onFlameSuccess?: () => void
+  chainName?: string
 }
 
 export const PanelInfo = ({
@@ -24,19 +26,26 @@ export const PanelInfo = ({
   isCanViewFile,
   isViewFile,
   typeFile,
+  onFlameSuccess,
   onViewFileClick,
+  chainName,
 }: IPanelInfoProps) => {
   return (
     <StyledPanelInfo>
       <StyledPanelInfoContainer>
-        <CardFlameItem tokenFullId={tokenFullId} likesCount={likesCount} />
+        <CardFlame
+          tokenFullId={tokenFullId}
+          onSuccess={onFlameSuccess}
+          likesCount={likesCount}
+          isHasFlameText
+          chainName={chainName}
+        />
         <Share />
         {(isCanViewFile && !isLoadingFile) && (
           <ViewFile
             isPreviewView={!isViewFile}
             type={typeFile}
-            onClick={onViewFileClick
-            }
+            onClick={onViewFileClick}
           />
         )}
       </StyledPanelInfoContainer>

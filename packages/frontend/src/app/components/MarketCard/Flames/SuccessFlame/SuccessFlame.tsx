@@ -7,7 +7,7 @@ import {
   StyledFlameIconMain, useCardFlameAnimation,
 } from '../CardFlame'
 
-export const LoadingFlame = () => {
+export const SuccessFlame = () => {
   const tlBurningRef = useRef<GSAPTimeline | null>(null)
   const tlGlowingRef = useRef<GSAPTimeline | null>(null)
 
@@ -15,6 +15,7 @@ export const LoadingFlame = () => {
     tlBurningRef,
     isModal: true,
     tlGlowingRef,
+    successState: true,
   })
 
   return (
