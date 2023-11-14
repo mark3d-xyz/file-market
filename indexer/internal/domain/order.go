@@ -27,6 +27,10 @@ func OrderToModel(o *Order) *models.Order {
 	if o == nil {
 		return nil
 	}
+	if o.PriceUsd == nil {
+		o.PriceUsd = big.NewFloat(0)
+	}
+
 	return &models.Order{
 		ID:              o.Id,
 		Statuses:        MapSlice(o.Statuses, OrderStatusToModel),

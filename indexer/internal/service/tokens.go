@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"github.com/mark3d-xyz/mark3d/indexer/pkg/currencyconversion"
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/utils"
 	"log"
 	"math/big"
@@ -158,6 +159,16 @@ func (s *service) GetTokensByAddress(
 		return nil, internalError
 	}
 
+	currency := "FIL"
+	if strings.Contains(s.cfg.Mode, "era") {
+		currency = "ETH"
+	}
+	rate, err := s.currencyConverter.GetExchangeRate(ctx, currency, "USD")
+	if err != nil {
+		log.Println("failed to get conversion rate: ", err)
+		rate = 0
+	}
+
 	var (
 		addresses           = make(map[string]struct{})
 		tokenIds            = make([]string, 0, len(tokens))
@@ -189,6 +200,9 @@ func (s *service) GetTokensByAddress(
 		tokenModel := domain.TokenToModel(t)
 		if o, ok := orders[strings.ToLower(t.CollectionAddress.String())]; ok {
 			order = o[t.TokenId.String()]
+			if ok {
+				order.PriceUsd = currencyconversion.Convert(rate, order.Price)
+			}
 		}
 		transfer, err := s.repository.GetActiveTransfer(ctx, tx, t.CollectionAddress, t.TokenId)
 		if err != nil {
