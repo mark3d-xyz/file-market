@@ -16,6 +16,8 @@ import { cutNumber } from '../../../../utils/number'
 import { BaseModal } from '../../../Modal'
 import FlameFinalSub from '../flame-active.svg?react'
 import FlameIconMain from '../flame-morph.svg?react'
+import { LoadingFlame } from '../LoadingFlame/LoadingFlame'
+import { SuccessFlame } from '../SuccessFlame/SuccessFlame'
 import { useCardFlameAnimation } from './useCardFlameAnimation'
 
 gsap.registerPlugin(MorphSVGPlugin)
@@ -30,10 +32,9 @@ interface CardFlameProps {
   likesCount?: number
   color?: string
   chainName?: string
-  successState: boolean
 }
 
-const FlameWrapper = styled('div', {
+export const FlameWrapper = styled('div', {
   display: 'flex',
   alignItems: 'flex-end',
   justifyContent: 'center',
@@ -63,7 +64,7 @@ const FlameWrapper = styled('div', {
   },
 })
 
-const StyledFlameIconMain = styled(FlameIconMain, {
+export const StyledFlameIconMain = styled(FlameIconMain, {
   position: 'absolute',
   zIndex: 2,
   width: '100%',
@@ -95,7 +96,7 @@ const StyledFlameIconMain = styled(FlameIconMain, {
   },
 })
 
-const StyledFlameFinal = styled(FlameFinalSub, {
+export const StyledFlameFinal = styled(FlameFinalSub, {
   position: 'absolute',
   zIndex: 1,
   top: 0,
@@ -106,7 +107,7 @@ const StyledFlameFinal = styled(FlameFinalSub, {
   height: '100%',
 })
 
-const StyledFlameContainer = styled(Button, {
+export const StyledFlameContainer = styled(Button, {
   gap: '4px',
   display: 'flex',
   alignItems: 'center',
@@ -117,6 +118,16 @@ const StyledFlameContainer = styled(Button, {
   '&[data-hovered=true]': {
     opacity: 'initial',
   },
+
+  variants: {
+    isModal: {
+      true: {
+        height: 'initial',
+        width: '100%',
+        justifyContent: 'center',
+      },
+    },
+  },
 })
 
 export const CardFlame = observer(({
@@ -125,7 +136,6 @@ export const CardFlame = observer(({
   tokenFullId,
   mouseState,
   onSuccess,
-  successState,
   isHasFlameText,
   likesCount,
   chainName,
@@ -143,7 +153,6 @@ export const CardFlame = observer(({
     isModal,
     modalLoadFinished,
     tlGlowingRef,
-    successState,
   })
 
   const { like, ...statuses } = useLike()
@@ -153,11 +162,17 @@ export const CardFlame = observer(({
   const { modalProps } = useStatusModal({
     statuses,
     okMsg: 'Thank you for your engagement!',
-    okMsgUnderText: 'Your little flame will warm the heart of the EFT owner and increase its chances of sale.',
-    loadingMsg: 'Your flame is igniting in the blockchain, \n' +
+    okMsgUnderText: <>
+      Your little flame will warm the heart of the EFT owner
+      <br />
+      and increase its chances of sale.
+    </>,
+    loadingMsg: 'Your flame is igniting in  the blockchain, \n' +
       'please wait',
+    waitForSign: false,
+    loadingIcon: <LoadingFlame />,
+    successIcon: <SuccessFlame />,
   })
-
   useAfterDidMountEffect(() => {
     if (!mouseState) return
 
@@ -206,7 +221,7 @@ export const CardFlame = observer(({
         <StyledFlameContainer
           onPress={
             async () => {
-              if (networkChain && chain?.id !== networkChain?.id) {
+              if (chain && networkChain && chain?.id !== networkChain?.id) {
                 changeNetwork(chain?.id)
 
                 return

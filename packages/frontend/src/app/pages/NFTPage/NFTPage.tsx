@@ -74,9 +74,6 @@ const MainInfo = styled(PageLayout, {
     height: 'unset',
     borderRadius: '24px 24px 0px 0px',
   },
-  '@sm': {
-    marginTop: '45px',
-  },
 })
 
 const GridLayout = styled('div', {

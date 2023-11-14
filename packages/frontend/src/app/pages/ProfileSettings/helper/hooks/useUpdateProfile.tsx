@@ -17,6 +17,7 @@ export const useUpdateProfile = (onSuccess?: () => void) => {
     twitter: '',
     telegram: '',
     discord: '',
+    instagram: '',
   })
   const [isEmailUpdated, setIsEmailUpdated] = useState<boolean>(false)
   const {

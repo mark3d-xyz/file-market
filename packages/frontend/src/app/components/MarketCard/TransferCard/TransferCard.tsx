@@ -26,12 +26,14 @@ export interface TransferCardProps {
   status: string
   chainName?: string
   chainImg?: string
+  onFlameSuccess: () => void
 }
 
 export const TransferCard: React.FC<TransferCardProps> = ({
   imageURL,
   title,
   collectionName,
+  onFlameSuccess,
   categories,
   tokenFullId,
   hiddenFileMeta,
@@ -55,6 +57,7 @@ export const TransferCard: React.FC<TransferCardProps> = ({
       button={{ to: button.link, text: button.text }}
       chainName={chainName}
       chainImg={chainImg}
+      onFlameSuccess={onFlameSuccess}
     >
       <NftCardUserInfo img={user.img} address={user.address} />
       <PriceBadge

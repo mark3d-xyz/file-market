@@ -1,3 +1,4 @@
+import { Tooltip } from '@nextui-org/react'
 import { observer } from 'mobx-react-lite'
 import React, { type MouseEventHandler, type PropsWithChildren, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -63,7 +64,15 @@ export const NftCardBase: React.FC<NftCardProps> = observer(({
       <StyledCardBorder>
         <StyledCardInner>
           <StyledTypeAndChainContainer>
-            {fileType}
+            <Tooltip
+              rounded
+              placement='top'
+              trigger='hover'
+              content='Internal hidden file type'
+              color="primary"
+            >
+              {fileType}
+            </Tooltip>
             <StyledChain>
               <img src={chainImg} />
               <Txt primary1 style={{ fontSize: '10px', color: '#6B6F76', lineHeight: '16px' }}>{chainName}</Txt>

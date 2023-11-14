@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx'
 
-import { type Api, type CollectionData } from '../../../swagger/Api'
+import { type Api, type CollectionData, OrderStatus } from '../../../swagger/Api'
 import { gradientPlaceholderImg } from '../../UIkit'
 import { getHttpLinkFromIpfsString } from '../../utils/nfts/getHttpLinkFromIpfsString'
 import { getProfileImageUrl } from '../../utils/nfts/getProfileImageUrl'
@@ -74,7 +74,7 @@ export class CollectionTokenListStore implements IActivateDeactivate<[string, st
   }
 
   requestMore() {
-    const lastTokenId = lastItem(this.data.tokens ?? [])?.tokenId
+    const lastTokenId = lastItem(this.data.tokens ?? [])?.token?.tokenId
     storeRequest(
       this,
       this.currentBlockChainStore.api.collections.fullDetail(this.collectionAddress, { lastTokenId, limit: 10 }),
@@ -105,7 +105,7 @@ export class CollectionTokenListStore implements IActivateDeactivate<[string, st
   increaseLikeCount(index: number) {
     const tokenFind = this.data.tokens?.[index]
     console.log(tokenFind)
-    if (tokenFind) tokenFind.likeCount = tokenFind.likeCount !== undefined ? tokenFind.likeCount + 1 : 1
+    if (tokenFind?.token) tokenFind.token.likeCount = tokenFind?.token.likeCount !== undefined ? tokenFind.token.likeCount + 1 : 1
   }
 
   get hasMoreData() {
@@ -117,35 +117,33 @@ export class CollectionTokenListStore implements IActivateDeactivate<[string, st
   get nftCards() {
     if (!this.data.tokens) return []
 
-    return this.data.tokens.map((token) => ({
+    return this.data.tokens.map(({ token, order }) => ({
       collectionName: this.data.collection?.name ?? '',
-      imageURL: token.image ? getHttpLinkFromIpfsString(token.image) : gradientPlaceholderImg,
-      title: token.name ?? '—',
-      likesCount: token.likeCount,
+      imageURL: token?.image ? getHttpLinkFromIpfsString(token.image) : gradientPlaceholderImg,
+      title: token?.name ?? '—',
+      likesCount: token?.likeCount,
+      categories: token?.categories?.[0],
       user: {
-        img: !!token.ownerProfile?.avatarUrl
-          ? getHttpLinkFromIpfsString(token.ownerProfile?.avatarUrl ?? '')
-          : getProfileImageUrl(token.owner ?? ''),
-        address: reduceAddress(token.ownerProfile?.name ?? token.owner ?? ''),
-        url: token.ownerProfile?.username ?? token.owner,
+        img: !!token?.ownerProfile?.avatarUrl
+          ? getHttpLinkFromIpfsString(token?.ownerProfile?.avatarUrl ?? '')
+          : getProfileImageUrl(token?.owner ?? ''),
+        address: reduceAddress(token?.ownerProfile?.name ?? token?.owner ?? ''),
+        url: token?.ownerProfile?.username ?? token?.owner,
       },
       button: {
-        link: `/collection/${this.currentBlockChainStore.chain?.name}/${token.collectionAddress}/${token.tokenId}`,
+        link: `/collection/${this.currentBlockChainStore.chain?.name}/${token?.collectionAddress}/${token?.tokenId}`,
         text: 'Go to page',
       },
       tokenFullId: {
         collectionAddress: token?.collectionAddress ?? '',
         tokenId: token?.tokenId ?? '',
       },
-      hiddenFile: token.hiddenFileMeta,
-      hiddenFileMeta: token.hiddenFileMeta,
+      hiddenFile: token?.hiddenFileMeta,
+      hiddenFileMeta: token?.hiddenFileMeta,
+      priceUsd: order?.statuses?.[0]?.status === OrderStatus.Created ? order?.priceUsd : undefined,
+      price: order?.statuses?.[0]?.status === OrderStatus.Created ? order?.price : undefined,
       chainName: this.currentBlockChainStore.chain?.name,
       chainImg: this.currentBlockChainStore.configChain?.imgGray,
-      onFlameSuccess: () => {
-        console.log('SUCCCCCCCESESESE')
-        const tokenFind = this.data.tokens?.find(item => item.tokenId === token.tokenId && item.collectionAddress === token.collectionAddress)
-        if (tokenFind) tokenFind.likeCount = tokenFind.likeCount !== undefined ? tokenFind.likeCount++ : 0
-      },
     }))
   }
 }

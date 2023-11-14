@@ -10,4 +10,5 @@ export interface IProfileSettings {
   discord?: string
   avatarUrl?: string
   bannerUrl?: string
+  instagram?: string
 }

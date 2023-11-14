@@ -15,9 +15,10 @@ interface ILinksSection<T extends FieldValues> {
   twitter: ControlledInputProps<T>
   telegram: ControlledInputProps<T>
   discord: ControlledInputProps<T>
+  instagram: ControlledInputProps<T>
 }
 
-const LinksSection = <T extends FieldValues>({ websiteUrl, telegram, discord, twitter }: ILinksSection<T>) => {
+const LinksSection = <T extends FieldValues>({ websiteUrl, telegram, discord, twitter, instagram }: ILinksSection<T>) => {
   return (
     <StyledSectionContent>
       <StyledTitleSection>Links</StyledTitleSection>
@@ -65,6 +66,16 @@ const LinksSection = <T extends FieldValues>({ websiteUrl, telegram, discord, tw
           controlledInputProps={discord}
           errorMessage={discord.control._formState.errors.discord?.message as string}
           isError={!!discord.control._formState.errors.discord?.message}
+        />
+      </FormControlSettings>
+      <FormControlSettings>
+        <StyledTitleInput>Instagram</StyledTitleInput>
+        <Input<T>
+          settings
+          placeholder='Instagram username'
+          controlledInputProps={discord}
+          errorMessage={instagram.control._formState.errors.instagram?.message as string}
+          isError={!!instagram.control._formState.errors.instagram?.message}
         />
       </FormControlSettings>
     </StyledSectionContent>

@@ -9,7 +9,6 @@ export const PopoverContent = styled(NextUIPopover.Content, {
   paddingLR: '30px',
   display: 'flex',
   flexWrap: 'wrap',
-  height: '500px',
   '@md': {
     padding: '$3',
   },
