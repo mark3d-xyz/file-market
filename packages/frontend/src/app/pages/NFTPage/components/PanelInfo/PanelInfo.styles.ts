@@ -7,7 +7,7 @@ export const StyledPanelInfo = styled('div', {
   display: 'flex',
   justifyContent: 'center',
   width: '100%',
-  top: '-$6',
+  top: 'calc( -$6 + 4px )',
   zIndex: '2',
   position: 'relative',
 })
@@ -17,4 +17,10 @@ export const StyledPanelInfoContainer = styled('div', {
   width: '100%',
   gap: '70px',
   justifyContent: 'center',
+  '@sm': {
+    gap: '4px',
+    justifyContent: 'space-between',
+    padding: '0 16px',
+    maxWidth: '450px',
+  },
 })

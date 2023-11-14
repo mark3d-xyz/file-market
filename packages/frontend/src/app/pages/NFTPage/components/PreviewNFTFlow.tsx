@@ -63,6 +63,7 @@ const ImageStyle = styled('img', {
   height: 'max-content',
   maxHeight: '500px',
   borderRadius: '20px',
+  marginTop: '10px',
   '@lg': {
     maxWidth: '812px',
   },
@@ -72,7 +73,8 @@ const ImageStyle = styled('img', {
   '@sm': {
     maxWidth: 358,
     maxHeight: 358,
-    marginBottom: '40px',
+    marginBottom: '73px',
+    marginTop: 0,
   },
 })
 
