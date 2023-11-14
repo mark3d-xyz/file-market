@@ -206,13 +206,13 @@ func (s *service) GetTokensByAddress(
 		}
 		transfer, err := s.repository.GetActiveTransfer(ctx, tx, t.CollectionAddress, t.TokenId)
 		if err != nil {
-			if errors.Is(err, pgx.ErrNoRows) {
-				continue
+			if !errors.Is(err, pgx.ErrNoRows) {
+				log.Println("get token active transfer failed: ", err)
+				return nil, internalError
 			}
-			log.Println("get token active transfer failed: ", err)
-			return nil, internalError
+		} else {
+			tokenModel.PendingTransferID, tokenModel.PendingOrderID = transfer.Id, transfer.OrderId
 		}
-		tokenModel.PendingTransferID, tokenModel.PendingOrderID = transfer.Id, transfer.OrderId
 		fillTokenUserProfiles(tokenModel, profilesMap)
 
 		tokensRes = append(tokensRes, &models.TokenWithOrder{
