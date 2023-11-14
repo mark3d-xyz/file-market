@@ -1487,7 +1487,7 @@ definitions:
         type: array
         description: Токены пользователя
         items:
-          $ref: "#/definitions/Token"
+          $ref: "#/definitions/TokenWithOrder"
       tokensTotal:
         type: number
         x-omitempty: false

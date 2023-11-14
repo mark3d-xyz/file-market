@@ -16,3 +16,32 @@ func SetToSlice[T comparable](set map[T]struct{}) []T {
 	}
 	return s
 }
+
+func Map[T1, T2 any](x []T1, converter func(T1) T2) []T2 {
+	res := make([]T2, len(x))
+	for i := range x {
+		res[i] = converter(x[i])
+	}
+	return res
+}
+
+func Filter[T any](arr []T, predicate func(T) bool) []T {
+	var res []T
+	for _, el := range arr {
+		if !predicate(el) {
+			continue
+		}
+
+		res = append(res, el)
+	}
+	return res
+}
+
+func Has[T any](arr []T, predicate func(T) bool) bool {
+	for _, el := range arr {
+		if predicate(el) {
+			return true
+		}
+	}
+	return false
+}
