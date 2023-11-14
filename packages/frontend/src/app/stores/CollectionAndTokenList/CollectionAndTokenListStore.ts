@@ -1,7 +1,7 @@
 import { makeAutoObservable } from 'mobx'
 import { getAddress } from 'viem'
 
-import { type TokensResponse } from '../../../swagger/Api'
+import { OrderStatus, type TokensResponse } from '../../../swagger/Api'
 import { type NFTCardProps } from '../../components/MarketCard/NFTCard/NFTCard'
 import { gradientPlaceholderImg } from '../../UIkit'
 import { type ComboBoxOption } from '../../UIkit/Form/Combobox'
@@ -72,8 +72,8 @@ export class CollectionAndTokenListStore implements IActivateDeactivate<[string]
     storeRequest(
       this,
       this.currentBlockChainStore.api.tokens.tokensDetail(this.address, {
-        lastTokenId: token?.tokenId,
-        lastTokenCollectionAddress: token?.collectionAddress,
+        lastTokenId: token?.token?.tokenId,
+        lastTokenCollectionAddress: token?.token?.collectionAddress,
         tokenLimit: 10,
       }),
       (data) => { this.addData(data) },
@@ -102,7 +102,7 @@ export class CollectionAndTokenListStore implements IActivateDeactivate<[string]
   increaseLikeCount(index: number) {
     const tokenFind = this.data.tokens?.[index]
     console.log(tokenFind)
-    if (tokenFind) tokenFind.likeCount = tokenFind.likeCount !== undefined ? tokenFind.likeCount + 1 : 1
+    if (tokenFind?.token) tokenFind.token.likeCount = tokenFind.token.likeCount !== undefined ? tokenFind.token.likeCount + 1 : 1
   }
 
   get hasMoreData() {
@@ -111,37 +111,35 @@ export class CollectionAndTokenListStore implements IActivateDeactivate<[string]
     return tokens.length < tokensTotal
   }
 
-  get nftCards(): NFTCardProps[] {
+  get nftCards(): Array<Omit<NFTCardProps, 'onFlameSuccess'>> {
     if (!this.data.tokens) return []
 
-    return this.data.tokens.map((token) => ({
-      collectionName: token.collectionName ?? '',
-      imageURL: token.image ? getHttpLinkFromIpfsString(token.image) : gradientPlaceholderImg,
-      title: token.name ?? '—',
-      categories: token.categories?.[0],
-      likesCount: token.likeCount,
+    return this.data.tokens.map(({ token, order }) => ({
+      collectionName: token?.collectionName ?? '',
+      imageURL: token?.image ? getHttpLinkFromIpfsString(token?.image) : gradientPlaceholderImg,
+      title: token?.name ?? '—',
+      categories: token?.categories?.[0],
+      likesCount: token?.likeCount,
       tokenFullId: {
         collectionAddress: token?.collectionAddress ?? '',
         tokenId: token?.tokenId ?? '',
       },
       user: {
-        img: !!token.ownerProfile?.avatarUrl
-          ? getHttpLinkFromIpfsString(token.ownerProfile?.avatarUrl ?? '')
-          : getProfileImageUrl(token.owner ?? ''),
-        address: reduceAddress(token.ownerProfile?.name ?? token.owner ?? ''),
-        url: token.ownerProfile?.username ?? token.owner,
+        img: !!token?.ownerProfile?.avatarUrl
+          ? getHttpLinkFromIpfsString(token?.ownerProfile?.avatarUrl ?? '')
+          : getProfileImageUrl(token?.owner ?? ''),
+        address: reduceAddress(token?.ownerProfile?.name ?? token?.owner ?? ''),
+        url: token?.ownerProfile?.username ?? token?.owner,
       },
-      hiddenFileMeta: token.hiddenFileMeta,
+      hiddenFileMeta: token?.hiddenFileMeta,
       button: {
         text: 'Go to page',
-        link: `/collection/${this.currentBlockChainStore.chain?.name}/${token.collectionAddress}/${token.tokenId}`,
+        link: `/collection/${this.currentBlockChainStore.chain?.name}/${token?.collectionAddress}/${token?.tokenId}`,
       },
       chainName: this.currentBlockChainStore.chain?.name,
       chainImg: this.currentBlockChainStore.configChain?.imgGray,
-      onFlameSuccess: () => {
-        const tokenFind = this.data.tokens?.find(item => item.tokenId === token.tokenId && item.collectionAddress === token.collectionAddress)
-        if (tokenFind) tokenFind.likeCount = tokenFind.likeCount !== undefined ? tokenFind.likeCount++ : 0
-      },
+      priceUsd: order?.statuses?.[0]?.status === OrderStatus.Created ? order?.priceUsd : undefined,
+      price: order?.statuses?.[0]?.status === OrderStatus.Created ? order?.price : undefined,
     }))
   }
 

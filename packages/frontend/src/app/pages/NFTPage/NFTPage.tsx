@@ -36,7 +36,7 @@ const NFTPreviewContainer = styled('div', {
   overflow: 'hidden',
   '@sm': {
     marginTop: '83px',
-    height: 365,
+    height: 455,
   },
 })
 
@@ -57,7 +57,7 @@ const NFTPreviewContent = styled('div', {
 
 const MainInfo = styled(PageLayout, {
   display: 'flex', // чтобы можно было дочерним заполнить все пространство
-  marginTop: '10px',
+  marginTop: '74px',
   marginBottom: '-80px',
   paddingTB: 48,
   fontSize: '16px',
@@ -66,13 +66,12 @@ const MainInfo = styled(PageLayout, {
   minHeight: '100%',
   height: 'max-content',
   borderRadius: '12px 12px 0 0',
-  top: 'calc(-$6 - 25px)',
+  top: 'calc(-$6 - 90px)',
   boxShadow: '$footer',
   zIndex: '7',
   position: 'relative',
   '@md': {
     height: 'unset',
-    borderRadius: '24px 24px 0px 0px',
   },
 })
 

@@ -32,7 +32,7 @@ import {
 import { styled } from '../../../styles'
 import { StyledPanelInfoItem } from '../../pages/NFTPage/components/PanelInfo/Item/PanelInfoItem.styles'
 import { Popover, PopoverContent, PopoverTrigger, Txt } from '../../UIkit'
-import ShareImg from './img/Share.png'
+import ShareImg from './img/Share.svg'
 
 const StyledPopoverContent = styled('div', {
   display: 'flex',

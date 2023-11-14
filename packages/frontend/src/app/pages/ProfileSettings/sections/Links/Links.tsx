@@ -46,6 +46,19 @@ const LinksSection = <T extends FieldValues>({ websiteUrl, telegram, discord, tw
         />
       </FormControlSettings>
       <FormControlSettings>
+        <StyledTitleInput>Instagram handle</StyledTitleInput>
+        <TextStartInput<T>
+          inputProps={{
+            placeholder: 'Instagram username',
+            settings: true,
+            errorMessage: instagram.control._formState.errors.instagram?.message as string,
+            isError: !!instagram.control._formState.errors.instagram?.message,
+          }}
+          controlledInputProps={instagram}
+          textStart={'@'}
+        />
+      </FormControlSettings>
+      <FormControlSettings>
         <StyledTitleInput>Telegram handle</StyledTitleInput>
         <TextStartInput<T>
           inputProps={{
@@ -66,16 +79,6 @@ const LinksSection = <T extends FieldValues>({ websiteUrl, telegram, discord, tw
           controlledInputProps={discord}
           errorMessage={discord.control._formState.errors.discord?.message as string}
           isError={!!discord.control._formState.errors.discord?.message}
-        />
-      </FormControlSettings>
-      <FormControlSettings>
-        <StyledTitleInput>Instagram</StyledTitleInput>
-        <Input<T>
-          settings
-          placeholder='Instagram username'
-          controlledInputProps={discord}
-          errorMessage={instagram.control._formState.errors.instagram?.message as string}
-          isError={!!instagram.control._formState.errors.instagram?.message}
         />
       </FormControlSettings>
     </StyledSectionContent>

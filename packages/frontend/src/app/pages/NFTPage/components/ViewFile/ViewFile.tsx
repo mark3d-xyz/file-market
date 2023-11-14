@@ -14,9 +14,9 @@ const ViewFileStyle = styled('div', {
   justifyContent: 'flex-start',
   '&:hover': {
     opacity: '1',
+    filter: 'brightness(1.2)',
   },
   '& .container': {
-    padding: '0 14.5px',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',

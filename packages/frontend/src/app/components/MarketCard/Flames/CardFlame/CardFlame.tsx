@@ -119,6 +119,10 @@ export const StyledFlameContainer = styled(Button, {
     opacity: 'initial',
   },
 
+  '&:hover': {
+    filter: 'brightness(1.2)',
+  },
+
   variants: {
     isModal: {
       true: {
@@ -212,7 +216,7 @@ export const CardFlame = observer(({
           isTooltipVisible
             ? (
               <Txt>
-                Send flame onchain
+                Send a flame onchain
               </Txt>
             )
             : undefined}
@@ -250,7 +254,14 @@ export const CardFlame = observer(({
             <StyledFlameFinal className='flameFinal' />
             <StyledFlameIconMain className='flame' />
           </FlameWrapper>
-          <Txt primary1 style={{ fontSize: '14px', lineHeight: '32px', color }}>
+          <Txt
+            primary1
+            style={{
+              fontSize: '14px',
+              lineHeight: '32px',
+              color,
+            }}
+          >
             { (likesCount !== undefined) && (
               <>
                 {(likesCount ?? 0) > 0 ? `${cutNumber(likesCount, 0)} ${flameText}` : flameText }

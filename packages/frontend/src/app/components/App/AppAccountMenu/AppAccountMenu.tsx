@@ -1,4 +1,5 @@
 import { Warning } from '@mui/icons-material'
+import { observer } from 'mobx-react-lite'
 import { type FC, useCallback, useEffect, useMemo, useState } from 'react'
 import { useAccount, useNetwork } from 'wagmi'
 
@@ -26,7 +27,7 @@ const IconWrapper = styled('div', {
   height: '100%',
 })
 
-export const AppAccountMenu: FC = () => {
+export const AppAccountMenu: FC = observer(() => {
   const [isOpen, setIsOpen] = useState(false)
   const { address } = useAccount()
   const close = useCallback(() => { setIsOpen(false) }, [setIsOpen])
@@ -49,6 +50,10 @@ export const AppAccountMenu: FC = () => {
     return (userStore.user?.username ?? username) ?? address
   }, [address, userStore.user, username])
 
+  const avatarView = useMemo(() => {
+    return userStore.user?.avatarUrl ?? avatar
+  }, [userStore.user, avatar])
+
   return (
     <Popover isOpen={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger>
@@ -66,7 +71,7 @@ export const AppAccountMenu: FC = () => {
                   color: 'var(--colors-red)',
                 }}
               />
-            ) : (avatar ? <img style={{ width: '100%', height: '100%' }} src={getHttpLinkFromIpfsString(avatar)} /> : (
+            ) : (avatarView ? <img style={{ width: '100%', height: '100%', objectFit: 'cover' }} src={getHttpLinkFromIpfsString(avatarView)} /> : (
               <AddressIcon
                 address={address ?? ''}
                 size={36}
@@ -88,4 +93,4 @@ export const AppAccountMenu: FC = () => {
       </PopoverContent>
     </Popover>
   )
-}
+})
