@@ -158,7 +158,11 @@ func (s *service) GetTokensByAddress(
 		return nil, internalError
 	}
 
-	addresses := make(map[string]struct{})
+	var (
+		addresses           = make(map[string]struct{})
+		tokenIds            = make([]string, 0, len(tokens))
+		collectionAddresses = make([]string, 0, len(tokens))
+	)
 	for _, c := range collections {
 		addresses[strings.ToLower(c.Owner.String())] = struct{}{}
 		addresses[strings.ToLower(c.Creator.String())] = struct{}{}
@@ -166,14 +170,26 @@ func (s *service) GetTokensByAddress(
 	for _, t := range tokens {
 		addresses[strings.ToLower(t.Owner.String())] = struct{}{}
 		addresses[strings.ToLower(t.Creator.String())] = struct{}{}
+		tokenIds = append(tokenIds, t.TokenId.String())
+		collectionAddresses = append(collectionAddresses, strings.ToLower(t.CollectionAddress.String()))
 	}
 	profilesMap, e := s.getProfilesMap(ctx, utils.SetToSlice(addresses))
 	if e != nil {
 		return nil, e
 	}
+	orders, err := s.repository.GetActiveOrdersByTokenIdsAndCollectionAddresses(ctx, tx, collectionAddresses, tokenIds)
+	if err != nil {
+		log.Println("get token active orders failed: ", err)
+		return nil, internalError
+	}
 
-	tokensRes := domain.MapSlice(tokens, domain.TokenToModel)
-	for i, t := range tokens {
+	tokensRes := make([]*models.TokenWithOrder, 0, len(tokens))
+	for _, t := range tokens {
+		var order *domain.Order
+		tokenModel := domain.TokenToModel(t)
+		if o, ok := orders[strings.ToLower(t.CollectionAddress.String())]; ok {
+			order = o[t.TokenId.String()]
+		}
 		transfer, err := s.repository.GetActiveTransfer(ctx, tx, t.CollectionAddress, t.TokenId)
 		if err != nil {
 			if errors.Is(err, pgx.ErrNoRows) {
@@ -182,8 +198,13 @@ func (s *service) GetTokensByAddress(
 			log.Println("get token active transfer failed: ", err)
 			return nil, internalError
 		}
-		fillTokenUserProfiles(tokensRes[i], profilesMap)
-		tokensRes[i].PendingTransferID, tokensRes[i].PendingOrderID = transfer.Id, transfer.OrderId
+		tokenModel.PendingTransferID, tokenModel.PendingOrderID = transfer.Id, transfer.OrderId
+		fillTokenUserProfiles(tokenModel, profilesMap)
+
+		tokensRes = append(tokensRes, &models.TokenWithOrder{
+			Token: tokenModel,
+			Order: domain.OrderToModel(order),
+		})
 	}
 
 	collectionsRes := make([]*models.Collection, len(collections))
