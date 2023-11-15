@@ -1,4 +1,5 @@
 import { Tooltip } from '@nextui-org/react'
+import assert from 'assert'
 import { gsap } from 'gsap'
 import { MorphSVGPlugin } from 'gsap/MorphSVGPlugin'
 import { observer } from 'mobx-react-lite'
@@ -25,7 +26,7 @@ gsap.registerPlugin(MorphSVGPlugin)
 interface CardFlameProps {
   isModal?: boolean
   modalLoadFinished?: boolean
-  tokenFullId: TokenFullId
+  tokenFullId?: TokenFullId
   onSuccess?: () => void
   mouseState?: 'in' | 'out'
   isHasFlameText?: boolean
@@ -230,6 +231,7 @@ export const CardFlame = observer(({
 
                 return
               }
+              assert(tokenFullId !== undefined)
               await like(tokenFullId)
             }
           }

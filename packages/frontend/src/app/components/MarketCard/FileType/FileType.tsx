@@ -22,6 +22,7 @@ export const FileType: React.FC<FileTypeProps> = ({ hiddenFileMeta, className, c
   }, [hiddenFileMeta])
 
   const img = useMemo(() => {
+    console.log(categories)
     if (categories) return CategoriesImg[categories]
   }, [categories])
 

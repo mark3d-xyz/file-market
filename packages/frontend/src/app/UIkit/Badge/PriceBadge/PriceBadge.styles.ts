@@ -18,6 +18,9 @@ export const StyledWrapper = styled('div', {
       secondary: {
         background: 'linear-gradient(0deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), $gray800',
       },
+      notListed: {
+        background: '#F4F5F5',
+      },
     },
   },
 })
