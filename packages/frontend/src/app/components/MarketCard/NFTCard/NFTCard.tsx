@@ -2,6 +2,7 @@ import React from 'react'
 
 import { type HiddenFileMetaData } from '../../../../swagger/Api'
 import { useCurrency } from '../../../hooks/useCurrency'
+import { type TokenFullId } from '../../../processing/types'
 import { NftCardBase, NftCardUserInfo, PriceBadge, Txt } from '../../../UIkit'
 import { StyledWrapper } from '../../../UIkit/Badge/PriceBadge/PriceBadge.styles'
 import { FileType } from '../FileType/FileType'
@@ -10,6 +11,10 @@ export interface NFTCardProps {
   imageURL: string
   title: string
   collectionName: string
+  categories?: string
+  likesCount?: number
+  tokenFullId: TokenFullId
+  onFlameSuccess: () => void
   user: {
     img: string
     address: string
@@ -23,13 +28,16 @@ export interface NFTCardProps {
   hiddenFileMeta?: HiddenFileMetaData
   chainName?: string
   chainImg?: string
-  categories?: string
 }
 
 export const NFTCard: React.FC<NFTCardProps> = ({
   collectionName,
   button,
   imageURL,
+  likesCount,
+  categories,
+  tokenFullId,
+  onFlameSuccess,
   hiddenFileMeta,
   title,
   user,
@@ -37,7 +45,6 @@ export const NFTCard: React.FC<NFTCardProps> = ({
   priceUsd,
   chainImg,
   chainName,
-  categories,
 }) => {
   const { formatCurrency, formatUsd } = useCurrency()
 
@@ -46,6 +53,9 @@ export const NFTCard: React.FC<NFTCardProps> = ({
       to={button.link}
       title={title}
       collectionName={collectionName}
+      onFlameSuccess={onFlameSuccess}
+      likesCount={likesCount}
+      tokenFullId={tokenFullId}
       fileType={<FileType hiddenFileMeta={hiddenFileMeta} categories={categories} />}
       imgSrc={imageURL}
       button={{
