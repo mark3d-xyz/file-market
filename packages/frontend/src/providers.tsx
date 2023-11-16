@@ -2,6 +2,7 @@ import { NextUIProvider } from '@nextui-org/react'
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { type FC, type PropsWithChildren } from 'react'
+import { HelmetProvider } from 'react-helmet-async'
 import { WagmiConfig } from 'wagmi'
 
 import { DialogManager } from './app/components/DialogManager'
@@ -17,21 +18,23 @@ export const Providers: FC<PropsWithChildren> = ({ children }) => {
   useStores()
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <WagmiConfig config={wagmiConfig}>
-        <RainbowKitProvider chains={chains}>
-          <StitchesProvider>
-            <NextUIProvider disableBaseline>
-              <StoreProvider>
-                {children}
-                <DialogManager />
-              </StoreProvider>
-            </NextUIProvider>
-          </StitchesProvider>
-          <FileWalletConnectWatcher />
-          <BlockNumberWatcher />
-        </RainbowKitProvider>
-      </WagmiConfig>
-    </QueryClientProvider>
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
+        <WagmiConfig config={wagmiConfig}>
+          <RainbowKitProvider chains={chains}>
+            <StitchesProvider>
+              <NextUIProvider disableBaseline>
+                <StoreProvider>
+                  {children}
+                  <DialogManager />
+                </StoreProvider>
+              </NextUIProvider>
+            </StitchesProvider>
+            <FileWalletConnectWatcher />
+            <BlockNumberWatcher />
+          </RainbowKitProvider>
+        </WagmiConfig>
+      </QueryClientProvider>
+    </HelmetProvider>
   )
 }
