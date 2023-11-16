@@ -156,12 +156,11 @@ const NFTPage: React.FC = observer(() => {
   const MainInfoSectionWrapper = md ? Fragment : GridBlockSection
 
   return (
-    <>
-      <HelmetWrapper
-        description={tokenStore.data?.description ?? ''}
-        img={tokenStore.data?.image ? getHttpLinkFromIpfsString(tokenStore.data?.image ?? '') : 'https://ibb.co/HF3Mqms'}
-        title={tokenStore.data?.name ?? ''}
-      />
+    <HelmetWrapper
+      description={tokenStore.data?.description ?? ''}
+      img={tokenStore.data?.image ? getHttpLinkFromIpfsString(tokenStore.data?.image ?? '') : 'https://ibb.co/HF3Mqms'}
+      title={tokenStore.data?.name ?? ''}
+    >
       <NFTPreviewContainer >
         <NFTPreviewBlur
           css={{
@@ -222,7 +221,7 @@ const NFTPage: React.FC = observer(() => {
           </ControlFileSection>
         </GridLayout>
       </MainInfo>
-    </>
+    </HelmetWrapper>
   )
 })
 

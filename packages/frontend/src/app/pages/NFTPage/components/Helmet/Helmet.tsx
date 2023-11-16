@@ -1,7 +1,7 @@
-import React, { type FC } from 'react'
+import React, { type FC, type PropsWithChildren } from 'react'
 import { Helmet } from 'react-helmet-async'
 
-interface IHelmetProps {
+interface IHelmetProps extends PropsWithChildren {
   img: string
   title: string
   description: string
