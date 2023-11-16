@@ -124,8 +124,11 @@ export const StyledFlameContainer = styled(Button, {
   },
 
   variants: {
-    isOffBrightness: {
+    isModal: {
       true: {
+        height: 'initial',
+        width: '100%',
+        justifyContent: 'center',
         '&:hover': {
           filter: 'brightness(1)',
         },
@@ -223,7 +226,7 @@ export const CardFlame = observer(({
         color={'primary'}
       >
         <StyledFlameContainer
-          isOffBrightness={!isHasFlameText || isModal}
+          isModal={!isHasFlameText || isModal}
           onPress={
             async () => {
               if (chain && networkChain && chain?.id !== networkChain?.id) {
@@ -248,7 +251,6 @@ export const CardFlame = observer(({
             : () => {
               setIsTooltipVisible(false)
             }}
-
         >
           <FlameWrapper
             modal={isModal}
