@@ -14,7 +14,6 @@ import { PageLayout } from '../../UIkit'
 import { getHttpLinkFromIpfsString } from '../../utils/nfts/getHttpLinkFromIpfsString'
 import { type Params } from '../../utils/router'
 import { transferPermissions } from '../../utils/transfer/status'
-import { HelmetWrapper } from './components/Helmet/Helmet'
 import { PanelInfo } from './components/PanelInfo/PanelInfo'
 import { PreviewNFTFlow } from './components/PreviewNFTFlow'
 import { useViewFile } from './helper/hooks/useViewFile'
@@ -156,11 +155,7 @@ const NFTPage: React.FC = observer(() => {
   const MainInfoSectionWrapper = md ? Fragment : GridBlockSection
 
   return (
-    <HelmetWrapper
-      description={tokenStore.data?.description ?? ''}
-      img={tokenStore.data?.image ? getHttpLinkFromIpfsString(tokenStore.data?.image ?? '') : 'https://ibb.co/HF3Mqms'}
-      title={tokenStore.data?.name ?? ''}
-    >
+    <>
       <NFTPreviewContainer >
         <NFTPreviewBlur
           css={{
@@ -221,7 +216,7 @@ const NFTPage: React.FC = observer(() => {
           </ControlFileSection>
         </GridLayout>
       </MainInfo>
-    </HelmetWrapper>
+    </>
   )
 })
 
