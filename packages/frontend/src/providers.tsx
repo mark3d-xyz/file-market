@@ -10,7 +10,6 @@ import { BlockNumberWatcher } from './app/components/Web3/BlockNumberWatcher/Blo
 import { FileWalletConnectWatcher } from './app/components/Web3/FileWalletConnectWatcher'
 import { chains, wagmiConfig } from './app/config/web3Modal'
 import { StoreProvider, useStores } from './app/hooks'
-import { HelmetWrapper } from './app/pages/NFTPage/components/Helmet/Helmet'
 import { StitchesProvider } from './styles'
 
 export const Providers: FC<PropsWithChildren> = ({ children }) => {
@@ -20,7 +19,6 @@ export const Providers: FC<PropsWithChildren> = ({ children }) => {
 
   return (
     <HelmetProvider>
-      <HelmetWrapper img={'https://ibb.co/HF3Mqms'} description={'FileMarket - Tokenized File Sharing platform'} title={'FileMarket - Tokenized File Sharing platform'} />
       <QueryClientProvider client={queryClient}>
         <WagmiConfig config={wagmiConfig}>
           <RainbowKitProvider chains={chains}>
