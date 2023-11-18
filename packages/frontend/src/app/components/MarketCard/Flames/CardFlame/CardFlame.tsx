@@ -192,17 +192,6 @@ export const CardFlame = observer(({
     handleMouseLeave()
   }, [mouseState])
 
-  useEffect(() => {
-    if (!statuses.result) return
-
-    console.log(onSuccess)
-
-    console.log('SUCCESSDASDAS')
-
-    onSuccess?.()
-    handleMouseLeave()
-  }, [statuses.result])
-
   const flameText = useMemo(() => {
     return isHasFlameText ? 'Flames' : ''
   }, [isHasFlameText])
