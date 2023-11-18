@@ -126,8 +126,9 @@ export const PartnersData: PartnerItemProps[] = [
     link: 'https://salad.ventures/',
   },
   {
-    name: 'placeholder',
-    link: 'placeholder',
+    name: 'Resolutio',
+    icon: Resolutio,
+    link: 'https://resolutio.ai/',
   },
   {
     name: 'placeholder',
@@ -157,6 +158,12 @@ export const PartnersData: PartnerItemProps[] = [
     name: 'FoxWallet',
     icon: FoxWallet,
     link: 'https://foxwallet.com/',
+  },
+  {
+    name: 'Filutils',
+    icon: Filutils,
+    iconSizeX2: true,
+    link: 'https://filutils.com/en/',
   },
   {
     name: 'Snicker Doodle',
@@ -204,15 +211,6 @@ export const PartnersData: PartnerItemProps[] = [
     link: 'https://otcmarsbase.io/',
   },
   {
-    name: 'Resolutio',
-    icon: Resolutio,
-    link: 'https://resolutio.ai/',
-  },
-  {
-    name: 'placeholder',
-    link: 'placeholder',
-  },
-  {
     name: 'Glif',
     icon: Glif,
     link: 'https://glif.io/en',
@@ -236,12 +234,6 @@ export const PartnersData: PartnerItemProps[] = [
     name: 'FilFi',
     icon: Filfi,
     link: 'https://filfi.io/',
-  },
-  {
-    name: 'Filutils',
-    icon: Filutils,
-    iconSizeX2: true,
-    link: 'https://filutils.com/en/',
   },
   {
     name: 'Flame Launch',
