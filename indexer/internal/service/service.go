@@ -13,6 +13,7 @@ import (
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/currencyconversion"
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/ethsigner"
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/jwt"
+	log2 "github.com/mark3d-xyz/mark3d/indexer/pkg/log"
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/mail"
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/retry"
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/sequencer"
@@ -39,7 +40,6 @@ import (
 	"github.com/mark3d-xyz/mark3d/indexer/models"
 	ethclient2 "github.com/mark3d-xyz/mark3d/indexer/pkg/ethclient"
 	healthnotifier "github.com/mark3d-xyz/mark3d/indexer/pkg/health_notifier"
-	log2 "github.com/mark3d-xyz/mark3d/indexer/pkg/log"
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/now"
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/types"
 )
@@ -1480,13 +1480,10 @@ func (s *service) ListenBlockchain() error {
 	lastBlock, err := s.repository.GetLastBlock(ctx)
 	if err != nil {
 		if err == redis.Nil {
-			// FIXME
-			t := time.Now()
 			blockNum, err := s.ethClient.GetLatestBlockNumber(context.Background())
 			if err != nil {
 				return err
 			}
-			logger.Info("GetLatestBlockNumber took", log2.Fields{"time": time.Since(t)})
 			lastBlock = blockNum
 		} else {
 			return err
@@ -1502,8 +1499,6 @@ func (s *service) ListenBlockchain() error {
 	for {
 		select {
 		case <-time.After(delay):
-			// FIXME
-			t := time.Now()
 			current, err := s.checkBlock(lastBlock)
 			if err != nil {
 				err = fmt.Errorf("process block failed: %w", err)
@@ -1518,7 +1513,6 @@ func (s *service) ListenBlockchain() error {
 					}
 				}
 			}
-			logger.Info("checkBlock took", log2.Fields{"time": time.Since(t), "num": lastBlock})
 			if lastBlock.Cmp(current) != 0 {
 				s.SendBlockNumberSubscriptionUpdate(current)
 			}
@@ -1533,25 +1527,19 @@ func (s *service) checkBlock(latest *big.Int) (*big.Int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	// FIXME
-	t := time.Now()
 	blockNum, err := s.ethClient.GetLatestBlockNumber(ctx)
 	if err != nil {
 		log.Println("get latest block failed", err)
 		return latest, err
 	}
-	logger.Info("checkBlock GetLatestBlockNumber", log2.Fields{"time": time.Since(t), "num": latest})
 	if blockNum.Cmp(latest) != 0 {
 		log.Println("processing block difference", latest, blockNum)
 	}
 	for blockNum.Cmp(latest) != 0 {
-		// FIXME
-		t = time.Now()
 		latest, err = s.checkSingleBlock(latest)
 		if err != nil {
 			return latest, err
 		}
-		logger.Info("checkBlock checkSingleBlock", log2.Fields{"time": time.Since(t), "num": latest})
 	}
 	return latest, nil
 }
@@ -1560,10 +1548,7 @@ func (s *service) checkSingleBlock(latest *big.Int) (*big.Int, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	pending := big.NewInt(0).Add(latest, big.NewInt(1))
-	// FIXME
-	t := time.Now()
 	block, err := s.ethClient.BlockByNumber(ctx, pending)
-	logger.Info("checkBlock checkSingleBlock ethClient.BlockByNumber", log2.Fields{"time": time.Since(t), "num": latest})
 
 	if err != nil {
 		log.Println("get pending block failed", pending.String(), err)
@@ -1571,10 +1556,7 @@ func (s *service) checkSingleBlock(latest *big.Int) (*big.Int, error) {
 			return latest, err
 		}
 	} else {
-		// FIXME
-		t = time.Now()
 		err := s.processBlock(block)
-		logger.Info("checkBlock checkSingleBlock processBlock", log2.Fields{"time": time.Since(t), "num": latest})
 		if err != nil {
 			log.Println("process block failed", err)
 			return latest, err
