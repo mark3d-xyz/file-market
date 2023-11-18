@@ -48,7 +48,7 @@ const TransfersSection: React.FC = observer(() => {
           buttonsBlock={(
             <>
               <Button primary onClick={() => { navigate('/market') } }>
-                <Txt primary1>3D Market</Txt>
+                <Txt primary1>Explore</Txt>
               </Button>
               <Button onClick={() => { navigate('/create') } }>
                 <Txt primary1>Create</Txt>

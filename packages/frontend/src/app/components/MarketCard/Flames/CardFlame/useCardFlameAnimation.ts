@@ -1,5 +1,5 @@
 import { gsap } from 'gsap'
-import { type MutableRefObject, useEffect } from 'react'
+import { type MutableRefObject, useCallback, useEffect } from 'react'
 
 interface IUseCardFlameAnimationProps {
   tlBurningRef: MutableRefObject<gsap.core.Timeline | null>
@@ -75,17 +75,17 @@ export const useCardFlameAnimation = ({
     isModal && tlGlowingRef.current?.play()
   }, [isModal])
 
-  const handleMouseOver = () => {
+  const handleMouseOver = useCallback(() => {
     if (tlBurningRef.current) {
       tlBurningRef.current.play()
     }
-  }
+  }, [tlBurningRef])
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
     if (tlBurningRef.current) {
       tlBurningRef.current.reverse()
     }
-  }
+  }, [tlBurningRef])
 
   useEffect(() => {
     if (isModal && successState && tlGlowingRef.current) {
