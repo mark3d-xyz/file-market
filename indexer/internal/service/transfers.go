@@ -67,10 +67,10 @@ func (s *service) GetTransfers(
 	incomingRes := domain.MapSlice(incomingTransfers, domain.TransferToModel)
 	outgoingRes := domain.MapSlice(outgoingTransfers, domain.TransferToModel)
 	for _, t := range incomingRes {
-		fillTransferUserProfiles(t, profilesMap[t.To], profilesMap[t.From])
+		fillTransferUserProfiles(t, profilesMap)
 	}
 	for _, t := range outgoingRes {
-		fillTransferUserProfiles(t, profilesMap[t.To], profilesMap[t.From])
+		fillTransferUserProfiles(t, profilesMap)
 	}
 
 	return &models.TransfersResponse{
@@ -134,10 +134,10 @@ func (s *service) GetTransfersHistory(
 	incomingRes := domain.MapSlice(incomingTransfers, domain.TransferToModel)
 	outgoingRes := domain.MapSlice(outgoingTransfers, domain.TransferToModel)
 	for _, t := range incomingRes {
-		fillTransferUserProfiles(t, profilesMap[t.To], profilesMap[t.From])
+		fillTransferUserProfiles(t, profilesMap)
 	}
 	for _, t := range outgoingRes {
-		fillTransferUserProfiles(t, profilesMap[t.To], profilesMap[t.From])
+		fillTransferUserProfiles(t, profilesMap)
 	}
 
 	return &models.TransfersResponse{
@@ -166,13 +166,16 @@ func (s *service) GetTransfer(ctx context.Context, address common.Address,
 		return nil, internalError
 	}
 
-	profilesMap, e := s.getProfilesMap(ctx, []string{transfer.ToAddress.String(), transfer.FromAddress.String()})
+	profilesMap, e := s.getProfilesMap(ctx, []string{
+		strings.ToLower(transfer.ToAddress.String()),
+		strings.ToLower(transfer.FromAddress.String()),
+	})
 	if e != nil {
 		return nil, e
 	}
 
 	res := domain.TransferToModel(transfer)
-	fillTransferUserProfiles(res, profilesMap[res.To], profilesMap[res.From])
+	fillTransferUserProfiles(res, profilesMap)
 
 	return res, nil
 }
@@ -250,12 +253,12 @@ func (s *service) GetTransfersV2(
 			order.PriceUsd = currencyconversion.Convert(rate, order.Price)
 		}
 
-		addresses[token.Owner.String()] = struct{}{}
-		addresses[token.Creator.String()] = struct{}{}
-		addresses[collection.Owner.String()] = struct{}{}
-		addresses[collection.Creator.String()] = struct{}{}
-		addresses[t.FromAddress.String()] = struct{}{}
-		addresses[t.ToAddress.String()] = struct{}{}
+		addresses[strings.ToLower(token.Owner.String())] = struct{}{}
+		addresses[strings.ToLower(token.Creator.String())] = struct{}{}
+		addresses[strings.ToLower(collection.Owner.String())] = struct{}{}
+		addresses[strings.ToLower(collection.Creator.String())] = struct{}{}
+		addresses[strings.ToLower(t.FromAddress.String())] = struct{}{}
+		addresses[strings.ToLower(t.ToAddress.String())] = struct{}{}
 
 		incoming[i] = &models.TransferWithData{
 			Collection: domain.CollectionToModel(collection),
@@ -289,12 +292,12 @@ func (s *service) GetTransfersV2(
 			order.PriceUsd = currencyconversion.Convert(rate, order.Price)
 		}
 
-		addresses[token.Owner.String()] = struct{}{}
-		addresses[token.Creator.String()] = struct{}{}
-		addresses[collection.Owner.String()] = struct{}{}
-		addresses[collection.Creator.String()] = struct{}{}
-		addresses[t.FromAddress.String()] = struct{}{}
-		addresses[t.ToAddress.String()] = struct{}{}
+		addresses[strings.ToLower(token.Owner.String())] = struct{}{}
+		addresses[strings.ToLower(token.Creator.String())] = struct{}{}
+		addresses[strings.ToLower(collection.Owner.String())] = struct{}{}
+		addresses[strings.ToLower(collection.Creator.String())] = struct{}{}
+		addresses[strings.ToLower(t.FromAddress.String())] = struct{}{}
+		addresses[strings.ToLower(t.ToAddress.String())] = struct{}{}
 
 		outgoing[i] = &models.TransferWithData{
 			Collection: domain.CollectionToModel(collection),
@@ -309,9 +312,9 @@ func (s *service) GetTransfersV2(
 		return nil, e
 	}
 	for _, d := range incoming {
-		fillTransferUserProfiles(d.Transfer, profilesMap[d.Transfer.To], profilesMap[d.Transfer.From])
-		fillCollectionUserProfiles(d.Collection, profilesMap[d.Collection.Owner], profilesMap[d.Collection.Creator])
-		fillTokenUserProfiles(d.Token, profilesMap[d.Token.Owner], profilesMap[d.Token.Creator])
+		fillTransferUserProfiles(d.Transfer, profilesMap)
+		fillCollectionUserProfiles(d.Collection, profilesMap)
+		fillTokenUserProfiles(d.Token, profilesMap)
 	}
 
 	return &models.TransfersResponseV2{
@@ -388,12 +391,12 @@ func (s *service) GetTransfersHistoryV2(
 			order.PriceUsd = currencyconversion.Convert(rate, order.Price)
 		}
 
-		addresses[token.Owner.String()] = struct{}{}
-		addresses[token.Creator.String()] = struct{}{}
-		addresses[collection.Owner.String()] = struct{}{}
-		addresses[collection.Creator.String()] = struct{}{}
-		addresses[t.FromAddress.String()] = struct{}{}
-		addresses[t.ToAddress.String()] = struct{}{}
+		addresses[strings.ToLower(token.Owner.String())] = struct{}{}
+		addresses[strings.ToLower(token.Creator.String())] = struct{}{}
+		addresses[strings.ToLower(collection.Owner.String())] = struct{}{}
+		addresses[strings.ToLower(collection.Creator.String())] = struct{}{}
+		addresses[strings.ToLower(t.FromAddress.String())] = struct{}{}
+		addresses[strings.ToLower(t.ToAddress.String())] = struct{}{}
 
 		incoming[i] = &models.TransferWithData{
 			Collection: domain.CollectionToModel(collection),
@@ -421,12 +424,12 @@ func (s *service) GetTransfersHistoryV2(
 			order.PriceUsd = currencyconversion.Convert(rate, order.Price)
 		}
 
-		addresses[token.Owner.String()] = struct{}{}
-		addresses[token.Creator.String()] = struct{}{}
-		addresses[collection.Owner.String()] = struct{}{}
-		addresses[collection.Creator.String()] = struct{}{}
-		addresses[t.FromAddress.String()] = struct{}{}
-		addresses[t.ToAddress.String()] = struct{}{}
+		addresses[strings.ToLower(token.Owner.String())] = struct{}{}
+		addresses[strings.ToLower(token.Creator.String())] = struct{}{}
+		addresses[strings.ToLower(collection.Owner.String())] = struct{}{}
+		addresses[strings.ToLower(collection.Creator.String())] = struct{}{}
+		addresses[strings.ToLower(t.FromAddress.String())] = struct{}{}
+		addresses[strings.ToLower(t.ToAddress.String())] = struct{}{}
 
 		outgoing[i] = &models.TransferWithData{
 			Collection: domain.CollectionToModel(collection),
@@ -441,9 +444,14 @@ func (s *service) GetTransfersHistoryV2(
 		return nil, e
 	}
 	for _, d := range incoming {
-		fillTransferUserProfiles(d.Transfer, profilesMap[d.Transfer.To], profilesMap[d.Transfer.From])
-		fillCollectionUserProfiles(d.Collection, profilesMap[d.Collection.Owner], profilesMap[d.Collection.Creator])
-		fillTokenUserProfiles(d.Token, profilesMap[d.Token.Owner], profilesMap[d.Token.Creator])
+		fillTransferUserProfiles(d.Transfer, profilesMap)
+		fillCollectionUserProfiles(d.Collection, profilesMap)
+		fillTokenUserProfiles(d.Token, profilesMap)
+	}
+	for _, d := range outgoing {
+		fillTransferUserProfiles(d.Transfer, profilesMap)
+		fillCollectionUserProfiles(d.Collection, profilesMap)
+		fillTokenUserProfiles(d.Token, profilesMap)
 	}
 
 	return &models.TransfersResponseV2{
@@ -497,12 +505,12 @@ func (s *service) GetTransferV2(
 	}
 
 	addresses := make(map[string]struct{})
-	addresses[token.Owner.String()] = struct{}{}
-	addresses[token.Creator.String()] = struct{}{}
-	addresses[collection.Owner.String()] = struct{}{}
-	addresses[collection.Creator.String()] = struct{}{}
-	addresses[transfer.FromAddress.String()] = struct{}{}
-	addresses[transfer.ToAddress.String()] = struct{}{}
+	addresses[strings.ToLower(token.Owner.String())] = struct{}{}
+	addresses[strings.ToLower(token.Creator.String())] = struct{}{}
+	addresses[strings.ToLower(collection.Owner.String())] = struct{}{}
+	addresses[strings.ToLower(collection.Creator.String())] = struct{}{}
+	addresses[strings.ToLower(transfer.FromAddress.String())] = struct{}{}
+	addresses[strings.ToLower(transfer.ToAddress.String())] = struct{}{}
 
 	profilesMap, e := s.getProfilesMap(ctx, utils.SetToSlice(addresses))
 	if e != nil {
@@ -513,9 +521,9 @@ func (s *service) GetTransferV2(
 	tokenRes := domain.TokenToModel(token)
 	transferRes := domain.TransferToModel(transfer)
 
-	fillTransferUserProfiles(transferRes, profilesMap[transferRes.To], profilesMap[transferRes.From])
-	fillCollectionUserProfiles(collectionRes, profilesMap[collectionRes.Owner], profilesMap[collectionRes.Creator])
-	fillTokenUserProfiles(tokenRes, profilesMap[tokenRes.Owner], profilesMap[tokenRes.Creator])
+	fillTransferUserProfiles(transferRes, profilesMap)
+	fillCollectionUserProfiles(collectionRes, profilesMap)
+	fillTokenUserProfiles(tokenRes, profilesMap)
 
 	return &models.TransferWithData{
 		Collection: collectionRes,

@@ -9,10 +9,12 @@ import (
 	"github.com/mark3d-xyz/mark3d/indexer/internal/domain"
 	"github.com/mark3d-xyz/mark3d/indexer/models"
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/currencyconversion"
+	"github.com/mark3d-xyz/mark3d/indexer/pkg/utils"
 	"log"
 	"math/big"
 	"net/http"
 	"strings"
+	"time"
 )
 
 func (s *service) AddEFTSubscription(ctx context.Context, w http.ResponseWriter, r *http.Request, req *models.EFTSubscriptionRequest) {
@@ -77,25 +79,9 @@ func (s *service) EFTSubOnConnectionResponse(ctx context.Context, req any) any {
 	return msg
 }
 
-func (s *service) SendEFTSubscriptionUpdate(collectionAddress common.Address, tokenId *big.Int, msg *domain.EFTSubMessage) {
-	go func() {
-		if msg.Order != nil {
-			currency := "FIL"
-			if strings.Contains(s.cfg.Mode, "era") {
-				currency = "ETH"
-			}
-
-			rate, err := s.currencyConverter.GetExchangeRate(context.Background(), currency, "USD")
-			if err != nil {
-				log.Println("failed to get conversion rate: ", err)
-				rate = 0
-			}
-			msg.Order.PriceUsd = currencyconversion.Convert(rate, msg.Order.Price)
-		}
-
-		topic := fmt.Sprintf("%s:%s", strings.ToLower(collectionAddress.String()), tokenId.String())
-		s.wsPool.SendTopicSub(topic, domain.EFTSubMessageToModel(msg))
-	}()
+func (s *service) SendEFTSubscriptionUpdate(collectionAddress common.Address, tokenId *big.Int, msg *models.EFTSubscriptionMessage) {
+	topic := fmt.Sprintf("%s:%s", strings.ToLower(collectionAddress.String()), tokenId.String())
+	s.wsPool.SendTopicSub(topic, msg)
 }
 
 func (s *service) SendBlockNumberSubscriptionUpdate(number *big.Int) {
@@ -114,5 +100,35 @@ func (s *service) AddBlockNumberSubscription(w http.ResponseWriter, r *http.Requ
 	if err := s.wsPool.AddConnection(w, r, "last_block", nil); err != nil {
 		logger.Error("failed to add connection", err, nil)
 		return
+	}
+}
+
+func (s *service) fillUserProfilesForEftSubMessage(msg *models.EFTSubscriptionMessage) {
+	if msg == nil {
+		return
+	}
+	addresses := make(map[string]struct{})
+	if msg.Token != nil {
+		addresses[strings.ToLower(msg.Token.Owner)] = struct{}{}
+		addresses[strings.ToLower(msg.Token.Creator)] = struct{}{}
+	}
+	if msg.Transfer != nil {
+		addresses[strings.ToLower(msg.Transfer.To)] = struct{}{}
+		addresses[strings.ToLower(msg.Transfer.From)] = struct{}{}
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	profilesMap, e := s.getProfilesMap(ctx, utils.SetToSlice(addresses))
+	if e != nil {
+		logger.Error("failed to get profiles", fmt.Errorf(e.Message), nil)
+	}
+
+	if msg.Token != nil {
+		fillTokenUserProfiles(msg.Token, profilesMap)
+	}
+	if msg.Transfer != nil {
+		fillTransferUserProfiles(msg.Transfer, profilesMap)
 	}
 }

@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"github.com/mark3d-xyz/mark3d/indexer/pkg/currencyconversion"
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/utils"
 	"log"
 	"math/big"
@@ -33,13 +34,16 @@ func (s *service) GetToken(ctx context.Context, address common.Address,
 		return nil, internalError
 	}
 
-	profilesMap, e := s.getProfilesMap(ctx, []string{token.Owner.String(), token.Creator.String()})
+	profilesMap, e := s.getProfilesMap(ctx, []string{
+		strings.ToLower(token.Owner.String()),
+		strings.ToLower(token.Creator.String()),
+	})
 	if e != nil {
 		return nil, e
 	}
 
 	t := domain.TokenToModel(token)
-	fillTokenUserProfiles(t, profilesMap[t.Owner], profilesMap[t.Creator])
+	fillTokenUserProfiles(t, profilesMap)
 
 	return t, nil
 }
@@ -109,7 +113,7 @@ func (s *service) GetCollectionTokens(
 
 	modelsTokens := domain.MapSlice(tokens, domain.TokenToModel)
 	for _, t := range modelsTokens {
-		fillTokenUserProfiles(t, profilesMap[t.Owner], profilesMap[t.Creator])
+		fillTokenUserProfiles(t, profilesMap)
 	}
 
 	return &models.TokensByCollectionResponse{
@@ -155,7 +159,21 @@ func (s *service) GetTokensByAddress(
 		return nil, internalError
 	}
 
-	addresses := make(map[string]struct{})
+	currency := "FIL"
+	if strings.Contains(s.cfg.Mode, "era") {
+		currency = "ETH"
+	}
+	rate, err := s.currencyConverter.GetExchangeRate(ctx, currency, "USD")
+	if err != nil {
+		log.Println("failed to get conversion rate: ", err)
+		rate = 0
+	}
+
+	var (
+		addresses           = make(map[string]struct{})
+		tokenIds            = make([]string, 0, len(tokens))
+		collectionAddresses = make([]string, 0, len(tokens))
+	)
 	for _, c := range collections {
 		addresses[strings.ToLower(c.Owner.String())] = struct{}{}
 		addresses[strings.ToLower(c.Creator.String())] = struct{}{}
@@ -163,24 +181,44 @@ func (s *service) GetTokensByAddress(
 	for _, t := range tokens {
 		addresses[strings.ToLower(t.Owner.String())] = struct{}{}
 		addresses[strings.ToLower(t.Creator.String())] = struct{}{}
+		tokenIds = append(tokenIds, t.TokenId.String())
+		collectionAddresses = append(collectionAddresses, strings.ToLower(t.CollectionAddress.String()))
 	}
 	profilesMap, e := s.getProfilesMap(ctx, utils.SetToSlice(addresses))
 	if e != nil {
 		return nil, e
 	}
+	orders, err := s.repository.GetActiveOrdersByTokenIdsAndCollectionAddresses(ctx, tx, collectionAddresses, tokenIds)
+	if err != nil {
+		log.Println("get token active orders failed: ", err)
+		return nil, internalError
+	}
 
-	tokensRes := domain.MapSlice(tokens, domain.TokenToModel)
-	for i, t := range tokens {
+	tokensRes := make([]*models.TokenWithOrder, 0, len(tokens))
+	for _, t := range tokens {
+		var order *domain.Order
+		tokenModel := domain.TokenToModel(t)
+		if o, ok := orders[strings.ToLower(t.CollectionAddress.String())]; ok {
+			order = o[t.TokenId.String()]
+			if ok {
+				order.PriceUsd = currencyconversion.Convert(rate, order.Price)
+			}
+		}
 		transfer, err := s.repository.GetActiveTransfer(ctx, tx, t.CollectionAddress, t.TokenId)
 		if err != nil {
-			if errors.Is(err, pgx.ErrNoRows) {
-				continue
+			if !errors.Is(err, pgx.ErrNoRows) {
+				log.Println("get token active transfer failed: ", err)
+				return nil, internalError
 			}
-			log.Println("get token active transfer failed: ", err)
-			return nil, internalError
+		} else {
+			tokenModel.PendingTransferID, tokenModel.PendingOrderID = transfer.Id, transfer.OrderId
 		}
-		fillTokenUserProfiles(tokensRes[i], profilesMap[tokensRes[i].Owner], profilesMap[tokensRes[i].Creator])
-		tokensRes[i].PendingTransferID, tokensRes[i].PendingOrderID = transfer.Id, transfer.OrderId
+		fillTokenUserProfiles(tokenModel, profilesMap)
+
+		tokensRes = append(tokensRes, &models.TokenWithOrder{
+			Token: tokenModel,
+			Order: domain.OrderToModel(order),
+		})
 	}
 
 	collectionsRes := make([]*models.Collection, len(collections))
@@ -209,7 +247,7 @@ func (s *service) GetTokensByAddress(
 				res.Stats = append(res.Stats, &models.CollectionStat{Name: s.Name, Value: s.Value})
 			}
 		}
-		fillCollectionUserProfiles(res, profilesMap[res.Owner], profilesMap[res.Creator])
+		fillCollectionUserProfiles(res, profilesMap)
 		collectionsRes[i] = res
 	}
 
@@ -247,7 +285,10 @@ func (s *service) getTokenCurrentState(ctx context.Context, address common.Addre
 	defer s.repository.RollbackTransaction(ctx, tx)
 
 	token, err := s.repository.GetToken(ctx, tx, address, tokenId)
-	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, nil, nil, nil
+		}
 		logger.Error("failed to get token", err, nil)
 		return nil, nil, nil, err
 	}

@@ -72,8 +72,8 @@ export class UserTransferStore implements IActivateDeactivate<[string]>, IStoreR
   }
 
   requestMore() {
-    const lastOutgoingTransferId = lastItem(this.data.incoming ?? [])?.transfer?.id
-    const lastIncomingTransferId = lastItem(this.data.outgoing ?? [])?.transfer?.id
+    const lastOutgoingTransferId = lastItem(this.data.outgoing ?? [])?.transfer?.id
+    const lastIncomingTransferId = lastItem(this.data.incoming ?? [])?.transfer?.id
 
     storeRequest<TransfersResponseV2>(
       this,
@@ -106,23 +106,39 @@ export class UserTransferStore implements IActivateDeactivate<[string]>, IStoreR
     this.request()
   }
 
+  increaseLikeCount(index: number) {
+    const tokenFind = this.data.incoming?.concat(this.data.outgoing ?? [])?.[index]
+    console.log(tokenFind)
+    if (tokenFind?.token) tokenFind.token.likeCount = tokenFind.token.likeCount !== undefined ? tokenFind.token.likeCount + 1 : 1
+  }
+
   convertTransferToTransferCards(target: 'incoming' | 'outgoing', chain: Chain | undefined) {
     const eventOptions =
       target === 'incoming' ? ['Receiving', 'Buying'] : ['Sending', 'Selling']
 
-    return (transfer: TransferWithData): TransferCardProps => ({
+    return (transfer: TransferWithData): Omit<TransferCardProps, 'onFlameSuccess'> => ({
       status: transfer.order?.id === 0 ? eventOptions[0] : eventOptions[1],
       button: {
         link: `/collection/${chain?.name}/${transfer.collection?.address}/${transfer.token?.tokenId}`,
         text: 'Go to page',
       },
+      tokenFullId: {
+        collectionAddress: transfer?.collection?.address ?? '',
+        tokenId: transfer?.token?.tokenId ?? '',
+      },
       collectionName: transfer.collection?.name ?? '',
       imageURL: getHttpLinkFromIpfsString(transfer.token?.image ?? ''),
       title: transfer.token?.name ?? '',
       hiddenFileMeta: transfer.token?.hiddenFileMeta,
+      categories: transfer.token?.categories?.[0],
+      likesCount: transfer.token?.likeCount,
+      chainName: this.currentBlockChainStore.chain?.name,
+      chainImg: this.currentBlockChainStore.configChain?.imgGray,
       user: {
-        address: reduceAddress(transfer.token?.owner ?? '—'),
-        img: getProfileImageUrl(transfer.token?.owner ?? ''),
+        img: !!transfer.token?.ownerProfile?.avatarUrl
+          ? getHttpLinkFromIpfsString(transfer.token?.ownerProfile?.avatarUrl ?? '')
+          : getProfileImageUrl(transfer.token?.owner ?? ''),
+        address: reduceAddress(transfer.token?.ownerProfile?.name ?? transfer.token?.owner ?? ''),
       },
       price: transfer.order?.price ? formatCurrency(transfer.order?.price, chain) : undefined,
     })
@@ -140,13 +156,13 @@ export class UserTransferStore implements IActivateDeactivate<[string]>, IStoreR
     return incomingTotal + outgoingTotal
   }
 
-  get transferCards(): TransferCardProps[] {
+  get transferCards(): Array<Omit<TransferCardProps, 'onFlameSuccess'>> {
     const { incoming = [], outgoing = [] } = this.data
 
-    const incomingCards = incoming.map<TransferCardProps>(
+    const incomingCards = incoming.map<Omit<TransferCardProps, 'onFlameSuccess'>>(
       this.convertTransferToTransferCards('incoming', this.currentBlockChainStore.chain),
     )
-    const outgoingCards = outgoing.map<TransferCardProps>(
+    const outgoingCards = outgoing.map<Omit<TransferCardProps, 'onFlameSuccess'>>(
       this.convertTransferToTransferCards('outgoing', this.currentBlockChainStore.chain),
     )
 

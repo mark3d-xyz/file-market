@@ -6,6 +6,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/jackc/pgx/v4"
 	"github.com/mark3d-xyz/mark3d/indexer/internal/domain"
+	"github.com/mark3d-xyz/mark3d/indexer/pkg/utils"
 	"math"
 	"math/big"
 	"strings"
@@ -20,9 +21,9 @@ func (p *postgres) GetAllActiveOrders(
 	lastOrderId *int64,
 	limit int,
 ) ([]*domain.Order, error) {
-	// Returns orders, where the latest order status=='Created' and latest transfer status NOT IN ('Finished', 'Cancelled')
 	// language=PostgreSQL
 	query := `
+		-- Returns orders, where the latest order status=='Created' and latest transfer status NOT IN ('Finished', 'Cancelled')
 		WITH latest_transfer_statuses AS (
 			SELECT transfer_id, status, RANK() OVER(PARTITION BY transfer_id ORDER BY timestamp DESC) as rank
 			FROM transfer_statuses
@@ -431,6 +432,187 @@ func (p *postgres) GetActiveOrder(ctx context.Context, tx pgx.Tx, contractAddres
 	o.ExchangeAddress = common.HexToAddress(exchangeAddress)
 
 	return o, nil
+}
+
+func (p *postgres) GetActiveOrdersByTokenIds(ctx context.Context, tx pgx.Tx, contractAddress common.Address, tokenIds []string) (map[string]*domain.Order, error) {
+	// language=PostgreSQL
+	query := `
+		WITH latest_transfer_statuses AS (
+			SELECT transfer_id, status, RANK() OVER(PARTITION BY transfer_id ORDER BY timestamp DESC) as rank
+			FROM transfer_statuses
+		)
+		SELECT o.id, o.transfer_id, o.price, o.currency, o.exchange_address, o.block_number,
+			   os.timestamp, os.status, os.tx_id, t.token_id
+		FROM orders AS o
+		    JOIN transfers t ON o.transfer_id = t.id
+			JOIN latest_transfer_statuses lts ON lts.transfer_id = t.id
+			JOIN order_statuses os ON o.id = os.order_id
+		WHERE lts.rank = 1 AND
+		      lts.status IN ('Created', 'Drafted') AND
+		      t.collection_address=$1 AND
+		      t.token_id = ANY($2::VARCHAR[]) AND
+		      o.visibility = 'Visible' AND                                        -- TODO: delete all occurrences
+		      o.exchange_address != '0x' AND                                      -- was used to temporarily hide orders
+			  NOT (t.collection_address=$3 AND t.number=1) AND                    -- exclude file bunnies first orders
+		      t.collection_address NOT IN (SELECT collection_address FROM rejected_collections) AND
+		      (t.token_id, t.collection_address) NOT IN (SELECT token_id, collection_address FROM rejected_tokens)
+	`
+	rows, err := tx.Query(
+		ctx,
+		query,
+		strings.ToLower(contractAddress.String()),
+		tokenIds,
+		strings.ToLower(p.cfg.fileBunniesCollectionAddress.String()),
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var (
+		res = make(map[string]*domain.Order)
+		ids []int64
+	)
+	for rows.Next() {
+		var price, currency, exchangeAddress, txId, tokenId string
+		status := &domain.OrderStatus{}
+		o := &domain.Order{
+			Statuses: make([]*domain.OrderStatus, 0, 1),
+		}
+
+		if err := rows.Scan(
+			&o.Id,
+			&o.TransferId,
+			&price,
+			&currency,
+			&exchangeAddress,
+			&o.BlockNumber,
+			&status.Timestamp,
+			&status.Status,
+			&txId,
+			&tokenId,
+		); err != nil {
+			return nil, err
+		}
+
+		status.TxId = common.HexToHash(txId)
+		o.Statuses = append(o.Statuses, status)
+		o.Currency = common.HexToAddress(currency)
+		o.ExchangeAddress = common.HexToAddress(exchangeAddress)
+
+		var ok bool
+		o.Price, ok = big.NewInt(0).SetString(price, 10)
+		if !ok {
+			return nil, fmt.Errorf("failed to parse big int: %s", price)
+		}
+
+		ids = append(ids, o.Id)
+		res[tokenId] = o
+	}
+
+	statuses, err := p.getOrderStatuses(ctx, tx, ids)
+	if err != nil {
+		return nil, err
+	}
+	for _, t := range res {
+		t.Statuses = statuses[t.Id]
+	}
+	return res, nil
+}
+
+func (p *postgres) GetActiveOrdersByTokenIdsAndCollectionAddresses(ctx context.Context, tx pgx.Tx, collectionAddresses []string, tokenIds []string) (map[string]map[string]*domain.Order, error) {
+	// language=PostgreSQL
+	query := `
+		WITH latest_transfer_statuses AS (
+			SELECT transfer_id, status, RANK() OVER(PARTITION BY transfer_id ORDER BY timestamp DESC) as rank
+			FROM transfer_statuses
+		)
+		SELECT o.id, o.transfer_id, o.price, o.currency, o.exchange_address, o.block_number,
+			   os.timestamp, os.status, os.tx_id, t.token_id, t.collection_address
+		FROM orders AS o
+		    JOIN transfers t ON o.transfer_id = t.id
+			JOIN latest_transfer_statuses lts ON lts.transfer_id = t.id
+			JOIN order_statuses os ON o.id = os.order_id
+			JOIN (
+			    SELECT collection_address, token_id
+			    FROM UNNEST($1::VARCHAR(255)[], $2::VARCHAR(255)[]) AS temp(collection_address, token_id)
+			) AS input ON t.collection_address = input.collection_address AND 
+			              t.token_id = input.token_id                             -- filtering on collectionAddresses[i] && tokenIds[i]
+		WHERE lts.rank = 1 AND
+		      lts.status IN ('Created', 'Drafted') AND
+		      o.visibility = 'Visible' AND                                        -- TODO: delete all occurrences
+		      o.exchange_address != '0x' AND                                      -- was used to temporarily hide orders
+			  NOT (t.collection_address=$3 AND t.number=1) AND                    -- exclude file bunnies first orders
+		      t.collection_address NOT IN (SELECT collection_address FROM rejected_collections) AND
+		      (t.token_id, t.collection_address) NOT IN (SELECT token_id, collection_address FROM rejected_tokens);
+	`
+	rows, err := tx.Query(
+		ctx,
+		query,
+		utils.Map(collectionAddresses, strings.ToLower),
+		tokenIds,
+		strings.ToLower(p.cfg.fileBunniesCollectionAddress.String()),
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var (
+		res = make(map[string]map[string]*domain.Order)
+		ids []int64
+	)
+	for rows.Next() {
+		var price, currency, exchangeAddress, txId, tokenId, collectionAddress string
+		status := &domain.OrderStatus{}
+		o := &domain.Order{
+			Statuses: make([]*domain.OrderStatus, 0, 1),
+		}
+
+		if err := rows.Scan(
+			&o.Id,
+			&o.TransferId,
+			&price,
+			&currency,
+			&exchangeAddress,
+			&o.BlockNumber,
+			&status.Timestamp,
+			&status.Status,
+			&txId,
+			&tokenId,
+			&collectionAddress,
+		); err != nil {
+			return nil, err
+		}
+
+		status.TxId = common.HexToHash(txId)
+		o.Statuses = append(o.Statuses, status)
+		o.Currency = common.HexToAddress(currency)
+		o.ExchangeAddress = common.HexToAddress(exchangeAddress)
+
+		var ok bool
+		o.Price, ok = big.NewInt(0).SetString(price, 10)
+		if !ok {
+			return nil, fmt.Errorf("failed to parse big int: %s", price)
+		}
+
+		ids = append(ids, o.Id)
+		if _, ok := res[collectionAddress]; !ok {
+			res[collectionAddress] = make(map[string]*domain.Order)
+		}
+		res[collectionAddress][tokenId] = o
+	}
+
+	statuses, err := p.getOrderStatuses(ctx, tx, ids)
+	if err != nil {
+		return nil, err
+	}
+	for _, c := range res {
+		for _, t := range c {
+			t.Statuses = statuses[t.Id]
+		}
+	}
+	return res, nil
 }
 
 func (p *postgres) InsertOrder(ctx context.Context, tx pgx.Tx, order *domain.Order) (int64, error) {

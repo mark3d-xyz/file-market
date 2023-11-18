@@ -15,9 +15,14 @@ type StatusStateType = ReturnType<typeof useStatusState>
 export interface UseModalOkArgs {
   statuses: StatusStateType['statuses']
   loadingMsg: ReactNode
+  loadingIcon?: ReactNode
+  loadingIconSrc?: string
   okMsg: ReactNode
   waitForSign?: boolean
   successNavTo?: string
+  okMsgUnderText?: ReactNode
+  loadingSmallText?: ReactNode
+  successIcon?: ReactNode
   // error message is retrieved from error
 }
 
@@ -27,6 +32,10 @@ export function useStatusModal({
   loadingMsg,
   waitForSign = true,
   successNavTo,
+  okMsgUnderText,
+  loadingSmallText,
+  loadingIcon,
+  successIcon,
 }: UseModalOkArgs) {
   const {
     modalOpen,
@@ -49,8 +58,10 @@ export function useStatusModal({
     if (isLoading) {
       setModalBody(
         <InProgressBody
+          icon={loadingIcon}
           text={loadingMsg}
           waitForSign={waitForSign}
+          mainText={loadingSmallText}
         />,
       )
     } else if (result) {
@@ -58,6 +69,7 @@ export function useStatusModal({
         setModalBody(
           <SuccessNavBody
             buttonText='Cool'
+            underText={okMsgUnderText}
             mainText={okMsg}
             link={successNavTo}
             onPress={() => {
@@ -69,8 +81,10 @@ export function useStatusModal({
       } else {
         setModalBody(
           <SuccessOkBody
+            icon={successIcon}
             description={okMsg}
             handleClose={handleClose}
+            underText={okMsgUnderText}
           />,
         )
       }

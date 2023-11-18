@@ -14,7 +14,9 @@ import { PageLayout } from '../../UIkit'
 import { getHttpLinkFromIpfsString } from '../../utils/nfts/getHttpLinkFromIpfsString'
 import { type Params } from '../../utils/router'
 import { transferPermissions } from '../../utils/transfer/status'
+import { PanelInfo } from './components/PanelInfo/PanelInfo'
 import { PreviewNFTFlow } from './components/PreviewNFTFlow'
+import { useViewFile } from './helper/hooks/useViewFile'
 import { GridBlock } from './helper/styles/style'
 import BaseInfoSection from './section/BaseInfo/BaseInfoSection'
 import ControlSection from './section/Contol/ControlSection'
@@ -34,7 +36,7 @@ const NFTPreviewContainer = styled('div', {
   overflow: 'hidden',
   '@sm': {
     marginTop: '83px',
-    height: 365,
+    height: 455,
   },
 })
 
@@ -55,7 +57,7 @@ const NFTPreviewContent = styled('div', {
 
 const MainInfo = styled(PageLayout, {
   display: 'flex', // чтобы можно было дочерним заполнить все пространство
-  marginTop: '10px',
+  marginTop: '74px',
   marginBottom: '-80px',
   paddingTB: 48,
   fontSize: '16px',
@@ -63,17 +65,13 @@ const MainInfo = styled(PageLayout, {
   columnGap: '$4',
   minHeight: '100%',
   height: 'max-content',
-  borderRadius: '$6 $6 0 0',
-  top: '-$6',
+  borderRadius: '12px 12px 0 0',
+  top: 'calc(-$6 - 90px)',
   boxShadow: '$footer',
   zIndex: '7',
   position: 'relative',
   '@md': {
     height: 'unset',
-    borderRadius: '24px 24px 0px 0px',
-  },
-  '@sm': {
-    marginTop: '45px',
   },
 })
 
@@ -139,6 +137,20 @@ const NFTPage: React.FC = observer(() => {
     return categories
   }, [tokenStore.data?.categories, tokenStore.data?.subcategories])
 
+  const {
+    isCanViewFile,
+    onViewFileButtonClick,
+    isViewFile,
+    previewState,
+    is3D,
+    typeFile,
+    isLoadingFile,
+  } = useViewFile({
+    getFile: files[0]?.getFile,
+    hiddenFile: tokenStore.data?.hiddenFileMeta,
+    canViewFile: isOwner || canViewHiddenFiles,
+  })
+
   const md = useMediaQuery('(max-width:900px)')
   const MainInfoSectionWrapper = md ? Fragment : GridBlockSection
 
@@ -152,13 +164,31 @@ const NFTPage: React.FC = observer(() => {
         />
         <NFTPreviewContent>
           <PreviewNFTFlow
-            getFile={files[0]?.getFile}
-            hiddenFile={tokenStore.data?.hiddenFileMeta}
-            canViewFile={isOwner || canViewHiddenFiles}
+            isCanView={isCanViewFile}
+            is3D={is3D}
             imageURL={getHttpLinkFromIpfsString(tokenStore.data?.image ?? '')}
+            previewState={previewState}
+            isLoading={isLoadingFile}
+            isViewFile={isViewFile}
           />
         </NFTPreviewContent>
       </NFTPreviewContainer>
+      <PanelInfo
+        isLoadingFile={isLoadingFile}
+        isCanViewFile={isCanViewFile}
+        isViewFile={isViewFile}
+        typeFile={typeFile}
+        onViewFileClick={onViewFileButtonClick}
+        likesCount={tokenStore.data?.likeCount ?? 0}
+        tokenFullId={{
+          collectionAddress: collectionAddress ?? '',
+          tokenId: tokenId ?? '',
+        }}
+        onFlameSuccess={() => {
+          tokenStore.increaseLikeCount()
+        }}
+        chainName={chainName}
+      />
       <MainInfo>
         <GridLayout>
           <MainInfoSectionWrapper>

@@ -4,7 +4,8 @@ import {
   FileBunniesCollection__factory,
   FilemarketCollectionV2__factory,
   FilemarketExchangeV2__factory,
-  FraudDeciderWeb2V2__factory, LikeEmitter__factory,
+  FraudDeciderWeb2V2__factory,
+  LikeEmitter__factory,
   Mark3dAccessTokenV2__factory,
   PublicCollection__factory,
 } from "../typechain-types";
@@ -56,7 +57,7 @@ async function callRpc(method: string, params: string) {
   const network = process.env.HARDHAT_NETWORK;
   let url: string;
   if (network === "filecoin") {
-    url = "https://filecoin-mainnet.chainstacklabs.com/rpc/v1";
+    url = "https://rpc.ankr.com/filecoin";
   } else {
     url = "https://filecoin-calibration.chainup.net/rpc/v1";
   }

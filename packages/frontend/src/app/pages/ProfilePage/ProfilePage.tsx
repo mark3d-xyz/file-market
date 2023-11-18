@@ -157,6 +157,7 @@ const ProfilePage: React.FC = observer(() => {
 
               return user?.twitter
             })(),
+            instagram: user?.instagram,
             discord: user?.discord,
             telegram: user?.telegram,
           }}

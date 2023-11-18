@@ -16,4 +16,3 @@ bafkreiawng5ztw575dqotb7efmdbfcaq3upsbn4q6yocytgetxtvmb3yiu - лобанов
 bafkreifkjpnkion2ztxrvrzl4yjadjorx4fck34x5fx7s6qfnqkvuekfcm - метаданные с корректным файлом
 
 bafkreic2d5w64m7aspwshkklq6rkq2nq3thm4rt7wzbpwdomcfywnrmp5m - метаданные со сломанным файлом
-

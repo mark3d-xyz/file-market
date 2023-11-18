@@ -46,6 +46,7 @@ export default observer(function ProfileSettings() {
       twitter: userStore.user?.twitter,
       telegram: userStore.user?.telegram,
       discord: userStore.user?.discord,
+      instagram: userStore.user?.instagram,
       isEmailNotificationEnabled: userStore.user?.isEmailNotificationEnabled,
     },
   })
@@ -241,7 +242,7 @@ export default observer(function ProfileSettings() {
                 validate: (value) => {
                   if (!value) return
 
-                  return value.length < 50 ? undefined : 'The twitter must have less than 1000 characters'
+                  return value.length < 50 ? undefined : 'The twitter must have less than 50 characters'
                 },
               },
             }}
@@ -253,7 +254,7 @@ export default observer(function ProfileSettings() {
                 validate: (value) => {
                   if (!value) return
 
-                  return value.length < 50 ? undefined : 'The telegram must have less than 1000 characters'
+                  return value.length < 50 ? undefined : 'The telegram must have less than 50 characters'
                 },
               },
             }}
@@ -265,7 +266,19 @@ export default observer(function ProfileSettings() {
                 validate: (value) => {
                   if (!value) return
 
-                  return value.length < 50 ? undefined : 'The discord must have less than 1000 characters'
+                  return value.length < 50 ? undefined : 'The discord must have less than 50 characters'
+                },
+              },
+            }}
+            instagram={{
+              control,
+              setValue,
+              name: 'instagram',
+              rules: {
+                validate: (value) => {
+                  if (!value) return
+
+                  return value.length < 50 ? undefined : 'The instagram must have less than 50 characters'
                 },
               },
             }}

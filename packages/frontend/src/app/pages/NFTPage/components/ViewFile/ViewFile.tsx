@@ -7,42 +7,21 @@ import { ViewFilesImage, ViewFilesText } from '../../helper/ViewFilesData/ViewFi
 import PreviewImg from '../../img/Preview.svg'
 
 const ViewFileStyle = styled('div', {
-  width: '144px',
   height: '32px',
-  boxShadow: '0px 0px 4px rgba(0, 0, 0, 0.15)',
-  borderRadius: '8px',
-  background: 'white',
   color: '#232528',
-  opacity: '0.75',
   cursor: 'pointer',
   display: 'flex',
   justifyContent: 'flex-start',
   '&:hover': {
     opacity: '1',
+    filter: 'brightness(1.2)',
   },
   '& .container': {
-    padding: '0 14.5px',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     gap: '10.5px',
     height: '100%',
-  },
-  position: 'absolute',
-  bottom: '90px',
-  right: 'calc((100% - $breakpoints$xl) * 0.3 + $space$4)',
-  '@xl': {
-    right: 'calc((100% - $breakpoints$lg) * 0.554 + $space$4)',
-  },
-  '@lg': {
-    right: 'calc((100% - $breakpoints$md) * 0.554 + $space$4)',
-  },
-  '@md': {
-    right: 'calc((100% - $breakpoints$sm) * 0.554 + $space$3)',
-  },
-  '@sm': {
-    right: '$3',
-    bottom: '35px',
   },
 })
 
@@ -69,7 +48,7 @@ const ViewFile = ({ type, onClick, isPreviewView }: ViewFileProps) => {
     <ViewFileStyle onClick={onClick}>
       <div className='container'>
         <img src={isPreviewView ? img : PreviewImg} />
-        <Txt primary1>{isPreviewView ? text : 'Preview'}</Txt>
+        <Txt primary1 style={{ fontSize: '14px', lineHeight: '32px', color: '#C9CBCF' }}>{isPreviewView ? text : 'Preview'}</Txt>
       </div>
     </ViewFileStyle>
   )

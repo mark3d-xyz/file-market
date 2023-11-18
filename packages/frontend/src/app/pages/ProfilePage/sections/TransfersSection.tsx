@@ -30,7 +30,15 @@ const TransfersSection: React.FC = observer(() => {
         fetchMore={() => { userTransferStore.requestMore() }}
         isLoading={userTransferStore.isLoading}
         currentItemCount={userTransferStore.transferCards.length}
-        render={({ index }) => <TransferCard {...userTransferStore.transferCards[index]} key={index} />}
+        render={({ index }) => (
+          <TransferCard
+            {...userTransferStore.transferCards[index]}
+            onFlameSuccess={() => {
+              userTransferStore.increaseLikeCount(index)
+            }}
+            key={index}
+          />
+        )}
         listCss={nftCardListCss}
       />
       {!userTransferStore.transferCards.length && !userTransferStore.isLoading && (
@@ -40,7 +48,7 @@ const TransfersSection: React.FC = observer(() => {
           buttonsBlock={(
             <>
               <Button primary onClick={() => { navigate('/market') } }>
-                <Txt primary1>3D Market</Txt>
+                <Txt primary1>Explore</Txt>
               </Button>
               <Button onClick={() => { navigate('/create') } }>
                 <Txt primary1>Create</Txt>

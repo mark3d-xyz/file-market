@@ -75,4 +75,44 @@ export class TokenStore implements IStoreRequester,
     }
     console.log('Reload')
   }
+
+  increaseLikeCount() {
+    console.log('INCREASE')
+    if (this.data) this.data.likeCount = this.data.likeCount !== undefined ? this.data.likeCount + 1 : 1
+  }
+
+  get creatorUrl() {
+    return this.data?.creatorProfile?.username ?? this.data?.creator
+  }
+
+  get ownerUrl() {
+    return this.data?.ownerProfile?.username ?? this.data?.owner
+  }
+
+  get creatorName() {
+    return this.data?.creatorProfile?.name ?? this.data?.creator
+  }
+
+  get creatorHasImg() {
+    return !!this.data?.creatorProfile?.avatarUrl
+  }
+
+  get creatorImg() {
+    return this.data?.creatorProfile?.avatarUrl ?? this.data?.creator
+  }
+
+  get ownerName() {
+    return this.data?.ownerProfile?.name ?? this.data?.owner
+  }
+
+  get ownerHasImg() {
+    console.log(this.data?.ownerProfile?.avatarUrl)
+    console.log(!!this.data?.ownerProfile?.avatarUrl)
+
+    return !!this.data?.ownerProfile?.avatarUrl
+  }
+
+  get ownerImg() {
+    return this.data?.ownerProfile?.avatarUrl ?? this.data?.owner
+  }
 }

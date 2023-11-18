@@ -33,7 +33,15 @@ export const OwnedSection: React.FC = observer(() => {
         fetchMore={() => { collectionAndTokenListStore.requestMoreTokens() }}
         isLoading={collectionAndTokenListStore.isLoading}
         currentItemCount={collectionAndTokenListStore.nftCards.length}
-        render={({ index }) => <NFTCard {...collectionAndTokenListStore.nftCards[index]} key={index} />}
+        render={({ index }) => (
+          <NFTCard
+            {...collectionAndTokenListStore.nftCards[index]}
+            onFlameSuccess={() => {
+              collectionAndTokenListStore.increaseLikeCount(index)
+            }}
+            key={index}
+          />
+        )}
         listCss={nftCardListCss}
       />
       {

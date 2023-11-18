@@ -91,6 +91,12 @@ export class OpenOrderListStore implements IStoreRequester, IActivateDeactivate 
     this.request()
   }
 
+  increaseLikeCount(index: number) {
+    const tokenFind = this.data.items?.[index]
+    console.log(tokenFind)
+    if (tokenFind?.token) tokenFind.token.likeCount = tokenFind.token.likeCount !== undefined ? tokenFind.token.likeCount + 1 : 1
+  }
+
   get hasMoreData() {
     const { total = 0, items = [] } = this.data
 
@@ -104,12 +110,21 @@ export class OpenOrderListStore implements IStoreRequester, IActivateDeactivate 
       .filter(({ order }) => order?.statuses?.[0]?.status === OrderStatus.Created)
       .map(({ token, order }) => ({
         collectionName: token?.collectionName ?? '',
+        categories: token?.categories?.[0],
+        likesCount: token?.likeCount,
         hiddenFileMeta: token?.hiddenFileMeta,
         imageURL: token?.image ? getHttpLinkFromIpfsString(token.image) : gradientPlaceholderImg,
         title: token?.name ?? '—',
+        tokenFullId: {
+          collectionAddress: token?.collectionAddress ?? '',
+          tokenId: token?.tokenId ?? '',
+        },
         user: {
-          img: getProfileImageUrl(token?.owner ?? ''),
-          address: reduceAddress(token?.owner ?? ''),
+          img: !!token?.ownerProfile?.avatarUrl
+            ? getHttpLinkFromIpfsString(token?.ownerProfile?.avatarUrl ?? '')
+            : getProfileImageUrl(token?.owner ?? ''),
+          address: reduceAddress(token?.ownerProfile?.name ?? token?.owner ?? ''),
+          url: token?.ownerProfile?.username ?? token?.owner,
         },
         button: {
           link: `/collection/${this.currentBlockChainStore.chain?.name}/${token?.collectionAddress}/${token?.tokenId}`,

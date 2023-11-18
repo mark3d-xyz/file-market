@@ -1,4 +1,5 @@
 import discordImg from '../../img/discord.svg'
+import instagramImg from '../../img/Instagram.svg'
 import telegramImg from '../../img/telegram.svg'
 import twitterImg from '../../img/Twitter.svg'
 import urlImg from '../../img/Url.svg'
@@ -9,6 +10,7 @@ export const imgs: Record<typesCard, string> = {
   discord: discordImg,
   telegram: telegramImg,
   twitter: twitterImg,
+  instagram: instagramImg,
 }
 
 export const baseUrls: Record<typesCard, string> = {
@@ -16,4 +18,5 @@ export const baseUrls: Record<typesCard, string> = {
   discord: '',
   telegram: 'https://t.me/',
   twitter: 'https://twitter.com/',
+  instagram: 'https://instagram.com/',
 }

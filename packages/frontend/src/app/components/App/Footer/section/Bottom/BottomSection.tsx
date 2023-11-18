@@ -53,7 +53,7 @@ const Email = styled('div', {
 
 const date = new Date()
 
-const BottomSection = () => {
+export const BottomSection = () => {
   return (
     <BottomSectionStyle>
       <Info>
@@ -79,5 +79,3 @@ const BottomSection = () => {
     </BottomSectionStyle>
   )
 }
-
-export default BottomSection

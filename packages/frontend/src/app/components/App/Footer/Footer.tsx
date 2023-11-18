@@ -2,8 +2,7 @@ import React from 'react'
 
 import { styled } from '../../../../styles'
 import { Container } from '../../../UIkit'
-import BottomSection from './section/Bottom/BottomSection'
-import TopSection from './section/Top/TopSection'
+import { BottomSection, TopSection } from './section'
 
 const FooterWrapper = styled('footer', {
   width: '100%',

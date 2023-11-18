@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/currencyconversion"
+	"github.com/mark3d-xyz/mark3d/indexer/pkg/utils"
 	"log"
 	"math/big"
 	"strings"
@@ -177,6 +178,7 @@ func (s *service) GetAllActiveOrders(
 		o.PriceUsd = currencyconversion.Convert(rate, o.Price)
 	}
 
+	addresses := make(map[string]struct{})
 	ordersWithToken := make([]*models.OrderWithToken, 0, len(orders))
 	for _, o := range orders {
 		transfer, err := s.repository.GetTransfer(ctx, tx, o.TransferId)
@@ -190,12 +192,28 @@ func (s *service) GetAllActiveOrders(
 			return nil, internalError
 		}
 
+		addresses[strings.ToLower(transfer.ToAddress.String())] = struct{}{}
+		addresses[strings.ToLower(transfer.FromAddress.String())] = struct{}{}
+		addresses[strings.ToLower(token.Creator.String())] = struct{}{}
+		addresses[strings.ToLower(token.Owner.String())] = struct{}{}
+
 		ordersWithToken = append(ordersWithToken, &models.OrderWithToken{
 			Order:    domain.OrderToModel(o),
 			Token:    domain.TokenToModel(token),
 			Transfer: domain.TransferToModel(transfer),
 		})
 	}
+
+	profilesMap, e := s.getProfilesMap(ctx, utils.SetToSlice(addresses))
+	if e != nil {
+		return nil, e
+	}
+
+	for _, o := range ordersWithToken {
+		fillTransferUserProfiles(o.Transfer, profilesMap)
+		fillTokenUserProfiles(o.Token, profilesMap)
+	}
+
 	return &models.OrdersAllActiveResponse{
 		Items: ordersWithToken,
 		Total: total,
