@@ -197,13 +197,13 @@ func (s *service) GetTokensByAddress(
 	tokensRes := make([]*models.TokenWithOrder, 0, len(tokens))
 	for _, t := range tokens {
 		var order *domain.Order
-		tokenModel := domain.TokenToModel(t)
 		if o, ok := orders[strings.ToLower(t.CollectionAddress.String())]; ok {
-			order = o[t.TokenId.String()]
+			order, ok = o[t.TokenId.String()]
 			if ok {
 				order.PriceUsd = currencyconversion.Convert(rate, order.Price)
 			}
 		}
+		tokenModel := domain.TokenToModel(t)
 		transfer, err := s.repository.GetActiveTransfer(ctx, tx, t.CollectionAddress, t.TokenId)
 		if err != nil {
 			if !errors.Is(err, pgx.ErrNoRows) {
