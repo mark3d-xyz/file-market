@@ -7,7 +7,7 @@
       "nativeCurrency": {
         "name": "FIL",
         "symbol": "FIL",
-        "decimals": "18"
+        "decimals": 18
       },
       "rpcUrls": {
         "default": {
