@@ -57,8 +57,8 @@ func (b *Bot) HandleUpdate(update api.Update) {
 	if text[0] == '/' {
 		msgParts := strings.Split(text, " ")
 
-		if handler, exists := b.commands[msgParts[0]]; exists {
-			if err := handler(msgParts[1:]...); err != nil {
+		if handle, exists := b.commands[msgParts[0]]; exists {
+			if err := handle(msgParts[1:]...); err != nil {
 				log.Printf("ERROR: %v", err)
 				b.sendMsg(update.Message.Chat.ID, "Error occurred")
 			} else {

@@ -32,8 +32,10 @@ type (
 	}
 
 	MSArgs struct {
-		sheetId   string
-		sheetName string
+		sheetId           string
+		sheetName         string
+		readColumnLetter  string
+		writeColumnLetter string
 	}
 )
 
@@ -73,12 +75,9 @@ func (h *MSHandler) Handle(args ...string) error {
 		return err
 	}
 
-	column, err := h.sheets.GetColumn(msArgs.sheetId, msArgs.sheetName, "A")
+	column, err := h.sheets.GetColumn(msArgs.sheetId, msArgs.sheetName, msArgs.readColumnLetter)
 	if err != nil {
 		return fmt.Errorf("unable to retrieve data from sheet: %v", err)
-	}
-	if column.Name != "User" {
-		return errors.New("wrong sheet format. Column names don't match")
 	}
 
 	addressSlice := make([]string, 0, len(column.Rows))
@@ -125,7 +124,7 @@ func (h *MSHandler) Handle(args ...string) error {
 		}
 	}
 
-	vRange := fmt.Sprintf("E2:E%d", len(updateValues)+1)
+	vRange := fmt.Sprintf("%s2:%s%d", msArgs.writeColumnLetter, msArgs.writeColumnLetter, len(updateValues)+1)
 	err = h.sheets.UpdateRows(msArgs.sheetId, msArgs.sheetName, vRange, updateValues)
 	if err != nil {
 		return fmt.Errorf("failed to update values: %w", err)
@@ -143,12 +142,11 @@ func (h *MSHandler) GetCmd() string {
 	return h.cmd
 }
 
+// link name A E
 func (h *MSHandler) validateArgs(args ...string) (*MSArgs, error) {
-	if len(args) != 2 {
+	if len(args) != 4 {
 		return nil, MSHandlerErrWrongArguments
 	}
-
-	res := &MSArgs{}
 
 	link := args[0]
 	if !h.urlRegex.MatchString(link) {
@@ -158,17 +156,26 @@ func (h *MSHandler) validateArgs(args ...string) (*MSArgs, error) {
 	linkWithoutPrefix := strings.TrimPrefix(link, "https://docs.google.com/spreadsheets/d/")
 	linkSplit := strings.Split(linkWithoutPrefix, "/")
 	if len(linkSplit) < 0 {
+		return nil, fmt.Errorf("invalid link format: %s", link)
+	}
+
+	sheetName := args[1]
+	readLetter := args[2]
+	writeLetter := args[3]
+	if len(readLetter) != 1 || len(writeLetter) != 1 {
 		return nil, ErrInvalidFormat
 	}
-	res.sheetId = linkSplit[0]
-
-	id := args[1]
-	if len(id) < 0 {
+	if (readLetter[0] < 'A' && readLetter[0] > 'Z') ||
+		(writeLetter[0] < 'A' && writeLetter[0] > 'Z') {
 		return nil, ErrInvalidFormat
 	}
-	res.sheetName = id
 
-	return res, nil
+	return &MSArgs{
+		sheetId:           linkSplit[0],
+		sheetName:         sheetName,
+		readColumnLetter:  readLetter,
+		writeColumnLetter: writeLetter,
+	}, nil
 }
 
 func (h *MSHandler) findAddressesDifference(addresses []string, day, month, year int) ([]string, error) {
