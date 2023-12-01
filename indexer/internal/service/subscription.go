@@ -5,16 +5,17 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/mark3d-xyz/mark3d/indexer/internal/domain"
-	"github.com/mark3d-xyz/mark3d/indexer/models"
-	"github.com/mark3d-xyz/mark3d/indexer/pkg/currencyconversion"
-	"github.com/mark3d-xyz/mark3d/indexer/pkg/utils"
 	"log"
 	"math/big"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/mark3d-xyz/mark3d/indexer/internal/domain"
+	"github.com/mark3d-xyz/mark3d/indexer/models"
+	"github.com/mark3d-xyz/mark3d/indexer/pkg/currencyconversion"
+	"github.com/mark3d-xyz/mark3d/indexer/pkg/utils"
 )
 
 func (s *service) AddEFTSubscription(ctx context.Context, w http.ResponseWriter, r *http.Request, req *models.EFTSubscriptionRequest) {
@@ -74,6 +75,7 @@ func (s *service) EFTSubOnConnectionResponse(ctx context.Context, req any) any {
 		}
 
 		msg = domain.EFTSubMessageToModel(m)
+		s.fillUserProfilesForEftSubMessage(msg)
 	}
 
 	return msg
