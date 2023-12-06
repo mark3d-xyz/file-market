@@ -3,11 +3,12 @@ package service
 import (
 	"context"
 	"errors"
-	"github.com/mark3d-xyz/mark3d/indexer/pkg/currencyconversion"
-	"github.com/mark3d-xyz/mark3d/indexer/pkg/utils"
 	"log"
 	"math/big"
 	"strings"
+
+	"github.com/mark3d-xyz/mark3d/indexer/pkg/currencyconversion"
+	"github.com/mark3d-xyz/mark3d/indexer/pkg/utils"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/jackc/pgx/v4"
@@ -154,6 +155,7 @@ func (s *service) GetTokensByAddress(
 		return nil, internalError
 	}
 	tokensTotal, err := s.repository.GetTokensByAddressTotal(ctx, tx, address)
+
 	if err != nil {
 		log.Println("get tokens by address total failed: ", err)
 		return nil, internalError

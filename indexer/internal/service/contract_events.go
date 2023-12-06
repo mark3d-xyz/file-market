@@ -4,6 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
+	"math/big"
+	"strings"
+	"time"
+
 	"github.com/ethereum/go-ethereum/common"
 	eth_types "github.com/ethereum/go-ethereum/core/types"
 	"github.com/jackc/pgx/v4"
@@ -13,10 +18,6 @@ import (
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/retry"
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/types"
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/utils"
-	"log"
-	"math/big"
-	"strings"
-	"time"
 )
 
 func (s *service) onCollectionTransferEvent(
@@ -645,7 +646,9 @@ func (s *service) onPublicKeySetEvent(
 			return fmt.Errorf("failed to get active order: %w", err)
 		}
 	}
-	s.fillOrderUsdPrice(order)
+	if order != nil {
+		s.fillOrderUsdPrice(order)
+	}
 
 	msg := &models.EFTSubscriptionMessage{
 		Event:    "TransferPublicKeySet",
@@ -711,7 +714,9 @@ func (s *service) onPasswordSetEvent(
 			return fmt.Errorf("failed to get active order: %w", err)
 		}
 	}
-	s.fillOrderUsdPrice(order)
+	if order != nil {
+		s.fillOrderUsdPrice(order)
+	}
 
 	msg := &models.EFTSubscriptionMessage{
 		Event:    "TransferPasswordSet",
@@ -884,7 +889,9 @@ func (s *service) onTransferFraudReportedEvent(
 			return fmt.Errorf("failed to get active order: %w", err)
 		}
 	}
-	s.fillOrderUsdPrice(order)
+	if order != nil {
+		s.fillOrderUsdPrice(order)
+	}
 	if err := s.repository.InsertTransferStatus(ctx, tx, transfer.Id, &transferStatus); err != nil {
 		return err
 	}
