@@ -155,7 +155,6 @@ func (s *service) GetTokensByAddress(
 		return nil, internalError
 	}
 	tokensTotal, err := s.repository.GetTokensByAddressTotal(ctx, tx, address)
-
 	if err != nil {
 		log.Println("get tokens by address total failed: ", err)
 		return nil, internalError
