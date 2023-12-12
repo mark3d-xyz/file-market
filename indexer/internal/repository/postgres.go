@@ -57,6 +57,8 @@ type Tokens interface {
 	GetTokensForAutosell(ctx context.Context, tx pgx.Tx, collectionAddress common.Address, owner common.Address) ([]AutosellTokenInfo, error)
 	UpdateTokenTxData(ctx context.Context, tx pgx.Tx, tokenId *big.Int, collectionAddress common.Address, txTimestamp uint64, hash common.Hash, blockNumber *big.Int) error
 	IncrementLike(ctx context.Context, tx pgx.Tx, collectionAddress common.Address, tokenId *big.Int) error
+	GetAccountLikeCount(ctx context.Context, tx pgx.Tx, address common.Address) (int64, error)
+	IncrementAccountLike(ctx context.Context, tx pgx.Tx, from common.Address) error
 }
 
 type Transfers interface {

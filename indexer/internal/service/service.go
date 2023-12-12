@@ -6,6 +6,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"log"
+	"math/big"
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/mark3d-xyz/mark3d/indexer/contracts/filebunniesCollection"
 	"github.com/mark3d-xyz/mark3d/indexer/contracts/likeEmitter"
 	"github.com/mark3d-xyz/mark3d/indexer/contracts/publicCollection"
@@ -18,12 +25,6 @@ import (
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/retry"
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/sequencer"
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/ws"
-	"io"
-	"log"
-	"math/big"
-	"net/http"
-	"strings"
-	"time"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
@@ -92,6 +93,7 @@ type Tokens interface {
 	GetCollectionTokens(ctx context.Context, address common.Address, lastTokenId *big.Int, limit int) (*models.TokensByCollectionResponse, *models.ErrorResponse)
 	GetTokensByAddress(ctx context.Context, address common.Address, lastCollectionAddress *common.Address, collectionLimit int, lastTokenCollectionAddress *common.Address, lastTokenId *big.Int, tokenLimit int) (*models.TokensResponse, *models.ErrorResponse)
 	GetFileBunniesTokensForAutosell(ctx context.Context) ([]types.AutosellTokenInfo, *models.ErrorResponse)
+	GetAccountLikeCount(ctx context.Context, from common.Address) (*models.CampaignsLikesResponse, *models.ErrorResponse)
 }
 
 type Transfers interface {
@@ -1408,7 +1410,7 @@ func (s *service) processLike(ctx context.Context, tx pgx.Tx, t types.Transactio
 		if l.Address == s.cfg.LikeEmitterAddress {
 			instance, err := likeEmitter.NewLikeEmitter(l.Address, nil)
 			if err == nil {
-				if err := s.tryProcessLikeEmitterLikeEvent(ctx, tx, l, instance); err != nil {
+				if err := s.tryProcessLikeEmitterLikeEvent(ctx, tx, l, t, instance); err != nil {
 					return fmt.Errorf("failed to process Like: %w", err)
 				}
 			}
@@ -1422,6 +1424,7 @@ func (s *service) tryProcessLikeEmitterLikeEvent(
 	ctx context.Context,
 	tx pgx.Tx,
 	l *eth_types.Log,
+	t types.Transaction,
 	instance *likeEmitter.LikeEmitter,
 ) error {
 	likeEv, err := instance.ParseLike(*l)
@@ -1429,7 +1432,12 @@ func (s *service) tryProcessLikeEmitterLikeEvent(
 		return err
 	}
 
-	if err := s.onLikeEvent(ctx, tx, likeEv.CollectionAddress, likeEv.TokenId); err != nil {
+	defaultTx, err := s.ethClient.GetDefaultTransactionByHash(ctx, t.Hash())
+	if err != nil {
+		return err
+	}
+
+	if err := s.onLikeEvent(ctx, tx, likeEv.CollectionAddress, likeEv.TokenId, defaultTx.From()); err != nil {
 		return err
 	}
 
