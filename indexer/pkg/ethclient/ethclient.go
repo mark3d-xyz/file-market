@@ -5,6 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
+	"math/big"
+	"strings"
+	"time"
+
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -14,10 +19,6 @@ import (
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/types"
 	"github.com/sony/gobreaker"
 	"golang.org/x/exp/slices"
-	"log"
-	"math/big"
-	"strings"
-	"time"
 )
 
 type EthClient interface {
@@ -265,14 +266,16 @@ func (e *ethClient) GetDefaultTransactionByHash(ctx context.Context, hash common
 		var raw json.RawMessage
 		if err = c.CallContext(ctx, &raw, "eth_getTransactionByHash", hash.Hex()); err != nil {
 			log.Println("get tx error", err)
-			return nil, err
+			continue
 		} else if len(raw) == 0 {
-			return nil, ethereum.NotFound
+			err = ethereum.NotFound
+			continue
 		}
 
 		var tx *types.DefaultTransaction
 		if err = json.Unmarshal(raw, &tx); err != nil {
-			return nil, fmt.Errorf("failed to unmarshal tx: %w", err)
+			err = fmt.Errorf("failed to unmarshal tx: %w", err)
+			continue
 		}
 		return tx, nil
 	}

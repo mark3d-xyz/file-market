@@ -1071,6 +1071,9 @@ func (s *service) onTransferCancel(
 	return nil
 }
 
-func (s *service) onLikeEvent(ctx context.Context, tx pgx.Tx, collectionAddress common.Address, tokenId *big.Int) error {
-	return s.repository.IncrementLike(ctx, tx, collectionAddress, tokenId)
+func (s *service) onLikeEvent(ctx context.Context, tx pgx.Tx, collectionAddress common.Address, tokenId *big.Int, from common.Address) error {
+	if err := s.repository.IncrementLike(ctx, tx, collectionAddress, tokenId); err != nil {
+		return err
+	}
+	return s.repository.IncrementAccountLike(ctx, tx, from)
 }
