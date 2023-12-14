@@ -1,5 +1,6 @@
-import { getDefaultWallets } from '@rainbow-me/rainbowkit'
-import { EthereumClient, w3mProvider } from '@web3modal/ethereum'
+import { connectorsForWallets } from '@rainbow-me/rainbowkit'
+import { injectedWallet, rainbowWallet } from '@rainbow-me/rainbowkit/wallets'
+import { w3mProvider } from '@web3modal/ethereum'
 import { configureChains, createConfig } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
 
@@ -24,16 +25,18 @@ export const { chains, publicClient } = configureChains(
   { pollingInterval: 3_000 },
 )
 
-const { connectors } = getDefaultWallets({
-  appName: 'Filemarket',
-  projectId,
-  chains,
-})
+const connectors = connectorsForWallets([
+  {
+    groupName: 'Recommended',
+    wallets: [
+      injectedWallet({ chains }),
+      rainbowWallet({ projectId, chains }),
+    ],
+  },
+])
 
 export const wagmiConfig = createConfig({
   autoConnect: true,
   connectors,
   publicClient,
 })
-
-const ethereumClient = new EthereumClient(wagmiConfig, chains)
