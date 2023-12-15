@@ -149,6 +149,7 @@ func (h *handler) handleCampaignsLikes(w http.ResponseWriter, r *http.Request) {
 	from := r.URL.Query().Get("address")
 	if from == "" {
 		sendResponse(w, http.StatusBadRequest, struct{}{})
+		return
 	}
 	res, err := h.service.GetAccountLikeCount(ctx, common.HexToAddress(from))
 	if err != nil {
