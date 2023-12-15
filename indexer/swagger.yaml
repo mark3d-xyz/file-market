@@ -1187,6 +1187,7 @@ definitions:
         properties:
           isValid:
             type: boolean
+            x-omitempty: false
   EFTSubscriptionRequest:
     type: object
     description: Запрос на подписку на EFT
