@@ -106,7 +106,7 @@ postgres.start:
             docker rm test-postgres; \
         fi; \
 		docker run --restart unless-stopped -d -p 1338:5432 -e POSTGRES_PASSWORD=1337 --name test-postgres postgres:13 ;\
-        sleep 5s; \
+        sleep 5; \
     fi;
 	-docker exec test-postgres psql -U postgres -c "create user indexer password '1337'"
 	-docker exec test-postgres psql -U postgres -c "create database mark3d_indexer"

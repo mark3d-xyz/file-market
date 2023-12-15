@@ -1159,7 +1159,35 @@ paths:
           description: ws upgrade
         default:
           description: Ошибка
+  /campaigns/likes:
+    get:
+      tags:
+        - campaigns
+      parameters:
+        - name: address
+          in: query
+          description: Account address
+          type: string
+          required: true
+      responses:
+        '200':
+          description: Valid or not
+          schema:
+            $ref: '#/definitions/CampaignsLikesResponse'
+        default:
+          description: Ошибка
+          schema:
+            $ref: '#/definitions/ErrorResponse'
 definitions:
+  CampaignsLikesResponse:
+    type: object
+    properties:
+      result:
+        type: object
+        properties:
+          isValid:
+            type: boolean
+            x-omitempty: false
   EFTSubscriptionRequest:
     type: object
     description: Запрос на подписку на EFT

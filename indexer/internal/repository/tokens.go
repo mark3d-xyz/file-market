@@ -4,9 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/mark3d-xyz/mark3d/indexer/pkg/types"
 	"math/big"
 	"strings"
+
+	"github.com/mark3d-xyz/mark3d/indexer/pkg/types"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/jackc/pgx/v4"
@@ -857,7 +858,7 @@ func (p *postgres) GetTokensContentTypeByCollection(
 	return fileTypes, categories, subcategories, nil
 }
 
-func (r *postgres) IncrementLike(ctx context.Context, tx pgx.Tx, collectionAddress common.Address, tokenId *big.Int) error {
+func (p *postgres) IncrementLike(ctx context.Context, tx pgx.Tx, collectionAddress common.Address, tokenId *big.Int) error {
 	// language=PostgreSQL
 	query := `
 		UPDATE tokens SET like_count=like_count+1
@@ -871,4 +872,39 @@ func (r *postgres) IncrementLike(ctx context.Context, tx pgx.Tx, collectionAddre
 	}
 
 	return nil
+}
+
+func (p *postgres) IncrementAccountLike(ctx context.Context, tx pgx.Tx, from common.Address) error {
+	// language=PostgreSQL
+	query := `
+		INSERT INTO account_likes(address, count) VALUES ($1, 1)
+		ON CONFLICT (address) DO UPDATE
+			SET count = COALESCE(account_likes.count, 0) + 1;
+`
+	if _, err := tx.Exec(ctx, query, strings.ToLower(from.String())); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (p *postgres) GetAccountLikeCount(ctx context.Context, tx pgx.Tx, address common.Address) (int64, error) {
+	// language=PostgreSQL
+	query := `
+		SELECT count
+		FROM account_likes
+		WHERE address=$1
+		`
+	var count int64
+	err := tx.
+		QueryRow(ctx, query, strings.ToLower(address.String())).
+		Scan(&count)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return 0, nil
+		}
+		return 0, err
+	}
+
+	return count, nil
 }
