@@ -175,7 +175,7 @@ export const CardFlame = observer(({
       and increase its chances of sale.
     </>,
     loadingMsg: 'Your flame is igniting in  the blockchain, \n' +
-      'please wait',
+        'please wait',
     waitForSign: false,
     loadingIcon: <LoadingFlame />,
     successIcon: <SuccessFlame />,
@@ -191,6 +191,12 @@ export const CardFlame = observer(({
 
     handleMouseLeave()
   }, [mouseState])
+
+  useEffect(() => {
+    if (!statuses.result) return
+
+    onSuccess?.()
+  }, [statuses.result])
 
   const flameText = useMemo(() => {
     return isHasFlameText ? 'Flames' : ''
