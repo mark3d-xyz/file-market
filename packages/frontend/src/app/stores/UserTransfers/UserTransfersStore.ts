@@ -132,7 +132,7 @@ export class UserTransferStore implements IActivateDeactivate<[string]>, IStoreR
       hiddenFileMeta: transfer.token?.hiddenFileMeta,
       categories: transfer.token?.categories?.[0],
       likesCount: transfer.token?.likeCount,
-      chainName: this.currentBlockChainStore.chain?.name,
+      chain: this.currentBlockChainStore.chain,
       chainImg: this.currentBlockChainStore.configChain?.imgGray,
       user: {
         img: !!transfer.token?.ownerProfile?.avatarUrl

@@ -17,7 +17,7 @@ import { type CurrentBlockChainStore } from '../CurrentBlockChain/CurrentBlockCh
 import { type ErrorStore } from '../Error/ErrorStore'
 import { type MultiChainStore } from '../MultiChain/MultiChainStore'
 
-export class CollectionTokenListStore implements IActivateDeactivate<[string, string]>, IStoreRequester {
+export class CollectionTokenListStore implements IActivateDeactivate<[string, number]>, IStoreRequester {
   errorStore: ErrorStore
   currentBlockChainStore: CurrentBlockChainStore
   multiChainStore: MultiChainStore
@@ -74,18 +74,23 @@ export class CollectionTokenListStore implements IActivateDeactivate<[string, st
   }
 
   requestMore() {
+    if (!this.api) return
+
     const lastTokenId = lastItem(this.data.tokens ?? [])?.token?.tokenId
     storeRequest(
       this,
-      this.currentBlockChainStore.api.collections.fullDetail(this.collectionAddress, { lastTokenId, limit: 10 }),
+      this.api.collections.fullDetail(this.collectionAddress, { lastTokenId, limit: 10 }),
       (data) => { this.addData(data) },
     )
   }
 
-  activate(collectionAddress: string, chainName: string): void {
+  activate(collectionAddress: string, chainId: number): void {
     this.isActivated = true
     this.collectionAddress = collectionAddress
-    this.api = this.multiChainStore.getApiByName(chainName)
+
+    console.log(chainId)
+
+    this.api = this.multiChainStore.getApiById(chainId)
     this.request(this.api)
   }
 
@@ -142,7 +147,7 @@ export class CollectionTokenListStore implements IActivateDeactivate<[string, st
       hiddenFileMeta: token?.hiddenFileMeta,
       priceUsd: order?.statuses?.[0]?.status === OrderStatus.Created ? order?.priceUsd : undefined,
       price: order?.statuses?.[0]?.status === OrderStatus.Created ? order?.price : undefined,
-      chainName: this.currentBlockChainStore.chain?.name,
+      chain: this.currentBlockChainStore.chain,
       chainImg: this.currentBlockChainStore.configChain?.imgGray,
     }))
   }

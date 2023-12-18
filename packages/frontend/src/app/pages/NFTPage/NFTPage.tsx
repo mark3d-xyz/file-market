@@ -4,6 +4,7 @@ import React, { Fragment, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { styled } from '../../../styles'
+import { useChainStore } from '../../hooks/useChainStore'
 import { useHiddenFileDownload } from '../../hooks/useHiddenFilesDownload'
 import { useSubscribeToEft } from '../../hooks/useSubscribeToEft'
 import { useTokenMetaStore } from '../../hooks/useTokenMetaStore'
@@ -119,8 +120,9 @@ const ControlStickyBlock = styled('div', {
 const NFTPage: React.FC = observer(() => {
   useSubscribeToEft()
   const { collectionAddress, tokenId, chainName } = useParams<Params>()
-  const transferStore = useTransferStore(collectionAddress, tokenId, chainName)
-  const tokenStore = useTokenStore(collectionAddress, tokenId, chainName)
+  const chainStore = useChainStore(chainName)
+  const transferStore = useTransferStore(collectionAddress, tokenId, chainStore.selectedChain?.chain.id)
+  const tokenStore = useTokenStore(collectionAddress, tokenId, chainStore.selectedChain?.chain.id)
   const tokenMetaStore = useTokenMetaStore(tokenStore.data?.metaUri)
   const files = useHiddenFileDownload(tokenMetaStore, tokenStore.data)
   const { isOwner } = useIsOwner(tokenStore.data)
@@ -187,7 +189,7 @@ const NFTPage: React.FC = observer(() => {
         onFlameSuccess={() => {
           tokenStore.increaseLikeCount()
         }}
-        chainName={chainName}
+        chain={chainStore.selectedChain?.chain}
       />
       <MainInfo>
         <GridLayout>

@@ -2,8 +2,8 @@ import React, { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { styled } from '../../../../../styles'
+import { useChainStore } from '../../../../hooks/useChainStore'
 import { useCurrency } from '../../../../hooks/useCurrency'
-import { useMultiChainStore } from '../../../../hooks/useMultiChainStore'
 import { useTokenStore } from '../../../../hooks/useTokenStore'
 import { Flex, Link, textVariant } from '../../../../UIkit'
 import { type Params } from '../../../../utils/router'
@@ -23,13 +23,14 @@ export const NftLicence = styled('span', {
 
 const BaseInfoSection = () => {
   const { collectionAddress, tokenId, chainName } = useParams<Params>()
-  const { data: token } = useTokenStore(collectionAddress, tokenId)
-  const multiChainStore = useMultiChainStore()
+  const chainStore = useChainStore(chainName)
+
+  const { data: token } = useTokenStore(collectionAddress, tokenId, chainStore.selectedChain?.chain.id)
   const { formatRoyalty } = useCurrency()
 
   const transactionUrl = useMemo(() => {
-    if (multiChainStore.getChainByName(chainName)?.explorer && token?.mintTxHash) {
-      return `${multiChainStore.getChainByName(chainName)?.explorer}${token?.mintTxHash}`
+    if (chainStore.selectedChain?.explorer && token?.mintTxHash) {
+      return `${chainStore.selectedChain?.explorer}${token?.mintTxHash}`
     }
   }, [token?.mintTxHash])
 
@@ -38,7 +39,7 @@ const BaseInfoSection = () => {
       <NftName>{token?.name}</NftName>
       <Flex flexDirection='column' gap='$2' alignItems='start'>
         <Flex flexDirection='row' gap='$2' alignItems='center'>
-          <img src={multiChainStore.getChainByName(chainName)?.imgGray} style={{ width: '20px', height: '20px' }} />
+          <img src={chainStore.selectedChain?.imgGray} style={{ width: '20px', height: '20px' }} />
           {token?.mintTxTimestamp && (
             <Link
               iconRedirect
@@ -48,7 +49,7 @@ const BaseInfoSection = () => {
             >
               Minted on
               {' '}
-              {multiChainStore.getChainByName(chainName)?.chain.name}
+              {chainStore.selectedChain?.chain.name}
               {' '}
               at
               {' '}

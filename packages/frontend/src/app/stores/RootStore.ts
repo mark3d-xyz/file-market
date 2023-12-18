@@ -1,5 +1,6 @@
 import { AuthStore } from './auth/AuthStore'
 import { BlockStore } from './BlockStore/BlockStore'
+import { ChainStore } from './ChainStore/ChainStore'
 import { CollectionStore } from './Collection/CollectionStore'
 import { CollectionAndTokenListStore } from './CollectionAndTokenList/CollectionAndTokenListStore'
 import { CollectionListStore } from './CollectionsList/CollectionListStore'
@@ -47,6 +48,7 @@ export class RootStore {
   whitelistStore: WhiteListStore
   collectionsListStore: CollectionListStore
   multiChainStore: MultiChainStore
+  chainStore: ChainStore
   currentBlockChainStore: CurrentBlockChainStore
   socketStore: SocketStore
   userStore: UserStore
@@ -60,6 +62,7 @@ export class RootStore {
     this.userStore = new UserStore(this)
     this.authStore = new AuthStore(this)
     this.multiChainStore = new MultiChainStore(this)
+    this.chainStore = new ChainStore(this)
     this.currentBlockChainStore = new CurrentBlockChainStore(this)
     this.collectionAndTokenList = new CollectionAndTokenListStore(this)
     this.transferListStore = new TransferListStore(this)

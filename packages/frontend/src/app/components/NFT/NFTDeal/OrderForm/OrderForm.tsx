@@ -38,7 +38,8 @@ export const OrderForm: FC<OrderFormProps> = observer(({
 }) => {
   const { formatRoyalty, toCurrency, fromCurrency } = useCurrency()
   const currentBlockChainStore = useCurrentBlockChain()
-  const tokenStore = useTokenStore(tokenFullId.collectionAddress, tokenFullId.tokenId)
+
+  const tokenStore = useTokenStore(tokenFullId.collectionAddress, tokenFullId.tokenId, currentBlockChainStore.chainId)
 
   const { isCreator } = useIsCreator(tokenStore.data)
 

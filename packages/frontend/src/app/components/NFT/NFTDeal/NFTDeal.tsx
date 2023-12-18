@@ -1,13 +1,13 @@
 import { observer } from 'mobx-react-lite'
-import React, { type FC, type PropsWithChildren, useMemo } from 'react'
+import React, { type FC, type PropsWithChildren, useCallback, useMemo } from 'react'
 import { useParams } from 'react-router'
 import { useAccount } from 'wagmi'
 
 import { styled } from '../../../../styles'
 import { type Order } from '../../../../swagger/Api'
+import { useChainStore } from '../../../hooks/useChainStore'
 import { useChangeNetwork } from '../../../hooks/useChangeNetwork'
 import { useCurrency } from '../../../hooks/useCurrency'
-import { useMultiChainStore } from '../../../hooks/useMultiChainStore'
 import { useStatusModal } from '../../../hooks/useStatusModal'
 import { useWatchStatusesTransfer } from '../../../processing/nft-interaction/useWatchStatusesTransfer'
 import { type TokenFullId } from '../../../processing/types'
@@ -77,7 +77,7 @@ export const NFTDeal: FC<NFTDealProps> = observer(({
   const { isConnected } = useAccount()
   const { changeNetwork, chain } = useChangeNetwork()
   const { chainName } = useParams<Params>()
-  const multiChainStore = useMultiChainStore()
+  const chainStore = useChainStore()
   const isNetworkIncorrect = useMemo(() => {
     return chain?.name !== chainName
   }, [chain, chainName])
@@ -100,6 +100,13 @@ export const NFTDeal: FC<NFTDealProps> = observer(({
   if (error) {
     return <BaseModal {...modalProps} />
   }
+
+  const handleButtonClick = useCallback(() => {
+    if (!chainStore.selectedChain) return
+
+    console.log(chainStore.selectedChain.chain.id)
+    changeNetwork(chainStore.selectedChain.chain.id)
+  }, [chainStore.selectedChain, changeNetwork])
 
   return (
     <NFTDealStyle isNotListed={!transfer && !isOwner}>
@@ -124,7 +131,7 @@ export const NFTDeal: FC<NFTDealProps> = observer(({
               primary
               fullWidth
               borderRadiusSecond
-              onPress={() => { changeNetwork(multiChainStore.getChainByName(chainName)?.chain.id) }}
+              onPress={handleButtonClick}
             >
               {isConnected ? `Switch network to ${chainName}` : 'Check status'}
             </Button>

@@ -3,11 +3,11 @@ import { gsap } from 'gsap'
 import { MorphSVGPlugin } from 'gsap/MorphSVGPlugin'
 import { observer } from 'mobx-react-lite'
 import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { type Chain } from 'wagmi'
 
 import { styled } from '../../../../../styles'
 import { useChangeNetwork } from '../../../../hooks/useChangeNetwork'
 import { useAfterDidMountEffect } from '../../../../hooks/useDidMountEffect'
-import { useMultiChainStore } from '../../../../hooks/useMultiChainStore'
 import { useStatusModal } from '../../../../hooks/useStatusModal'
 import { useLike } from '../../../../processing/Like/useLike'
 import { type TokenFullId } from '../../../../processing/types'
@@ -31,7 +31,7 @@ interface CardFlameProps {
   isHasFlameText?: boolean
   likesCount?: number
   color?: string
-  chainName?: string
+  chain?: Chain
 }
 
 export const FlameWrapper = styled('div', {
@@ -145,15 +145,13 @@ export const CardFlame = observer(({
   onSuccess,
   isHasFlameText,
   likesCount,
-  chainName,
+  chain,
   color = '#C9CBCF',
 }: CardFlameProps) => {
   const tlBurningRef = useRef<GSAPTimeline | null>(null)
   const tlGlowingRef = useRef<GSAPTimeline | null>(null)
 
   const [isTooltipVisible, setIsTooltipVisible] = useState<boolean>(false)
-
-  const multiChainStore = useMultiChainStore()
 
   const { handleMouseLeave, handleMouseOver } = useCardFlameAnimation({
     tlBurningRef,
@@ -201,10 +199,6 @@ export const CardFlame = observer(({
   const flameText = useMemo(() => {
     return isHasFlameText ? 'Flames' : ''
   }, [isHasFlameText])
-
-  const chain = useMemo(() => {
-    return multiChainStore.getChainByName(chainName)?.chain
-  }, [multiChainStore.data, chainName])
 
   return (
     <>

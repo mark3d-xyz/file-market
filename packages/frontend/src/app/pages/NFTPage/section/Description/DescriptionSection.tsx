@@ -2,6 +2,7 @@ import React from 'react'
 import { useParams } from 'react-router-dom'
 
 import { styled } from '../../../../../styles'
+import { useChainStore } from '../../../../hooks/useChainStore'
 import { useTokenStore } from '../../../../hooks/useTokenStore'
 import { textVariant } from '../../../../UIkit'
 import { type Params } from '../../../../utils/router'
@@ -32,7 +33,8 @@ const Pre = styled('pre', {
 
 const DescriptionSection = () => {
   const { collectionAddress, tokenId } = useParams<Params>()
-  const { data: token } = useTokenStore(collectionAddress, tokenId)
+  const chainStore = useChainStore()
+  const { data: token } = useTokenStore(collectionAddress, tokenId, chainStore.selectedChain?.chain.id)
 
   return (
     <>

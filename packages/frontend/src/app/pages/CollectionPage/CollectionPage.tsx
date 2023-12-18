@@ -4,8 +4,8 @@ import { Outlet, useLocation, useParams } from 'react-router'
 
 import FileLogo from '../../../assets/FilemarketFileLogo.png'
 import { styled } from '../../../styles'
+import { useChainStore } from '../../hooks/useChainStore'
 import { useCollectionTokenListStore } from '../../hooks/useCollectionTokenListStore'
-import { useConfig } from '../../hooks/useConfig'
 import { useMultiChainStore } from '../../hooks/useMultiChainStore'
 import { Badge, Container, gradientPlaceholderImg, Link, NavLink, Tabs, textVariant } from '../../UIkit'
 import { TabsContainer } from '../../UIkit/Tabs/TabsContainer'
@@ -108,8 +108,10 @@ const StyledContainer = styled(Container, {
 const CollectionPage = observer(() => {
   const { collectionAddress, chainName } = useParams<Params>()
   useMultiChainStore()
-  const { data: collectionAndNfts } = useCollectionTokenListStore(collectionAddress, chainName)
-  const config = useConfig()
+
+  const chainStore = useChainStore(chainName)
+
+  const { data: collectionAndNfts } = useCollectionTokenListStore(collectionAddress, chainStore.selectedChain?.chain.id)
   const { pathname: currentPath } = useLocation()
 
   const collectionImgUrl = useMemo(() => {
@@ -164,12 +166,12 @@ const CollectionPage = observer(() => {
                 <Link
                   target='_blank'
                   rel='noopener noreferrer'
-                  href={`${config?.chain.blockExplorers?.default.url}` +
+                  href={`${chainStore.selectedChain?.chain.blockExplorers?.default.url}` +
                       `/address/${collectionAndNfts.collection?.address}`}
                 >
                   <Badge
                     content={{
-                      title: config?.chain.blockExplorers?.default.name,
+                      title: chainStore.selectedChain?.chain.blockExplorers?.default.name,
                       value: reduceAddress(collectionAndNfts.collection?.address ?? ''),
                     }}
                   />

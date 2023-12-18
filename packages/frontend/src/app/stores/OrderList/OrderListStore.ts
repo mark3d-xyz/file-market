@@ -132,7 +132,7 @@ export class OpenOrderListStore implements IStoreRequester, IActivateDeactivate 
         },
         priceUsd: order?.priceUsd,
         price: order?.price,
-        chainName: this.currentBlockChainStore.chain?.name,
+        chain: this.currentBlockChainStore.chain,
         chainImg: this.currentBlockChainStore.configChain?.imgGray,
       }))
   }

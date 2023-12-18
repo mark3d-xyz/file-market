@@ -136,7 +136,7 @@ export class CollectionAndTokenListStore implements IActivateDeactivate<[string]
         text: 'Go to page',
         link: `/collection/${this.currentBlockChainStore.chain?.name}/${token?.collectionAddress}/${token?.tokenId}`,
       },
-      chainName: this.currentBlockChainStore.chain?.name,
+      chainName: this.currentBlockChainStore.chain,
       chainImg: this.currentBlockChainStore.configChain?.imgGray,
       priceUsd: order?.statuses?.[0]?.status === OrderStatus.Created ? order?.priceUsd : undefined,
       price: order?.statuses?.[0]?.status === OrderStatus.Created ? order?.price : undefined,

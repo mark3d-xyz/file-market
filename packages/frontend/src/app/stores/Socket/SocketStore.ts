@@ -13,13 +13,13 @@ interface ISubscribe<T, M> {
   params: T
   url: string
   type: ConnectionType
-  onSubscribeMessage: (event: MessageEvent<M>, chainName?: string) => void
-  chainName?: string
+  onSubscribeMessage: (event: MessageEvent<M>, chainId?: number) => void
+  chainId?: number
   onClose: () => void
 }
 
 interface IFindSocket {
-  chainName?: string
+  chainId?: number
   type: ConnectionType
 }
 
@@ -40,19 +40,19 @@ export class SocketStore {
     this.tokenStore = rootStore.tokenStore
   }
 
-  private readonly createISocketConnect = ({ socket, type, chainName, lastMessage }: ISocketConnect): ISocketConnect => {
+  private readonly createISocketConnect = ({ socket, type, chainId, lastMessage }: ISocketConnect): ISocketConnect => {
     return ({
       socket,
       type,
-      chainName,
+      chainId,
       lastMessage,
     })
   }
 
   private readonly subscribe = <T, M>(props: ISubscribe<T, M>) => {
-    const { params, type, url, onSubscribeMessage, chainName, onClose } = props
+    const { params, type, url, onSubscribeMessage, chainId, onClose } = props
     let socket: WebSocket
-    const socketConnect = this.socketConnects[this.findIndexSocket({ type, chainName })]
+    const socketConnect = this.socketConnects[this.findIndexSocket({ type, chainId })]
     console.log(this.socketConnects)
     console.log(props)
     console.log(socketConnect)
@@ -60,7 +60,7 @@ export class SocketStore {
       console.log('Old socket')
       socketConnect.socket?.send(JSON.stringify(params))
       socketConnect.lastMessage = JSON.stringify(params)
-      const socket = this.socketConnects[this.findIndexSocket({ type, chainName })]?.socket
+      const socket = this.socketConnects[this.findIndexSocket({ type, chainId })]?.socket
       if (socket) {
         socket.onclose = onClose
       }
@@ -71,25 +71,25 @@ export class SocketStore {
         this.send(JSON.stringify(params))
       }
       socket.onmessage = function(event: MessageEvent<M>) {
-        onSubscribeMessage(event, chainName)
+        onSubscribeMessage(event, chainId)
       }
       socket.onclose = onClose
       const lastMessage = JSON.stringify(params)
-      this.socketConnects = [...this.socketConnects, (this.createISocketConnect({ socket, type, chainName, lastMessage }))]
+      this.socketConnects = [...this.socketConnects, (this.createISocketConnect({ socket, type, chainId, lastMessage }))]
     }
   }
 
-  private readonly findIndexSocket = ({ type, chainName }: IFindSocket) => {
+  private readonly findIndexSocket = ({ type, chainId }: IFindSocket) => {
     return this.socketConnects.findIndex(item => {
-      if (chainName) {
-        return item.type === type && item.chainName === chainName && item.socket?.readyState === WebSocket.OPEN
+      if (chainId !== undefined) {
+        return item.type === type && item.chainId === chainId && item.socket?.readyState === WebSocket.OPEN
       }
 
       return item.type === type && item.socket?.readyState === WebSocket.OPEN
     })
   }
 
-  private readonly onMessageSubscribeToEft = (event: MessageEvent<string>, chainName?: string) => {
+  private readonly onMessageSubscribeToEft = (event: MessageEvent<string>) => {
     const data = JSON.parse(event.data) as EFTSubscriptionMessage
     if (!data || Object.keys(data).length === 0) {
       // sometimes backend sends empty subscription
@@ -111,8 +111,8 @@ export class SocketStore {
     if (!this.transferStore.isCanRedirectMint && token) this.transferStore.setIsCanRedirectMint(true)
   }
 
-  disconnect({ type, chainName }: IFindSocket) {
-    const socketConnect = this.socketConnects[this.findIndexSocket({ type, chainName })]
+  disconnect({ type, chainId }: IFindSocket) {
+    const socketConnect = this.socketConnects[this.findIndexSocket({ type, chainId })]
     console.log('Disconnect')
     if (socketConnect?.socket) {
       socketConnect.socket.onclose = () => {}
@@ -120,10 +120,10 @@ export class SocketStore {
     }
   }
 
-  subscribeToEft(params: EFTSubscriptionRequest, chainName?: string) {
-    const wsUrl = this.multiChainStore.getChainByName(chainName)?.wsUrl
+  subscribeToEft(params: EFTSubscriptionRequest, chainId?: number) {
+    const wsUrl = this.multiChainStore.getChainById(chainId)?.wsUrl
     this.socketConnects.forEach(item => {
-      if (item.chainName !== chainName && item.type === ConnectionType.Eft) this.disconnect({ type: item.type, chainName: item.chainName })
+      if (item.chainId !== chainId && item.type === ConnectionType.Eft) this.disconnect({ type: item.type, chainId })
     })
     this.subscribe<EFTSubscriptionRequest, string>({
       params,
@@ -131,9 +131,9 @@ export class SocketStore {
       type: ConnectionType.Eft,
       onSubscribeMessage: this.onMessageSubscribeToEft,
       onClose: () => {
-        setTimeout(() => { this.subscribeToEft(params, chainName) }, 2000)
+        setTimeout(() => { this.subscribeToEft(params, chainId) }, 2000)
       },
-      chainName,
+      chainId,
     })
   }
 
@@ -142,14 +142,4 @@ export class SocketStore {
 
     return socket
   }
-
-  // unsubscribeEft() {
-  //   this.disconnect(ConnectionType.Eft)
-  // }
-  //
-  // get isConnectedEft() {
-  //   const socketConnect = this.socketConnects[this.findIndexSocket({ type: ConnectionType.Eft })]
-  //
-  //   return socketConnect?.socket?.readyState === WebSocket.OPEN
-  // }
 }

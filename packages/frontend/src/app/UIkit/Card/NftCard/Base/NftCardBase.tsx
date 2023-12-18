@@ -2,6 +2,7 @@ import { Tooltip } from '@nextui-org/react'
 import { observer } from 'mobx-react-lite'
 import React, { type MouseEventHandler, type PropsWithChildren, type ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { type Chain } from 'wagmi'
 
 import { CardFlame } from '../../../../components/MarketCard/Flames'
 import { type TokenFullId } from '../../../../processing/types'
@@ -36,7 +37,7 @@ interface NftCardProps extends PropsWithChildren {
     to: string
   }
   chainImg?: string
-  chainName?: string
+  chain?: Chain
 }
 
 export const NftCardBase: React.FC<NftCardProps> = observer(({
@@ -51,7 +52,7 @@ export const NftCardBase: React.FC<NftCardProps> = observer(({
   children,
   button,
   chainImg,
-  chainName,
+  chain,
   onFlameSuccess,
 }) => {
   const navigate = useNavigate()
@@ -75,7 +76,7 @@ export const NftCardBase: React.FC<NftCardProps> = observer(({
             </Tooltip>
             <StyledChain>
               <img src={chainImg} />
-              <Txt primary1 style={{ fontSize: '10px', color: '#6B6F76', lineHeight: '16px' }}>{chainName}</Txt>
+              <Txt primary1 style={{ fontSize: '10px', color: '#6B6F76', lineHeight: '16px' }}>{chain?.name}</Txt>
             </StyledChain>
           </StyledTypeAndChainContainer>
           <CardImg src={imgSrc} />
@@ -99,6 +100,7 @@ export const NftCardBase: React.FC<NftCardProps> = observer(({
                   onSuccess={onFlameSuccess}
                   likesCount={likesCount}
                   color={'rgb(107, 111, 118)'}
+                  chain={chain}
                 />
                 <StyledButton
                   primary

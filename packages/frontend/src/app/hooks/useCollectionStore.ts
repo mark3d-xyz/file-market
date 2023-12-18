@@ -7,9 +7,9 @@ import { useStores } from './useStores'
  * Returns store containing collection details
  * @param collectionAddress
  */
-export function useCollectionStore(collectionAddress?: string, chainName?: string) {
+export function useCollectionStore(collectionAddress?: string, chainId?: number) {
   const { collectionStore } = useStores()
-  useActivateDeactivateRequireParams(collectionStore, collectionAddress, chainName)
+  useActivateDeactivateRequireParams(collectionStore, collectionAddress, chainId)
 
   return collectionStore
 }

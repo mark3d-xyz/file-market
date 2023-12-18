@@ -1,4 +1,5 @@
 import React from 'react'
+import { type Chain } from 'wagmi'
 
 import { CardFlame } from '../../../../components/MarketCard/Flames'
 import { type typeFiles } from '../../../../components/MarketCard/helper/data'
@@ -16,7 +17,7 @@ interface IPanelInfoProps {
   typeFile?: typeFiles
   onViewFileClick: () => void
   onFlameSuccess?: () => void
-  chainName?: string
+  chain?: Chain
 }
 
 export const PanelInfo = ({
@@ -28,7 +29,7 @@ export const PanelInfo = ({
   typeFile,
   onFlameSuccess,
   onViewFileClick,
-  chainName,
+  chain,
 }: IPanelInfoProps) => {
   return (
     <StyledPanelInfo>
@@ -38,7 +39,7 @@ export const PanelInfo = ({
           onSuccess={onFlameSuccess}
           likesCount={likesCount}
           isHasFlameText
-          chainName={chainName}
+          chain={chain}
         />
         <Share />
         {(isCanViewFile && !isLoadingFile) && (
