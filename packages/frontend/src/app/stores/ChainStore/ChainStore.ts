@@ -31,6 +31,8 @@ export class ChainStore implements IActivateDeactivate<[string]> {
   }
 
   activate(chainName?: string): void {
+    if (!chainName) return
+
     this.isActivated = true
     this.selectedChain = this.multiChainStore.getChainByName(chainName)
   }

@@ -160,7 +160,7 @@ export const CardFlame = observer(({
     tlGlowingRef,
   })
 
-  const { like, ...statuses } = useLike()
+  const { like, setResult, ...statuses } = useLike()
 
   const { changeNetwork, chain: networkChain } = useChangeNetwork()
 
@@ -193,6 +193,7 @@ export const CardFlame = observer(({
   useEffect(() => {
     if (!statuses.result) return
 
+    setResult(undefined)
     onSuccess?.()
   }, [statuses.result])
 

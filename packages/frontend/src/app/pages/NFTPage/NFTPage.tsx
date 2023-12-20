@@ -118,7 +118,9 @@ const ControlStickyBlock = styled('div', {
 })
 
 const NFTPage: React.FC = observer(() => {
-  useSubscribeToEft()
+  useSubscribeToEft({
+    isPageContainChain: true,
+  })
   const { collectionAddress, tokenId, chainName } = useParams<Params>()
   const chainStore = useChainStore(chainName)
   const transferStore = useTransferStore(collectionAddress, tokenId, chainStore.selectedChain?.chain.id)
