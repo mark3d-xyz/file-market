@@ -8,6 +8,10 @@ export const useContract = <A extends Abi>(address: string | undefined, abi: A |
   const { data: walletClient } = useWalletClient()
 
   return useMemo(() => {
+    console.log(address)
+    console.log(walletClient)
+    console.log(abi)
+    console.log(chain)
     if (address && walletClient && abi && chain) {
       return getContract({
         abi,

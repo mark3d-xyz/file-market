@@ -32,8 +32,8 @@ const Pre = styled('pre', {
 })
 
 const DescriptionSection = () => {
-  const { collectionAddress, tokenId } = useParams<Params>()
-  const chainStore = useChainStore()
+  const { collectionAddress, tokenId, chainName } = useParams<Params>()
+  const chainStore = useChainStore(chainName)
   const { data: token } = useTokenStore(collectionAddress, tokenId, chainStore.selectedChain?.chain.id)
 
   return (

@@ -30,7 +30,7 @@ export class ChainStore implements IActivateDeactivate<[string]> {
     })
   }
 
-  activate(chainName?: string): void {
+  activate(chainName: string | undefined): void {
     if (!chainName) return
 
     this.isActivated = true

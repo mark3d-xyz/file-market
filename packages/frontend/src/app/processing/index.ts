@@ -18,7 +18,6 @@
  * - Обработка случаев недобросовестного поведения при передаче nft через аукцион или нет.
  */
 
-export * from './contracts'
 export * from './HiddenFileBase'
 export * from './HiddenFileBuyer'
 export * from './HiddenFileOwner'

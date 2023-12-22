@@ -77,7 +77,7 @@ export const NFTDeal: FC<NFTDealProps> = observer(({
   const { isConnected } = useAccount()
   const { changeNetwork, chain } = useChangeNetwork()
   const { chainName } = useParams<Params>()
-  const chainStore = useChainStore()
+  const chainStore = useChainStore(chainName)
   const isNetworkIncorrect = useMemo(() => {
     return chain?.name !== chainName
   }, [chain, chainName])
