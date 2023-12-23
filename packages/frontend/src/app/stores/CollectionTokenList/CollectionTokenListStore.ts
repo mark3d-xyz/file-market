@@ -19,7 +19,6 @@ import { type MultiChainStore } from '../MultiChain/MultiChainStore'
 
 export class CollectionTokenListStore implements IActivateDeactivate<[string, number]>, IStoreRequester {
   errorStore: ErrorStore
-  currentBlockChainStore: CurrentBlockChainStore
   multiChainStore: MultiChainStore
 
   currentRequest?: RequestContext
@@ -27,6 +26,8 @@ export class CollectionTokenListStore implements IActivateDeactivate<[string, nu
   isLoaded = false
   isLoading = false
   isActivated = false
+
+  chainId?: number = undefined
 
   data: CollectionData = {
     total: 0,
@@ -43,11 +44,9 @@ export class CollectionTokenListStore implements IActivateDeactivate<[string, nu
     multiChainStore: MultiChainStore
   }) {
     this.errorStore = errorStore
-    this.currentBlockChainStore = currentBlockChainStore
     this.multiChainStore = multiChainStore
     makeAutoObservable(this, {
       errorStore: false,
-      currentBlockChainStore: false,
       multiChainStore: false,
     })
   }
@@ -92,6 +91,8 @@ export class CollectionTokenListStore implements IActivateDeactivate<[string, nu
 
     this.api = this.multiChainStore.getApiById(chainId)
     this.request(this.api)
+
+    this.chainId = chainId
   }
 
   deactivate(): void {
@@ -122,6 +123,8 @@ export class CollectionTokenListStore implements IActivateDeactivate<[string, nu
   get nftCards() {
     if (!this.data.tokens) return []
 
+    const config = this.multiChainStore.getChainById(this.chainId)
+
     return this.data.tokens.map(({ token, order }) => ({
       collectionName: this.data.collection?.name ?? '',
       imageURL: token?.image ? getHttpLinkFromIpfsString(token.image) : gradientPlaceholderImg,
@@ -136,7 +139,7 @@ export class CollectionTokenListStore implements IActivateDeactivate<[string, nu
         url: token?.ownerProfile?.username ?? token?.owner,
       },
       button: {
-        link: `/collection/${this.currentBlockChainStore.chain?.name}/${token?.collectionAddress}/${token?.tokenId}`,
+        link: `/collection/${config?.chain?.name}/${token?.collectionAddress}/${token?.tokenId}`,
         text: 'Go to page',
       },
       tokenFullId: {
@@ -147,8 +150,8 @@ export class CollectionTokenListStore implements IActivateDeactivate<[string, nu
       hiddenFileMeta: token?.hiddenFileMeta,
       priceUsd: order?.statuses?.[0]?.status === OrderStatus.Created ? order?.priceUsd : undefined,
       price: order?.statuses?.[0]?.status === OrderStatus.Created ? order?.price : undefined,
-      chain: this.currentBlockChainStore.chain,
-      chainImg: this.currentBlockChainStore.configChain?.imgGray,
+      chain: config?.chain?.name,
+      chainImg: config?.imgGray,
     }))
   }
 }

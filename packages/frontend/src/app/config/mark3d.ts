@@ -1,7 +1,7 @@
 import { parseUnits } from 'viem'
 
 export const fee = +import.meta.env.VITE_MARKETPLACE_FEE
-const isMainnet = import.meta.env.VITE_IS_MAINNET
+export const isMainnet = import.meta.env.VITE_IS_MAINNET
 
 export const mark3dConfig = {
   externalLink: 'https://filemarket.xyz/',

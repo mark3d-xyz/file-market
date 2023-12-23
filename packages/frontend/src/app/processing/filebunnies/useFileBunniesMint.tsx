@@ -2,13 +2,13 @@ import { useMemo, useState } from 'react'
 import { useAccount } from 'wagmi'
 
 import { SuccessNavBody, SuccessOkBody } from '../../components/Modal/Modal'
-import { mark3dConfig } from '../../config/mark3d'
+import { isMainnet, mark3dConfig } from '../../config/mark3d'
 import { useStatusState } from '../../hooks'
 import { useApi } from '../../hooks/useApi'
 import { useAuth } from '../../hooks/useAuth'
 import { useCheckWhiteListStore } from '../../hooks/useCheckWhiteListStore'
 import { useComputedMemo } from '../../hooks/useComputedMemo'
-import { useCurrentBlockChain } from '../../hooks/useCurrentBlockChain'
+import { useMultiChainStore } from '../../hooks/useMultiChainStore'
 import { useStatusModal } from '../../hooks/useStatusModal'
 import { wrapRequest } from '../../utils/error/wrapRequest'
 import { useFulfillOrder } from '../nft-interaction'
@@ -27,11 +27,8 @@ export const useFileBunniesMint = () => {
   const api = useApi()
   const [isFreeMintSoldOut, setIsFreeMintSoldOut] = useState<boolean>(false)
   const [isPayedMintSoldOut, setIsPayedMintSoldOut] = useState<boolean>(false)
-  const currentChainStore = useCurrentBlockChain()
 
-  const isCorrectNetwork = useMemo(() => {
-    return currentChainStore.chain?.name === 'Filecoin'
-  }, [currentChainStore.chain])
+  const multiChainStore = useMultiChainStore()
 
   const { connect } = useAuth()
   const [isLoadingReq, setIsLoadingReq] = useState<boolean>(false)
@@ -64,6 +61,11 @@ export const useFileBunniesMint = () => {
 
     return tokenResp.tokenId
   }
+
+  const chainName = useMemo(() => {
+    return isMainnet ? multiChainStore.getChainById(314)?.chain?.name : multiChainStore.getChainById(314159)?.chain?.name
+  }, [isMainnet, multiChainStore])
+
   const getSignWhiteList = async({ whiteList, address }: IGetSignWhiteList) => {
     if (!(whiteList && address)) return
     const sign = await wrapRequest(async () => api.collections.fileBunniesWhitelistSignDetail(whiteList, address))
@@ -102,7 +104,7 @@ export const useFileBunniesMint = () => {
     setIsLoadingReq(false)
     setModalBody(<SuccessNavBody
       buttonText='Show my FileBunny'
-      link={`/collection/${collectionAddress}/${tokenId}`}
+      link={`/collection/${chainName}/${collectionAddress}/${tokenId}`}
       onPress={() => {
         setModalOpen(false)
       }}
@@ -146,7 +148,7 @@ export const useFileBunniesMint = () => {
       setIsLoadingReq(false)
       setModalBody(<SuccessNavBody
         buttonText='Show my FileBunny'
-        link={`/collection/${collectionAddress}/${tokenId}`}
+        link={`/collection/${chainName}/${collectionAddress}/${tokenId}`}
         onPress={() => {
           setModalOpen(false)
         }}
@@ -166,7 +168,7 @@ export const useFileBunniesMint = () => {
 
   return {
     isFreeMintSoldOut: ((+(whiteListStore.data?.ordersLeft?.free ?? 0) <= 0) || isFreeMintSoldOut) && isConnected,
-    isPayedMintSoldOut: ((+(whiteListStore.data?.ordersLeft?.payed ?? 0) <= 0) || isPayedMintSoldOut) && isConnected && isCorrectNetwork,
+    isPayedMintSoldOut: ((+(whiteListStore.data?.ordersLeft?.payed ?? 0) <= 0) || isPayedMintSoldOut) && isConnected,
     isLoading,
     modalProps,
     payedMint,
