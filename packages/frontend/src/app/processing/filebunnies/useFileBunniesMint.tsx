@@ -13,6 +13,9 @@ import { useStatusModal } from '../../hooks/useStatusModal'
 import { wrapRequest } from '../../utils/error/wrapRequest'
 import { useFulfillOrder } from '../nft-interaction'
 
+const filecoinMainnetId = 314
+const filecointTestnetId = 314159
+
 interface ISequencerReq {
   suffix?: string
   collectionAddress?: string
@@ -63,7 +66,9 @@ export const useFileBunniesMint = () => {
   }
 
   const chainName = useMemo(() => {
-    return isMainnet ? multiChainStore.getChainById(314)?.chain?.name : multiChainStore.getChainById(314159)?.chain?.name
+    return isMainnet
+      ? multiChainStore.getChainById(filecoinMainnetId)?.chain?.name
+      : multiChainStore.getChainById(filecointTestnetId)?.chain?.name
   }, [isMainnet, multiChainStore])
 
   const getSignWhiteList = async({ whiteList, address }: IGetSignWhiteList) => {
