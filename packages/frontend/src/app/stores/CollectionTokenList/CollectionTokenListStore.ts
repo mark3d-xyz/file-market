@@ -150,7 +150,7 @@ export class CollectionTokenListStore implements IActivateDeactivate<[string, nu
       hiddenFileMeta: token?.hiddenFileMeta,
       priceUsd: order?.statuses?.[0]?.status === OrderStatus.Created ? order?.priceUsd : undefined,
       price: order?.statuses?.[0]?.status === OrderStatus.Created ? order?.price : undefined,
-      chain: config?.chain?.name,
+      chain: config?.chain,
       chainImg: config?.imgGray,
     }))
   }
