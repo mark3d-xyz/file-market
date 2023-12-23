@@ -13,10 +13,6 @@ import {
 import { type ErrorStore } from '../Error/ErrorStore'
 import { type MultiChainStore } from '../MultiChain/MultiChainStore'
 
-/**
- * Stores only ACTIVE order state.
- * Does not listen for updates, need to reload manually.
- */
 export class CurrentBlockChainStore implements IStoreRequester, IActivateDeactivate {
   errorStore: ErrorStore
   multiChainStore: MultiChainStore

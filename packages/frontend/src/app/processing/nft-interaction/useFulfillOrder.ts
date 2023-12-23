@@ -6,11 +6,9 @@ import { useAccount } from 'wagmi'
 import { useStatusState } from '../../hooks'
 import { useCallContract } from '../../hooks/useCallContract'
 import { useConfig } from '../../hooks/useConfig'
-import { useExchangeContract } from '../contracts'
 import { useHiddenFileProcessorFactory } from '../HiddenFileProcessorFactory'
 import {
   assertAccount, assertCollection, assertConfig,
-  assertContract,
   assertTokenId,
   bufferToEtherHex,
 } from '../utils'
@@ -30,7 +28,6 @@ interface IFulFillOrder {
 }
 
 export function useFulfillOrder() {
-  const { contract } = useExchangeContract()
   const { address } = useAccount()
   const { wrapPromise, statuses } = useStatusState<TransactionReceipt, IFulFillOrder>()
   const factory = useHiddenFileProcessorFactory()
@@ -39,8 +36,8 @@ export function useFulfillOrder() {
   const { callContract } = useCallContract()
 
   const fulfillOrder = useCallback(wrapPromise(async ({ collectionAddress, tokenId, price, signature }) => {
+    console.log(config)
     assertCollection(collectionAddress)
-    assertContract(contract, config?.exchangeToken.name ?? '')
     assertTokenId(tokenId)
     assertAccount(address)
     assertConfig(config)
@@ -66,7 +63,7 @@ export function useFulfillOrder() {
         minBalance: BigInt(price),
       },
     )
-  }), [contract, address, wrapPromise])
+  }), [address, wrapPromise])
 
   return { ...statuses, fulfillOrder }
 }

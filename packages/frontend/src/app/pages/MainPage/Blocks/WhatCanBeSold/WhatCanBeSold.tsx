@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useAccount } from 'wagmi'
+
 import { useAuth } from '../../../../hooks/useAuth'
 import Title from '../../components/SectionTitle/SectionTitle'
 import { WhatCanBeSoldData } from '../../helper/WhatCanBeSold/data'

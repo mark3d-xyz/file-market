@@ -1,32 +1,25 @@
 import { makeAutoObservable } from 'mobx'
 
-import { type Api, type Collection, type CollectionResponse } from '../../../swagger/Api'
+import { type IMultiChainConfig } from '../../config/multiChainConfigType'
 import {
   type IActivateDeactivate,
-  type IStoreRequester,
   type RequestContext,
-  storeRequest,
   storeReset,
 } from '../../utils/store'
 import { type ErrorStore } from '../Error/ErrorStore'
 import { type MultiChainStore } from '../MultiChain/MultiChainStore'
 
-export class CollectionStore implements IActivateDeactivate<[string, number]>, IStoreRequester {
+export class ChainStore implements IActivateDeactivate<[string]> {
   errorStore: ErrorStore
   multiChainStore: MultiChainStore
+
+  selectedChain?: IMultiChainConfig = undefined
 
   currentRequest?: RequestContext
   requestCount = 0
   isLoaded = false
-  isLoading = false
+  isLoading = true
   isActivated = false
-
-  collection?: Collection
-  address: string = ''
-
-  api?: Api<unknown>
-
-  isCustomApi: boolean = true
 
   constructor({ errorStore, multiChainStore }: { errorStore: ErrorStore, multiChainStore: MultiChainStore }) {
     this.errorStore = errorStore
@@ -37,34 +30,20 @@ export class CollectionStore implements IActivateDeactivate<[string, number]>, I
     })
   }
 
-  private request(address: string, api?: Api<unknown>) {
-    if (!api) return
-    storeRequest<CollectionResponse>(
-      this,
-      api.collections.collectionsDetail(address),
-      (resp) => {
-        this.collection = resp.collection
-      },
-    )
-  }
+  activate(chainName: string | undefined): void {
+    if (!chainName) return
 
-  activate(address: string, chainId?: number): void {
     this.isActivated = true
-    this.address = address
-    this.api = this.multiChainStore.getApiById(chainId)
-    this.request(address, this.api)
+    this.selectedChain = this.multiChainStore.getChainByName(chainName)
   }
 
   deactivate(): void {
     this.reset()
+    this.selectedChain = undefined
     this.isActivated = false
   }
 
   reset(): void {
     storeReset(this)
-  }
-
-  reload(): void {
-    this.request(this.address, this.api)
   }
 }

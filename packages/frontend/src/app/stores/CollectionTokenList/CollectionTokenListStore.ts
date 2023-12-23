@@ -17,9 +17,8 @@ import { type CurrentBlockChainStore } from '../CurrentBlockChain/CurrentBlockCh
 import { type ErrorStore } from '../Error/ErrorStore'
 import { type MultiChainStore } from '../MultiChain/MultiChainStore'
 
-export class CollectionTokenListStore implements IActivateDeactivate<[string, string]>, IStoreRequester {
+export class CollectionTokenListStore implements IActivateDeactivate<[string, number]>, IStoreRequester {
   errorStore: ErrorStore
-  currentBlockChainStore: CurrentBlockChainStore
   multiChainStore: MultiChainStore
 
   currentRequest?: RequestContext
@@ -27,6 +26,8 @@ export class CollectionTokenListStore implements IActivateDeactivate<[string, st
   isLoaded = false
   isLoading = false
   isActivated = false
+
+  chainId?: number = undefined
 
   data: CollectionData = {
     total: 0,
@@ -43,11 +44,9 @@ export class CollectionTokenListStore implements IActivateDeactivate<[string, st
     multiChainStore: MultiChainStore
   }) {
     this.errorStore = errorStore
-    this.currentBlockChainStore = currentBlockChainStore
     this.multiChainStore = multiChainStore
     makeAutoObservable(this, {
       errorStore: false,
-      currentBlockChainStore: false,
       multiChainStore: false,
     })
   }
@@ -74,19 +73,26 @@ export class CollectionTokenListStore implements IActivateDeactivate<[string, st
   }
 
   requestMore() {
+    if (!this.api) return
+
     const lastTokenId = lastItem(this.data.tokens ?? [])?.token?.tokenId
     storeRequest(
       this,
-      this.currentBlockChainStore.api.collections.fullDetail(this.collectionAddress, { lastTokenId, limit: 10 }),
+      this.api.collections.fullDetail(this.collectionAddress, { lastTokenId, limit: 10 }),
       (data) => { this.addData(data) },
     )
   }
 
-  activate(collectionAddress: string, chainName: string): void {
+  activate(collectionAddress: string, chainId: number): void {
     this.isActivated = true
     this.collectionAddress = collectionAddress
-    this.api = this.multiChainStore.getApiByName(chainName)
+
+    console.log(chainId)
+
+    this.api = this.multiChainStore.getApiById(chainId)
     this.request(this.api)
+
+    this.chainId = chainId
   }
 
   deactivate(): void {
@@ -117,6 +123,8 @@ export class CollectionTokenListStore implements IActivateDeactivate<[string, st
   get nftCards() {
     if (!this.data.tokens) return []
 
+    const config = this.multiChainStore.getChainById(this.chainId)
+
     return this.data.tokens.map(({ token, order }) => ({
       collectionName: this.data.collection?.name ?? '',
       imageURL: token?.image ? getHttpLinkFromIpfsString(token.image) : gradientPlaceholderImg,
@@ -131,7 +139,7 @@ export class CollectionTokenListStore implements IActivateDeactivate<[string, st
         url: token?.ownerProfile?.username ?? token?.owner,
       },
       button: {
-        link: `/collection/${this.currentBlockChainStore.chain?.name}/${token?.collectionAddress}/${token?.tokenId}`,
+        link: `/collection/${config?.chain?.name}/${token?.collectionAddress}/${token?.tokenId}`,
         text: 'Go to page',
       },
       tokenFullId: {
@@ -142,8 +150,8 @@ export class CollectionTokenListStore implements IActivateDeactivate<[string, st
       hiddenFileMeta: token?.hiddenFileMeta,
       priceUsd: order?.statuses?.[0]?.status === OrderStatus.Created ? order?.priceUsd : undefined,
       price: order?.statuses?.[0]?.status === OrderStatus.Created ? order?.price : undefined,
-      chainName: this.currentBlockChainStore.chain?.name,
-      chainImg: this.currentBlockChainStore.configChain?.imgGray,
+      chain: config?.chain?.name,
+      chainImg: config?.imgGray,
     }))
   }
 }

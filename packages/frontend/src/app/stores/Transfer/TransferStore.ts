@@ -15,7 +15,7 @@ import { type TokenStore } from '../Token/TokenStore'
  * Stores only ACTIVE (i.e. created and not finished/cancelled) transfer state
  */
 export class TransferStore implements IStoreRequester,
-  IActivateDeactivate<[string, string, string]>, IHiddenFilesTokenEventsListener {
+  IActivateDeactivate<[string, string, number]>, IHiddenFilesTokenEventsListener {
   errorStore: ErrorStore
   multiChainStore: MultiChainStore
 
@@ -80,10 +80,10 @@ export class TransferStore implements IStoreRequester,
       })
   }
 
-  activate(collectionAddress: string, tokenId: string, chainName: string): void {
+  activate(collectionAddress: string, tokenId: string, chainId: number): void {
     this.isActivated = true
     this.tokenFullId = { collectionAddress, tokenId }
-    this.api = this.multiChainStore.getApiByName(chainName)
+    this.api = this.multiChainStore.getApiById(chainId)
     this.request(this.tokenFullId, this.api)
     console.log('ACTIVVVVEAT')
   }

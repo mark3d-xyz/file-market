@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom'
 
 import FileLogo from '../../../../../assets/FilemarketFileLogo.png'
 import { styled } from '../../../../../styles'
+import { useChainStore } from '../../../../hooks/useChainStore'
 import { useCollectionStore } from '../../../../hooks/useCollectionStore'
 import { useTokenStore } from '../../../../hooks/useTokenStore'
 import { Badge, gradientPlaceholderImg, NavLink } from '../../../../UIkit'
@@ -24,6 +25,9 @@ const BadgesContainer = styled('div', {
 
 const HomeLandSection = observer(() => {
   const { collectionAddress, tokenId, chainName } = useParams<Params>()
+
+  const chainStore = useChainStore(chainName)
+
   const {
     data: token,
     creatorHasImg,
@@ -34,8 +38,8 @@ const HomeLandSection = observer(() => {
     ownerImg,
     ownerName,
     ownerUrl,
-  } = useTokenStore(collectionAddress, tokenId)
-  const { collection } = useCollectionStore(collectionAddress, chainName)
+  } = useTokenStore(collectionAddress, tokenId, chainStore.selectedChain?.chain.id)
+  const { collection } = useCollectionStore(collectionAddress, chainStore.selectedChain?.chain.id)
 
   const { collectionImgUrl, collectionName } = useMemo(() => {
     const result = {

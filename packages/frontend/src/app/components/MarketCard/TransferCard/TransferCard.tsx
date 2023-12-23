@@ -1,4 +1,5 @@
 import React from 'react'
+import { type Chain } from 'wagmi'
 
 import { type HiddenFileMetaData } from '../../../../swagger/Api'
 import { type TokenFullId } from '../../../processing/types'
@@ -24,7 +25,7 @@ export interface TransferCardProps {
   }
   price?: string
   status: string
-  chainName?: string
+  chain?: Chain
   chainImg?: string
   onFlameSuccess: () => void
 }
@@ -42,7 +43,7 @@ export const TransferCard: React.FC<TransferCardProps> = ({
   likesCount,
   status,
   button,
-  chainName,
+  chain,
   chainImg,
 }) => {
   return (
@@ -55,7 +56,7 @@ export const TransferCard: React.FC<TransferCardProps> = ({
       collectionName={collectionName}
       fileType={<FileType categories={categories} hiddenFileMeta={hiddenFileMeta} />}
       button={{ to: button.link, text: button.text }}
-      chainName={chainName}
+      chain={chain}
       chainImg={chainImg}
       onFlameSuccess={onFlameSuccess}
     >

@@ -1,22 +1,21 @@
 import { useCallback, useMemo } from 'react'
 import { useParams } from 'react-router'
 import { formatUnits } from 'viem'
-import { type Chain } from 'wagmi'
 
 import { formatNumber } from '../utils/number'
 import { type Params } from '../utils/router'
 import { formatCurrency as formatCurrencyProps } from '../utils/web3'
+import { useChainStore } from './useChainStore'
 import { useConfig } from './useConfig'
-import { useMultiChainStore } from './useMultiChainStore'
 
 export const useCurrency = () => {
   const configHook = useConfig()
   const { chainName } = useParams<Params>()
-  const multiChainStore = useMultiChainStore()
+  const chainStore = useChainStore(chainName)
 
-  const chain: Chain = useMemo(() => {
-    return multiChainStore.getChainByName(chainName)?.chain ?? configHook.chain
-  }, [configHook, chainName])
+  const chain = useMemo(() => {
+    return chainStore.selectedChain?.chain ?? configHook.chain
+  }, [chainStore.selectedChain, configHook])
 
   const formatCurrency = useCallback((value: string) => {
     return formatCurrencyProps(value, chain)

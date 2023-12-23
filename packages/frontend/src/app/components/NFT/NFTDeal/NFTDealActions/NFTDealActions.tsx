@@ -24,6 +24,8 @@ const ButtonsContainer = styled(Tooltip, {
   },
 })
 
+const timeStampFreeBunniesUnlocked = 1703350800000
+
 export interface NFTDealActionsProps {
   tokenFullId: TokenFullId
   order?: Order
@@ -45,18 +47,17 @@ export const NFTDealActions: FC<NFTDealActionsProps> = observer(({
   runIsApprovedRefetch,
 }) => {
   const { blockStore, transferStore } = useStores()
-  const [serverTime, setServerTime] = useState<number>()
+  const [serverTime, setServerTime] = useState<number>(0)
   const isDisabled = !blockStore.canContinue || transferStore.isWaitingForContinue
   const config = useConfig()
   const timeService = new Api({ baseUrl: '/api' }).serverTime
   const collectionAddressNormalized = tokenFullId?.collectionAddress && getAddress(tokenFullId?.collectionAddress)
   const fileBunniesAddressNormalized = getAddress(config?.fileBunniesCollectionToken.address ?? '')
   const isFileBunnies = collectionAddressNormalized === fileBunniesAddressNormalized
-  const transferNumber = Number(transfer?.number)
 
   const isDisabledFileBunnies = useMemo(() => {
-    return isFileBunnies && +tokenFullId.tokenId < 7000
-  }, [isFileBunnies, transfer, tokenFullId, transferNumber])
+    return isFileBunnies && (serverTime < timeStampFreeBunniesUnlocked)
+  }, [isFileBunnies, serverTime])
 
   const fileBunniesText = useMemo(() => {
     return isDisabledFileBunnies ? 'Unlocked 24.12.2023' : ''
@@ -65,7 +66,7 @@ export const NFTDealActions: FC<NFTDealActionsProps> = observer(({
   useEffect(() => {
     if (!serverTime) {
       timeService.serverTimeList().then((res) => {
-        setServerTime(res.data.serverTime)
+        setServerTime(res.data.serverTime ?? 0)
       })
     }
   }, [serverTime])

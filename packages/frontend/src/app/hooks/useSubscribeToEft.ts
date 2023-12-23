@@ -1,24 +1,35 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { type EFTSubscriptionRequest } from '../../swagger/Api'
 import { type Params } from '../utils/router'
+import { useChainStore } from './useChainStore'
+import { useCurrentBlockChain } from './useCurrentBlockChain'
 import { useStores } from './useStores'
 
 interface IUseSubscribeToEft {
   isDisableListener?: boolean
+  isPageContainChain?: boolean
 }
 
 export const useSubscribeToEft = (props?: IUseSubscribeToEft) => {
   const { collectionAddress, tokenId, chainName } = useParams<Params>()
   const { socketStore } = useStores()
 
-  const subscribe = (params: EFTSubscriptionRequest, chainName?: string) => {
-    socketStore.subscribeToEft(params, chainName)
+  const chainStore = useChainStore(chainName)
+  const currentBlockChainStore = useCurrentBlockChain()
+
+  const chainId = useMemo(() => {
+    return props?.isPageContainChain && chainStore?.selectedChain ? chainStore.selectedChain?.chain.id : currentBlockChainStore?.chainId
+  }, [props?.isPageContainChain, currentBlockChainStore.chainId, chainStore?.selectedChain])
+
+  const subscribe = (params: EFTSubscriptionRequest) => {
+    socketStore.subscribeToEft(params, chainId)
   }
 
   useEffect(() => {
-    if (!props?.isDisableListener) socketStore.subscribeToEft({ collectionAddress, tokenId }, chainName)
+    console.log(chainId)
+    if (!props?.isDisableListener) socketStore.subscribeToEft({ collectionAddress, tokenId }, chainId)
   }, [props?.isDisableListener, chainName, collectionAddress, tokenId])
 
   return {

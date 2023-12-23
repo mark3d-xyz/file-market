@@ -26,5 +26,5 @@ export const paths: NavBarItemData[] = [
 ]
 
 export const pathsWithoutCurrentBlockchain: string[] = [
-  'branding', 'successGetAccess', 'collection', 'checkCrypto', 'settings',
+  'branding', 'successGetAccess', 'collection', 'checkCrypto', 'settings', 'fileBunnies',
 ]

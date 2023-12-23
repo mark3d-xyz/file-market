@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import { styled } from '../../../../styles'
 import { NFTCard } from '../../../components'
 import Plug from '../../../components/Plug/Plug'
+import { useChainStore } from '../../../hooks/useChainStore'
 import { useCollectionTokenListStore } from '../../../hooks/useCollectionTokenListStore'
 import { Button, InfiniteScroll, nftCardListCss, Txt } from '../../../UIkit'
 import { type Params } from '../../../utils/router'
@@ -37,7 +38,10 @@ const NoNftContainer = styled('div', {
 
 const NftSection = observer(() => {
   const { collectionAddress, chainName } = useParams<Params>()
-  const collectionTokenListStore = useCollectionTokenListStore(collectionAddress, chainName)
+
+  const chainStore = useChainStore(chainName)
+
+  const collectionTokenListStore = useCollectionTokenListStore(collectionAddress, chainStore.selectedChain?.chain.id)
   const navigate = useNavigate()
 
   return (

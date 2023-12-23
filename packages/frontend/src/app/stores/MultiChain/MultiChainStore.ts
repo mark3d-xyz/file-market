@@ -17,10 +17,6 @@ import {
 } from '../../utils/store'
 import { type ErrorStore } from '../Error/ErrorStore'
 
-/**
- * Stores only ACTIVE order state.
- * Does not listen for updates, need to reload manually.
- */
 export class MultiChainStore implements IStoreRequester, IActivateDeactivate {
   errorStore: ErrorStore
 
@@ -83,10 +79,10 @@ export class MultiChainStore implements IStoreRequester, IActivateDeactivate {
     return this.data?.find(item => item.chain?.name === chainName)
   }
 
-  getApiByName(chainName: string | undefined): Api<unknown> | undefined {
-    if (chainName === undefined) return
+  getApiById(chainId: number | undefined): Api<unknown> | undefined {
+    if (chainId === undefined) return
 
-    return new Api({ baseUrl: this.getChainByName(chainName)?.baseUrl })
+    return new Api({ baseUrl: this.getChainById(chainId)?.baseUrl })
   }
 
   getConfigById (chainId: number | undefined) {

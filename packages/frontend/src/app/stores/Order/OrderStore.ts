@@ -11,7 +11,7 @@ import { type MultiChainStore } from '../MultiChain/MultiChainStore'
  * Does not listen for updates, need to reload manually.
  */
 export class OrderStore implements IStoreRequester,
-  IActivateDeactivate<[string, string, string]> {
+  IActivateDeactivate<[string, string, number]> {
   errorStore: ErrorStore
   multiChainStore: MultiChainStore
 
@@ -49,10 +49,10 @@ export class OrderStore implements IStoreRequester,
       })
   }
 
-  activate(collectionAddress: string, tokenId: string, chainName: string): void {
+  activate(collectionAddress: string, tokenId: string, chainId: number): void {
     this.isActivated = true
     this.tokenFullId = { collectionAddress, tokenId }
-    this.api = this.multiChainStore.getApiByName(chainName)
+    this.api = this.multiChainStore.getApiById(chainId)
     this.request(this.tokenFullId, this.api)
   }
 
