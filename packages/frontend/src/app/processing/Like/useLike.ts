@@ -13,7 +13,7 @@ interface IUseLikeProps {
 export function useLike() {
   const { callContract } = useCallContract()
   const config = useConfig()
-  const { wrapPromise, statuses } = useStatusState<TransactionReceipt, IUseLikeProps>()
+  const { wrapPromise, statuses, setResult } = useStatusState<TransactionReceipt, IUseLikeProps>()
   const like = useCallback(wrapPromise(async ({ collectionAddress, tokenId }) => {
     assertCollection(collectionAddress)
     assertTokenId(tokenId)
@@ -36,5 +36,6 @@ export function useLike() {
   return {
     ...statuses,
     like,
+    setResult,
   }
 }

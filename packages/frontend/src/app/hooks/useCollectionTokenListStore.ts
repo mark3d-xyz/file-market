@@ -7,9 +7,9 @@ import { useStores } from './useStores'
  * Returns store containing data field with collection's tokens, and status fields like isLoading, isLoaded
  * @param collectionAddress
  */
-export function useCollectionTokenListStore(collectionAddress?: string, chainName?: string) {
+export function useCollectionTokenListStore(collectionAddress?: string, chainId?: number) {
   const { collectionTokenList } = useStores()
-  useActivateDeactivateRequireParams(collectionTokenList, collectionAddress, chainName)
+  useActivateDeactivateRequireParams(collectionTokenList, collectionAddress, chainId)
 
   return collectionTokenList
 }

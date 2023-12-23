@@ -10,7 +10,7 @@ export enum ConnectionType {
 export interface ISocketConnect {
   socket?: WebSocket
   type?: ConnectionType
-  chainName?: string
+  chainId?: number
   lastMessage?: string
 }
 

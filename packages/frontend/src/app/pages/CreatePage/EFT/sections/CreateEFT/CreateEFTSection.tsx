@@ -159,7 +159,7 @@ export const CreateEFTSection: React.FC = observer(() => {
       subscribe({
         collectionAddress: nftResult?.receipt.to === null ? undefined : nftResult?.receipt.to,
         tokenId: nftResult?.tokenId,
-      }, currentBlockChainStore.chain?.name)
+      })
     }
   }, [nftError, isNftLoading])
 

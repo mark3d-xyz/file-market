@@ -3,6 +3,7 @@ import React, { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { NFTDeal } from '../../../../components'
+import { useChainStore } from '../../../../hooks/useChainStore'
 import { useOrderStore } from '../../../../hooks/useOrderStore'
 import { useTransferStore } from '../../../../hooks/useTransferStore'
 import { makeTokenFullId } from '../../../../processing'
@@ -11,8 +12,9 @@ import { GridBlock } from '../../helper/styles/style'
 
 const ControlSection = observer(() => {
   const { collectionAddress, tokenId, chainName } = useParams<Params>()
-  const transferStore = useTransferStore(collectionAddress, tokenId, chainName) // watch events is called inside nft pag
-  const orderStore = useOrderStore(collectionAddress, tokenId, chainName)
+  const chainStore = useChainStore(chainName)
+  const transferStore = useTransferStore(collectionAddress, tokenId, chainStore.selectedChain?.chain.id) // watch events is called inside nft pag
+  const orderStore = useOrderStore(collectionAddress, tokenId, chainStore.selectedChain?.chain.id)
   const tokenFullId = useMemo(
     () => makeTokenFullId(collectionAddress, tokenId),
     [collectionAddress, tokenId],
