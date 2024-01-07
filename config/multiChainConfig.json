@@ -33,7 +33,7 @@
       }
     },
     "img": "https://cryptologos.cc/logos/filecoin-fil-logo.svg?v=025",
-    "imgGray": "https://svgshare.com/i/vuR.svg",
+    "imgGray": "/FilecoinGray.svg",
     "accessTokenAddress": "0xdcbF452fEA133e28759F050C9BDD827C805B3030",
     "exchangeTokenAddress": "0x2f255f048c1510485bd3F7D65520EDFB9EbC9362",
     "likeEmitterAddress": "0x6623D67Af2B5f161419191Edd41359F07347E113",
@@ -72,7 +72,7 @@
       "testnet": true
     },
     "img": "https://cryptologos.cc/logos/filecoin-fil-logo.svg?v=025",
-    "imgGray": "https://svgshare.com/i/vuR.svg",
+    "imgGray": "/FilecoinGray.svg",
     "accessTokenAddress": "0xC3F07F620715Fec92db305f718C7FA10C708Bf7A",
     "exchangeTokenAddress": "0x2301D80E8A7e4Cf59a349ffC20A51367cb27A4fc",
     "likeEmitterAddress": "0x03afEF500900839F109957f8b856C3E2CC9309a8",
@@ -109,7 +109,7 @@
         }
       }
     },
-    "img": "https://svgshare.com/i/vmG.svg",
+    "img": "/ZkSyncBlack.svg",
     "imgGray": "/ZkSyncGray.svg",
     "isDefault": true,
     "accessTokenAddress": "0x729e9A1e49E16b1499bA0539F3deFf394bef09fb",
@@ -149,7 +149,7 @@
       },
       "testnet": true
     },
-    "img": "https://svgshare.com/i/vmG.svg",
+    "img": "/ZkSyncBlack.svg",
     "imgGray": "/ZkSyncGray.svg",
     "isDefault": true,
     "accessTokenAddress": "0x53B7A53465fE0d7951Aec67200eCa1B9B306DcF4",
