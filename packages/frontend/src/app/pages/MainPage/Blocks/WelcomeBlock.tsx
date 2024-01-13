@@ -56,6 +56,9 @@ const Title = styled('h1', {
   '@lg': {
     fontSize: 'calc(1.5vw + 20px)',
   },
+  '@md': {
+    fontSize: 26,
+  },
   '@sm': {
     fontSize: 24,
   },
@@ -239,11 +242,11 @@ export default function WelcomeBlock() {
         <WelcomeInfo>
           <StorageImg src={bgStorage} />
           <Title>
-            P2P file-sharing platform
+            P2P file-sharing protocol & platform
             {' '}
             <br />
             {' '}
-            for trading digital goods in web3
+            for storing, transferring, and trading files
           </Title>
           <FeaturesWrapper>
             <Features />
