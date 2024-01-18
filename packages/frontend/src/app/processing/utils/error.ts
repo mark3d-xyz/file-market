@@ -63,7 +63,7 @@ export const callContractGetter = async <T extends Abi, B extends string, R = an
 
     return data
   } catch (error: any) {
-    console.error(error)
+    console.error('contract getter error', error, callContractConfig)
 
     throw new Error(stringifyContractError(error))
   }
