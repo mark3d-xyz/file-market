@@ -32,19 +32,25 @@ export function useApproveTransfer() {
       publicKey = `0x${publicKey}`
     }
     const owner = await factory.getOwner(address, collectionAddress, +tokenId)
-    const encryptedFilePassword = await owner.encryptFilePassword(hexToBuffer(publicKey))
+    console.log('got owner', owner)
+    try {
+      const encryptedFilePassword = await owner.encryptFilePassword(hexToBuffer(publicKey))
 
-    return callContract(
-      {
-        callContractConfig: {
-          address: collectionAddress as `0x${string}`,
-          abi: config.collectionToken.abi,
-          functionName: 'approveTransfer',
-          gasPrice: config?.gasPrice,
-          args: [BigInt(tokenId), bufferToEtherHex(encryptedFilePassword)],
+      return await callContract(
+        {
+          callContractConfig: {
+            address: collectionAddress as `0x${string}`,
+            abi: config.collectionToken.abi,
+            functionName: 'approveTransfer',
+            gasPrice: config?.gasPrice,
+            args: [BigInt(tokenId), bufferToEtherHex(encryptedFilePassword)],
+          },
         },
-      },
-    )
+      )
+    } catch (e) {
+      console.error('encrypt file password error', e)
+      throw e
+    }
   }), [config, address, wrapPromise])
 
   return {
