@@ -106,9 +106,6 @@ export class TokenStore implements IStoreRequester,
   }
 
   get ownerHasImg() {
-    console.log(this.data?.ownerProfile?.avatarUrl)
-    console.log(!!this.data?.ownerProfile?.avatarUrl)
-
     return !!this.data?.ownerProfile?.avatarUrl
   }
 
