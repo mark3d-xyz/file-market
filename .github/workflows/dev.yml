@@ -201,6 +201,7 @@ jobs:
       - name: update nginx
         run: |
           sudo mv filemarket.dev.conf /etc/nginx/conf.d/filemarket.dev.conf
+          sudo mv filemarket.era.dev.conf /etc/nginx/conf.d/filemarket.era.dev.conf
           sudo nginx -s reload
       - name: Set changes
         run: |
