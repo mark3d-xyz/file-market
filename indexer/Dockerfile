@@ -1,17 +1,9 @@
-FROM golang:1.20 as build-deps
-
-ENV GO111MODULE=on
+FROM file-market-indexer-base:latest as build-deps
 
 WORKDIR /usr/src/backend
-COPY go.mod go.mod
-COPY go.sum go.sum
-RUN go mod download
+ARG env
 
-COPY . .
-
-WORKDIR /usr/src/backend
-
-RUN CGO_ENABLED=0 go build cmd/app/main.go
+COPY .env .env
 
 FROM ubuntu:18.04
 

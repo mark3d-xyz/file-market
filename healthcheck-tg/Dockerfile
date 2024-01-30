@@ -1,17 +1,8 @@
-FROM golang:1.20 as build-deps
-
-ENV GO111MODULE=on
-
-WORKDIR /usr/src/backend
-COPY go.mod go.mod
-COPY go.sum go.sum
-RUN go mod download
-
-COPY . .
+FROM file-market-healthcheck-base:latest as build-deps
 
 WORKDIR /usr/src/backend
 
-RUN go build -o main config.go main.go
+COPY .env .env
 
 FROM ubuntu:18.04
 

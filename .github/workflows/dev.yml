@@ -67,24 +67,33 @@ jobs:
     needs: [ check-changes ]
     steps:
       - uses: actions/checkout@v3
-      - name: Copy .env from host
-        if: ${{ needs.check-changes.outputs.backend_changes == 'true' }}
-        run: cp ~/.oracle_dev_env backend/.env
       - name: Build contracts
         if: ${{ needs.check-changes.outputs.backend_changes == 'true' }}
         run: make build-contracts
         working-directory: backend/
+      # base image
+      - name: Build oracle base image
+        if: ${{ needs.check-changes.outputs.backend_changes == 'true' }}
+        run: docker build -t file-market-oracle-base:latest -f backend/base.Dockerfile .
+      # filecoin
+      - name: Copy .env from host
+        if: ${{ needs.check-changes.outputs.backend_changes == 'true' }}
+        run: cp ~/.oracle_dev_env backend/.env
       - name: Build oracle container
         if: ${{ needs.check-changes.outputs.backend_changes == 'true' }}
         run: docker build -t file-market-oracle-service:latest -f backend/Dockerfile .
+      # zk sync
+      - name: Copy era .env from host
+        if: ${{ needs.check-changes.outputs.backend_changes == 'true' }}
+        run: cp ~/.era_oracle_dev_env backend/.env
+      - name: Build era oracle container
+        if: ${{ needs.check-changes.outputs.backend_changes == 'true' }}
+        run: docker build -t file-market-era-oracle-service:latest -f backend/Dockerfile .
   build-indexer:
     runs-on: [self-hosted, dev]
     needs: [ check-changes ]
     steps:
       - uses: actions/checkout@v3
-      - name: Copy .env from host
-        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
-        run: cp ~/.indexer_dev_env indexer/.env
       - name: Build contracts
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
         run: make build-contracts
@@ -97,21 +106,51 @@ jobs:
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
         run: make build-models
         working-directory: indexer/
-      - name: Build indexer container
+      # base image
+      - name: Build base indexer container
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
+        run: docker build -f base.Dockerfile -t file-market-indexer-base:latest .
+        working-directory: indexer/
+      # filecoin
+      - name: Copy .env from host
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
+        run: cp ~/.indexer_dev_env indexer/.env
+      - name: Build era indexer container
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
         run: docker build --build-arg env=dev -t file-market-indexer-service:latest .
+        working-directory: indexer/
+      # zk sync
+      - name: Copy era .env from host
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
+        run: cp ~/.era_indexer_dev_env indexer/.env
+      - name: Build indexer container
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
+        run: docker build --build-arg env=dev -t file-market-era-indexer-service:latest .
         working-directory: indexer/
   build-healthcheck:
     runs-on: [ self-hosted, dev ]
     needs: [ check-changes ]
     steps:
       - uses: actions/checkout@v3
+      - name: Build healthcheck base container
+        if: ${{ needs.check-changes.outputs.healthcheck_changes == 'true' }}
+        run: docker build -f base.Dockerfile -t file-market-healthcheck-base:latest .
+        working-directory: healthcheck-tg/
+      # filecoin
       - name: Copy .env from host
         if: ${{ needs.check-changes.outputs.healthcheck_changes == 'true' }}
         run: cp ~/.healthcheck_dev_env healthcheck-tg/.env
       - name: Build healthcheck container
         if: ${{ needs.check-changes.outputs.healthcheck_changes == 'true' }}
-        run: docker build -t file-market-healthcheck-service:latest .
+        run: docker build -f Dockerfile -t file-market-healthcheck-service:latest .
+        working-directory: healthcheck-tg/
+      # zk sync era
+      - name: Copy .env from host
+        if: ${{ needs.check-changes.outputs.healthcheck_changes == 'true' }}
+        run: cp ~/.era_healthcheck_dev_env healthcheck-tg/.env
+      - name: Build healthcheck container
+        if: ${{ needs.check-changes.outputs.healthcheck_changes == 'true' }}
+        run: docker build -f Dockerfile -t file-market-era-healthcheck-service:latest .
         working-directory: healthcheck-tg/
   update:
     runs-on: [self-hosted, dev]
@@ -135,15 +174,30 @@ jobs:
         run: |
           cp indexer/swagger.yaml ~/indexer-swagger/
           sed -i 's/filemarket.xyz/dev.filemarket.xyz/g' ~/indexer-swagger/swagger.yaml
+      # filecoin
       - name: Up migration
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
         run: docker-compose -f docker-compose.dev.yml up -d --build indexer-postgres-migration
       - name: Check migration status
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
         run: ./check_migration.sh
+      # zk sync era
+      - name: Up era migration
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
+        run: docker-compose -f docker-compose.era.dev.yml up -d --build era-indexer-postgres-migration
+      - name: Check era migration status
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
+        run: ./check_era_migration.sh
+
+      # filecoin
       - name: Update compose
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' || needs.check-changes.outputs.backend_changes == 'true' || needs.check-changes.outputs.healthcheck_changes == 'true' }}
         run: docker-compose -f docker-compose.dev.yml up -d indexer-swagger indexer-postgres indexer-redis oracle-redis indexer-service oracle-service healthcheck-service
+      # zk sync era
+      - name: Update era compose
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' || needs.check-changes.outputs.backend_changes == 'true' || needs.check-changes.outputs.healthcheck_changes == 'true' }}
+        run: docker-compose -f docker-compose.era.dev.yml up -d era-indexer-postgres era-indexer-redis era-oracle-redis era-indexer-service era-oracle-service era-healthcheck-service
+
       - name: update nginx
         run: |
           sudo mv filemarket.dev.conf /etc/nginx/conf.d/filemarket.dev.conf
