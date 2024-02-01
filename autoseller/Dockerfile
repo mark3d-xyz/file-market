@@ -11,7 +11,7 @@ COPY . .
 
 WORKDIR /usr/src/backend
 
-RUN go build cmd/app/main.go
+RUN CGO_ENABLED=0 go build cmd/app/main.go
 
 FROM ubuntu:18.04
 

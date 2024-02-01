@@ -11,4 +11,4 @@ COPY . .
 
 WORKDIR /usr/src/backend
 
-RUN go build -o main config.go main.go
+RUN CGO_ENABLED=0 go build -o main config.go main.go
