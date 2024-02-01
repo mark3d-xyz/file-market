@@ -10,11 +10,11 @@
     "swaggerHost": "*"
   },
   "service": {
-    "accessTokenAddress": "0xeBb64C159eeFEcF3c69e3C42C879BFF71e4A806c",
-    "fraudDeciderWeb2Address": "0x4a9B201031c4aB4c4d4Cc20a4f2913AB31108e6a",
-    "exchangeAddress": "0xf5691dcd49e778677158e5C5B75D8220188460F4",
-    "publicCollectionAddress": "0x2a7f8Cd1031B86B015f3e837930617302B2ec05c",
-    "likeEmitterAddress": "0x611A629E920E5A86E3F91957A9ED5A0cd1644b8d",
+    "accessTokenAddress": "0x387EE91bA3f6bA73Ef323DeFab14FC2aa80db923",
+    "fraudDeciderWeb2Address": "0xE47AAb76dF0A9CD8d142753198AcaaB475Bf2A21",
+    "exchangeAddress": "0x2D189D840C0F716FcF883c75A7edB31553151696",
+    "publicCollectionAddress": "0x61e6453AA67feb577946eC9669Ed21eda2666192",
+    "likeEmitterAddress": "0xCd317FC79dCCD20262bb89192648eE8152028dBB",
     "fileBunniesCollectionAddress": "0x0000000000000000000000000000000000000123",
     "fileBunniesCreatorAddress": "0x0000000000000000000000000000000000000123",
     "allowedBlockNumberDifference": 100,
@@ -26,7 +26,7 @@
       "switchTokenTimeout": "3m"
     },
     "currencyConversionCacheTTL": "1h",
-    "mode": "opbnb",
+    "mode": "dev-opbnb",
     "chainId": "5611"
   }
 }
