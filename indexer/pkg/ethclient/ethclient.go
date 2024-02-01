@@ -21,6 +21,14 @@ import (
 	"golang.org/x/exp/slices"
 )
 
+type bcType int32
+
+const (
+	bcTypeZk bcType = iota + 1
+	bcTypeOpbnb
+	bcTypeEth
+)
+
 type EthClient interface {
 	BlockByNumber(ctx context.Context, number *big.Int) (types.Block, error)
 	GetLatestBlockNumber(ctx context.Context) (*big.Int, error)
@@ -37,7 +45,7 @@ type ethClient struct {
 	breakers       []*gobreaker.CircuitBreaker
 	latestFetched  *big.Int
 	breakThreshold *big.Int
-	isZk           bool
+	bcType         bcType
 }
 
 func NewEthClient(urls []string) (EthClient, error) {
@@ -49,7 +57,11 @@ func NewEthClient(urls []string) (EthClient, error) {
 	if slices.Contains(urls, "https://testnet.era.zksync.dev") ||
 		slices.Contains(urls, "https://mainnet.era.zksync.io") ||
 		slices.Contains(urls, "https://nd-223-015-392.p2pify.com/80abe9200081e09a2ac7f6c101c9dd1e") {
-		res.isZk = true
+		res.bcType = bcTypeZk
+	} else if slices.Contains(urls, "https://opbnb-testnet-rpc.bnbchain.org") {
+		res.bcType = bcTypeOpbnb
+	} else {
+		res.bcType = bcTypeEth
 	}
 
 	res.rpcClients = make([]*rpc.Client, len(urls))
@@ -85,11 +97,15 @@ func (e *ethClient) BlockByNumber(ctx context.Context, number *big.Int) (types.B
 
 	var err error
 	var block types.Block
-	if e.isZk {
+
+	// For Zk and opBNB
+	// Zk got wierd transactions
+	// opBNB is not supporting type 2 transactions
+	if e.bcType != bcTypeEth {
 		for i, c := range e.RpcClients() {
 			block, err = getZkBlock(ctx, c, hexutil.EncodeBig(number), true)
 			if err != nil {
-				log.Println("get pending zk block failed", number.String(), e.urls[i], err)
+				log.Println("get pending block failed", number.String(), e.urls[i], err)
 				if strings.Contains(err.Error(), "want 512 for Bloom") {
 					return nil, err
 				}
