@@ -130,7 +130,7 @@ jobs:
       - name: Copy era .env from host
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
         run: cp ~/.era_indexer_dev_env indexer/.env
-      - name: Build indexer container
+      - name: Build era indexer container
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
         run: docker build --build-arg env=dev -t file-market-era-indexer-service:latest .
         working-directory: indexer/
@@ -138,7 +138,7 @@ jobs:
       - name: Copy opbnb .env from host
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
         run: cp ~/.opbnb_indexer_dev_env indexer/.env
-      - name: Build indexer container
+      - name: Build opBNB indexer container
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
         run: docker build --build-arg env=dev -t file-market-opbnb-indexer-service:latest .
         working-directory: indexer/
