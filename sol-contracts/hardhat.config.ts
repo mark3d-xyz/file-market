@@ -99,9 +99,6 @@ switch (process.env.HARDHAT_NETWORK!) {
   case "testnetOpbnb":
     console.log("opbnb testnet cfg:", testnetOpbnbConfig);
     break;
-  default:
-    console.log("wrong HARDHAT_NETWORK value");
-    process.exit(1);
 }
 
 const config: HardhatUserConfig = {
