@@ -1,7 +1,8 @@
 import * as hre from "hardhat";
-import { program } from "commander";
+import {program} from "commander";
 import {LikeEmitter__factory} from "../typechain-types";
 import util from "util";
+
 const request = util.promisify(require("request"));
 
 async function callRpc(method: string, params: string) {
@@ -33,19 +34,23 @@ async function callRpc(method: string, params: string) {
 async function main() {
   program.option("-token, --token <string>");
   program.option("-collection, --collection <string>");
+  program.option("-instance, --instance <string>");
   program.parse();
   const args = program.opts();
-
-  const priorityFee = await callRpc("eth_maxPriorityFeePerGas", "");
-  console.log(priorityFee);
 
   let accounts = await hre.ethers.getSigners();
   console.log(accounts)
 
-  const likeFactory = new LikeEmitter__factory(accounts[0]);
-  const like = likeFactory.attach("0x03afEF500900839F109957f8b856C3E2CC9309a8");
+  const isOpBNB = process.env.HARDHAT_NETWORK!.toLowerCase().includes("opbnb");
+  const overrides = isOpBNB ?
+    {gasPrice: await accounts[0].provider!.getGasPrice()} :
+    {maxPriorityFeePerGas: await callRpc("eth_maxPriorityFeePerGas", "")};
+  console.log(overrides);
 
-  const tx = await like.like(args.collection, args.token, {maxPriorityFeePerGas: priorityFee});
+  const likeFactory = new LikeEmitter__factory(accounts[0]);
+  const like = likeFactory.attach(args.instance);
+
+  const tx = await like.like(args.collection, args.token, overrides);
 
   console.log("minting tx id", tx);
 }

@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/mark3d-xyz/mark3d/indexer/internal/domain"

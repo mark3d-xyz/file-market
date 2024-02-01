@@ -1,5 +1,5 @@
-import { HardhatUserConfig } from "hardhat/config";
-import { HttpNetworkUserConfig } from "hardhat/types/config";
+import {HardhatUserConfig} from "hardhat/config";
+import {HttpNetworkUserConfig} from "hardhat/types/config";
 import "@nomicfoundation/hardhat-toolbox";
 import "@matterlabs/hardhat-zksync-deploy";
 import "@matterlabs/hardhat-zksync-solc";
@@ -11,6 +11,7 @@ const zkSyncTestnetAccounts: string[] = [];
 const zkSyncMainnetAccounts: string[] = [];
 const calibrationAccounts: string[] = [];
 const filecoinAccounts: string[] = [];
+const opbnbAccounts: string[] = [];
 
 if (fs.existsSync(".mumbai-secret")) {
   mumbaiAccounts.push(fs.readFileSync(".mumbai-secret").toString().trim());
@@ -26,6 +27,13 @@ if (fs.existsSync(".main-zksync-secret")) {
 }
 if (fs.existsSync(".mainnet-secret")) {
   filecoinAccounts.push(fs.readFileSync(".mainnet-secret").toString().trim());
+}
+if (fs.existsSync(".opbnb-secret")) {
+  fs.readFileSync(".opbnb-secret").toString().trim()
+    .split("\n")
+    .forEach(value => {
+      opbnbAccounts.push(value);
+    });
 }
 
 const mumbaiConfig: HttpNetworkUserConfig = {
@@ -65,11 +73,36 @@ const filecoinConfig: HttpNetworkUserConfig = {
   accounts: filecoinAccounts,
   timeout: 1000000000
 }
-console.log("mumbai cfg:", mumbaiConfig);
-console.log("calibrationConfig cfg:", calibrationConfig);
-console.log("zksync testnet cfg:", testnetZksyncConfig)
-console.log("zksync testnet cfg:", zksyncConfig)
-console.log("mainnet cfg:", filecoinConfig)
+const testnetOpbnbConfig: HttpNetworkUserConfig = {
+  url: "https://opbnb-testnet-rpc.bnbchain.org",
+  chainId: 5611,
+  accounts: opbnbAccounts,
+  timeout: 1000000000
+}
+
+switch (process.env.HARDHAT_NETWORK!) {
+  case "mumbai":
+    console.log("mumbai cfg:", mumbaiConfig);
+    break;
+  case "filecoin":
+    console.log("mainnet cfg:", filecoinConfig);
+    break;
+  case "calibration":
+    console.log("calibration cfg:", calibrationConfig);
+    break;
+  case "zksync":
+    console.log("zksync cfg:", zksyncConfig);
+    break;
+  case "testnetZksync":
+    console.log("zksync testnet cfg:", testnetZksyncConfig);
+    break;
+  case "testnetOpbnb":
+    console.log("opbnb testnet cfg:", testnetOpbnbConfig);
+    break;
+  default:
+    console.log("wrong HARDHAT_NETWORK value");
+    process.exit(1);
+}
 
 const config: HardhatUserConfig = {
   zksolc: {
@@ -98,7 +131,8 @@ const config: HardhatUserConfig = {
     calibration: calibrationConfig,
     filecoin: filecoinConfig,
     testnetZksync: testnetZksyncConfig,
-    zksync: zksyncConfig
+    zksync: zksyncConfig,
+    testnetOpbnb: testnetOpbnbConfig
   },
   etherscan: {
     apiKey: {

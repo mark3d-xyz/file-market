@@ -1,5 +1,5 @@
-import { ethers } from "hardhat";
 import * as hre from "hardhat";
+import {ethers} from "hardhat";
 import {
   FileBunniesCollection__factory,
   FilemarketCollectionV2__factory,
@@ -10,8 +10,9 @@ import {
   PublicCollection__factory,
 } from "../typechain-types";
 import "@nomicfoundation/hardhat-chai-matchers";
-import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
-import { Wallet, Contract } from "zksync-web3";
+import {Deployer} from "@matterlabs/hardhat-zksync-deploy";
+import {Contract, Wallet} from "zksync-web3";
+
 const util = require("util");
 const request = util.promisify(require("request"));
 
@@ -83,28 +84,31 @@ async function main() {
   const shouldVerify = false;
 
   let accounts = await ethers.getSigners();
+  if (accounts.length < 1) {
+    console.error("accounts is empty")
+    process.exit(1);
+  }
   console.log(accounts);
 
   if (!process.env.HARDHAT_NETWORK) {
     console.log("HARDHAT_NETWORK is not specified");
     process.exit(1);
   }
+  const network = process.env.HARDHAT_NETWORK!
+  const isZksync = network.toLowerCase().includes("zksync");
 
-  if (process.env.HARDHAT_NETWORK!.toLowerCase().includes("zksync")) {
-    let wallet;
-    if (process.env.HARDHAT_NETWORK === "zksync") {
+  if (isZksync) {
+    const wallet = network === "zksync" ?
       // @ts-ignore
-      wallet = new Wallet(hre.config.networks.zksync.accounts[0]);
-    } else {
+      new Wallet(hre.config.networks.zksync.accounts[0]) :
       // @ts-ignore
-      wallet = new Wallet(hre.config.networks.testnetZksync.accounts[0]);
-    }
+      new Wallet(hre.config.networks.testnetZksync.accounts[0]);
 
     const likeEmitter = await deployZkContract(
-        wallet,
-        "contracts/LikeEmitter.sol:LikeEmitter",
-        [],
-        shouldVerify
+      wallet,
+      "contracts/LikeEmitter.sol:LikeEmitter",
+      [],
+      shouldVerify
     );
     console.log("likeEmitter address: ", likeEmitter.address);
     await new Promise((resolve) => setTimeout(resolve, 5000));
@@ -175,26 +179,25 @@ async function main() {
     const fraudDeciderFactory = new FraudDeciderWeb2V2__factory(accounts[0]);
     const collectionFactory = new FilemarketCollectionV2__factory(accounts[0]);
     const publicCollectionFactory = new PublicCollection__factory(accounts[0]);
-    const fileBunniesCollectionFactory = new FileBunniesCollection__factory(
-      accounts[0]
-    );
+    const fileBunniesCollectionFactory = new FileBunniesCollection__factory(accounts[0]);
     const exchangeFactory = new FilemarketExchangeV2__factory(accounts[0]);
     const likeEmitterFactory = new LikeEmitter__factory(accounts[0])
 
-    const priorityFee = await callRpc("eth_maxPriorityFeePerGas", "");
-    console.log(priorityFee);
+    const isOpBNB = process.env.HARDHAT_NETWORK!
+      .toLowerCase()
+      .includes("opbnb");
+    const overrides = isOpBNB ?
+      {gasPrice: await accounts[0].provider!.getGasPrice()} :
+      {maxPriorityFeePerGas: await callRpc("eth_maxPriorityFeePerGas", "")};
+    console.log(overrides);
 
-    const likeEmitter = await likeEmitterFactory.deploy({maxPriorityFeePerGas: priorityFee});
+    const likeEmitter = await likeEmitterFactory.deploy(overrides);
     console.log("likeEmitter address: ", likeEmitter.address);
 
-    const collectionToClone = await collectionFactory.deploy({
-      maxPriorityFeePerGas: priorityFee,
-    });
+    const collectionToClone = await collectionFactory.deploy(overrides);
     console.log("collection address: ", collectionToClone.address);
 
-    let fraudDecider = await fraudDeciderFactory.deploy({
-      maxPriorityFeePerGas: priorityFee,
-    });
+    let fraudDecider = await fraudDeciderFactory.deploy(overrides);
     console.log("fraud decider address: ", fraudDecider.address);
 
     const globalSalt = genRanHex(128);
@@ -208,9 +211,7 @@ async function main() {
       collectionToClone.address,
       true,
       fraudDecider.address,
-      {
-        maxPriorityFeePerGas: priorityFee,
-      }
+      overrides
     );
     console.log("access token address: ", accessToken.address);
 
@@ -223,36 +224,29 @@ async function main() {
       "0x",
       fraudDecider.address,
       true,
-      {
-        maxPriorityFeePerGas: priorityFee,
-      }
+      overrides
     );
     console.log("public collection address: ", publicCollection.address);
 
-    let exchange = await exchangeFactory.deploy({
-      maxPriorityFeePerGas: priorityFee,
-    });
+    let exchange = await exchangeFactory.deploy(overrides);
     console.log("exchange address: ", exchange.address);
 
-    let fileBunniesCollection = await fileBunniesCollectionFactory.deploy(
-      "FileBunnies",
-      "FBNS",
-      "ipfs://QmQUr4ApevgdEKCbE7W4YHXCCF7JNAVzX2BgZTntaAGQzC",
-      accounts[0].getAddress(),
-      accounts[0].getAddress(),
-      accounts[0].getAddress(),
-      accounts[0].getAddress(),
-      "0x",
-      fraudDecider.address,
-      true,
-      {
-        maxPriorityFeePerGas: priorityFee,
-      }
-    );
-    console.log(
-      "file bunnies collection address: ",
-      fileBunniesCollection.address
-    );
+    if (!isOpBNB) {
+      let fileBunniesCollection = await fileBunniesCollectionFactory.deploy(
+        "FileBunnies",
+        "FBNS",
+        "ipfs://QmQUr4ApevgdEKCbE7W4YHXCCF7JNAVzX2BgZTntaAGQzC",
+        accounts[0].getAddress(),
+        accounts[0].getAddress(),
+        accounts[0].getAddress(),
+        accounts[0].getAddress(),
+        "0x",
+        fraudDecider.address,
+        true,
+        overrides
+      );
+      console.log("file bunnies collection address: ", fileBunniesCollection.address);
+    }
   }
 }
 

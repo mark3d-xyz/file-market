@@ -1,6 +1,6 @@
 import * as hre from "hardhat";
 import {program} from "commander";
-import {Mark3dCollection__factory} from "../typechain-types";
+import {FilemarketCollectionV2__factory} from "../typechain-types";
 
 async function main() {
   program.option("-id, --id <string>");
@@ -12,7 +12,7 @@ async function main() {
   if (accounts.length == 1)
     accounts.push(accounts[0]);
 
-  const collectionFactory = new Mark3dCollection__factory(accounts[0]);
+  const collectionFactory = new FilemarketCollectionV2__factory(accounts[0]);
   const collection = collectionFactory.attach(args.collection);
 
   const isOpBNB = process.env.HARDHAT_NETWORK!.toLowerCase().includes("opbnb");
@@ -21,10 +21,8 @@ async function main() {
     {};
   console.log(overrides);
 
-  const tx = await collection
-    .connect(accounts[1])
-    .finalizeTransfer(args.id, overrides);
-  console.log("finish transfer txid: ", tx.hash);
+  const tx = await collection.connect(accounts[1]).approveTransfer(args.id, "0x34", overrides);
+  console.log("approveTransfer txid: ", tx.hash);
 }
 
 main().catch((error) => {

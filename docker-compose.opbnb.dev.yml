@@ -1,0 +1,60 @@
+version: "3.8"
+services:
+  opbnb-indexer-service:
+    image: file-market-opbnb-indexer-service:latest
+    ports:
+      - "9402:9402"
+    depends_on:
+      - opbnb-indexer-postgres
+      - opbnb-indexer-redis
+      - opbnb-healthcheck-service
+    volumes:
+      - ~/opbnb-logs:/logs
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  opbnb-oracle-service:
+    image: file-market-opbnb-oracle-service:latest
+    depends_on:
+      - opbnb-oracle-redis
+    volumes:
+      - ~/opbnb-logs:/logs
+    restart: unless-stopped
+  opbnb-healthcheck-service:
+    image: file-market-opbnb-healthcheck-service:latest
+    volumes:
+      - ~/opbnb-logs:/logs
+    restart: unless-stopped
+  opbnb-oracle-redis:
+    image: redis:7
+    volumes:
+      - opbnb-cache-redis-data:/data
+    command: redis-server --save 60 1
+  opbnb-indexer-postgres:
+    image: postgres:13
+    volumes:
+      - opbnb-indexer-postgres-data:/var/lib/postgresql/data
+    env_file: ~/.opbnb_indexer_pg_env
+    restart: unless-stopped
+    healthcheck:
+      test: pg_isready -d file_market_indexer -U indexer
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  opbnb-indexer-redis:
+    image: redis:7
+    volumes:
+      - opbnb-indexer-redis-data:/data
+    command: redis-server --save 60 1
+  opbnb-indexer-postgres-migration:
+    build:
+      context: .
+      dockerfile: migrate.Dockerfile
+    env_file: ~/.opbnb_indexer_pg_env
+    depends_on:
+      - opbnb-indexer-postgres
+
+volumes:
+  opbnb-indexer-postgres-data:
+  opbnb-cache-redis-data:
+  opbnb-indexer-redis-data:

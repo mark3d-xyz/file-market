@@ -89,6 +89,13 @@ jobs:
       - name: Build era oracle container
         if: ${{ needs.check-changes.outputs.backend_changes == 'true' }}
         run: docker build -t file-market-era-oracle-service:latest -f backend/Dockerfile .
+      # opBNB
+      - name: Copy opbnb .env from host
+        if: ${{ needs.check-changes.outputs.backend_changes == 'true' }}
+        run: cp ~/.opbnb_oracle_dev_env backend/.env
+      - name: Build opbnb oracle container
+        if: ${{ needs.check-changes.outputs.backend_changes == 'true' }}
+        run: docker build -t file-market-opbnb-oracle-service:latest -f backend/Dockerfile .
   build-indexer:
     runs-on: [self-hosted, dev]
     needs: [ check-changes ]
@@ -115,7 +122,7 @@ jobs:
       - name: Copy .env from host
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
         run: cp ~/.indexer_dev_env indexer/.env
-      - name: Build era indexer container
+      - name: Build filecoin indexer container
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
         run: docker build --build-arg env=dev -t file-market-indexer-service:latest .
         working-directory: indexer/
@@ -126,6 +133,14 @@ jobs:
       - name: Build indexer container
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
         run: docker build --build-arg env=dev -t file-market-era-indexer-service:latest .
+        working-directory: indexer/
+      # opBNB
+      - name: Copy opbnb .env from host
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
+        run: cp ~/.opbnb_indexer_dev_env indexer/.env
+      - name: Build indexer container
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
+        run: docker build --build-arg env=dev -t file-market-opbnb-indexer-service:latest .
         working-directory: indexer/
   build-healthcheck:
     runs-on: [ self-hosted, dev ]
@@ -151,6 +166,14 @@ jobs:
       - name: Build healthcheck container
         if: ${{ needs.check-changes.outputs.healthcheck_changes == 'true' }}
         run: docker build -f Dockerfile -t file-market-era-healthcheck-service:latest .
+        working-directory: healthcheck-tg/
+      # opBNB
+      - name: Copy .env from host
+        if: ${{ needs.check-changes.outputs.healthcheck_changes == 'true' }}
+        run: cp ~/.opbnb_healthcheck_dev_env healthcheck-tg/.env
+      - name: Build healthcheck container
+        if: ${{ needs.check-changes.outputs.healthcheck_changes == 'true' }}
+        run: docker build -f Dockerfile -t file-market-opbnb-healthcheck-service:latest .
         working-directory: healthcheck-tg/
   update:
     runs-on: [self-hosted, dev]
@@ -188,6 +211,13 @@ jobs:
       - name: Check era migration status
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
         run: ./check_era_migration.sh
+      # opbnb
+      - name: Up opbnb migration
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
+        run: docker-compose -f docker-compose.opbnb.dev.yml up -d --build opbnb-indexer-postgres-migration
+      - name: Check opbnb migration status
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
+        run: ./check_opbnb_migration.sh
 
       # filecoin
       - name: Update compose
@@ -197,11 +227,16 @@ jobs:
       - name: Update era compose
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' || needs.check-changes.outputs.backend_changes == 'true' || needs.check-changes.outputs.healthcheck_changes == 'true' }}
         run: docker-compose -f docker-compose.era.dev.yml up -d era-indexer-postgres era-indexer-redis era-oracle-redis era-indexer-service era-oracle-service era-healthcheck-service
+      # opbnb
+      - name: Update opbnb compose
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' || needs.check-changes.outputs.backend_changes == 'true' || needs.check-changes.outputs.healthcheck_changes == 'true' }}
+        run: docker-compose -f docker-compose.opbnb.dev.yml up -d opbnb-indexer-postgres opbnb-indexer-redis opbnb-oracle-redis opbnb-indexer-service opbnb-oracle-service opbnb-healthcheck-service
 
       - name: update nginx
         run: |
           sudo mv filemarket.dev.conf /etc/nginx/conf.d/filemarket.dev.conf
           sudo mv filemarket.era.dev.conf /etc/nginx/conf.d/filemarket.era.dev.conf
+          sudo mv filemarket.opbnb.dev.conf /etc/nginx/conf.d/filemarket.opbnb.dev.conf
           sudo nginx -s reload
       - name: Set changes
         run: |
