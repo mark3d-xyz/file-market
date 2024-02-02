@@ -10,11 +10,11 @@
     "swaggerHost": "*"
   },
   "service": {
-    "accessTokenAddress": "0x387EE91bA3f6bA73Ef323DeFab14FC2aa80db923",
-    "fraudDeciderWeb2Address": "0xE47AAb76dF0A9CD8d142753198AcaaB475Bf2A21",
-    "exchangeAddress": "0x2D189D840C0F716FcF883c75A7edB31553151696",
-    "publicCollectionAddress": "0x61e6453AA67feb577946eC9669Ed21eda2666192",
-    "likeEmitterAddress": "0xCd317FC79dCCD20262bb89192648eE8152028dBB",
+    "accessTokenAddress": "0xd5d7b5c51D71bbEa05CEE63809d37dbC9F0703D7",
+    "fraudDeciderWeb2Address": "0x2301D80E8A7e4Cf59a349ffC20A51367cb27A4fc",
+    "exchangeAddress": "0xb5FE7764edf481cCB2fB164437208760c982C184",
+    "publicCollectionAddress": "0xc2cE712EBf723cE8Bb414dB28E2865bE16d091e9",
+    "likeEmitterAddress": "0xD20658C050860d407BFb2D51CfC96e0edAaB8F13",
     "fileBunniesCollectionAddress": "0x0000000000000000000000000000000000000123",
     "fileBunniesCreatorAddress": "0x0000000000000000000000000000000000000123",
     "allowedBlockNumberDifference": 100,
