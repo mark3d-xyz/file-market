@@ -19,6 +19,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
     env_logger::init();
     dotenvy::dotenv().expect("Failed to read .env file");
 
+    let eth_api_url_to_log = env::var("ETH_API_URL").expect("env err");
+    println!("eth api: {eth_api_url_to_log}");
+
     let mut con: Connection = Client::open(env::var("REDIS_CON").expect("redis env err"))?
         .get_tokio_connection()
         .await?;

@@ -1,6 +1,6 @@
 FROM file-market-oracle-base:latest as build-deps
 
-WORKDIR /usr/src/mark3d-oracle
+WORKDIR /usr/src/mark3d-oracle/backend
 
 COPY backend/.env .env
 
