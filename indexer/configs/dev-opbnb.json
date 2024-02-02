@@ -1,6 +1,6 @@
 {
   "server": {
-    "port": 9302,
+    "port": 9402,
     "readTimeout": "5s",
     "writeTimeout": "5s",
     "maxHeaderBytes": 1024
