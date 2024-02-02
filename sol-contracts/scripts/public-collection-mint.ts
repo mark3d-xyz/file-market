@@ -22,18 +22,18 @@ async function main() {
     {};
   console.log(overrides);
 
-  // const tx = args.id ?
-  //   await collection
-  //     .connect(accounts[1])
-  //     .mint(accounts[1].address, args.id, args.cid, "1000", "0x", overrides) :
-  //   await collection
-  //     .connect(accounts[1])
-  //     .mintWithoutId(accounts[1].address, args.cid, "1000", "0x", overrides);
-  //
-  // console.log("minting tx id", tx.hash);
+  const tx = args.id ?
+    await collection
+      .connect(accounts[1])
+      .mint(accounts[1].address, args.id, args.cid, "1000", "0x", overrides) :
+    await collection
+      .connect(accounts[1])
+      .mintWithoutId(accounts[1].address, args.cid, "1000", "0x", overrides);
+
+  console.log("minting tx id", tx.hash);
 
   // console.log(await collection.connect(accounts[0]).tokenUris(hre.ethers.BigNumber.from("1")))
-  console.log(await collection.connect(accounts[1]).tokensCount())
+  // console.log(await collection.connect(accounts[1]).tokensCount())
 }
 
 main().catch((error) => {

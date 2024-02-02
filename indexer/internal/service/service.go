@@ -1245,9 +1245,9 @@ func (s *service) processCollectionTx(ctx context.Context, tx pgx.Tx, t types.Tr
 		return err
 	}
 
-	fmt.Println(receipt)
+	fmt.Printf("%+v\n", receipt)
 	for _, v := range receipt.Logs {
-		fmt.Println(*v)
+		fmt.Printf("%+v\n", *v)
 	}
 
 	for _, l := range receipt.Logs {
