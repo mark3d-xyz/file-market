@@ -1245,11 +1245,6 @@ func (s *service) processCollectionTx(ctx context.Context, tx pgx.Tx, t types.Tr
 		return err
 	}
 
-	fmt.Printf("%+v\n", receipt)
-	for _, v := range receipt.Logs {
-		fmt.Printf("%+v\n", *v)
-	}
-
 	for _, l := range receipt.Logs {
 		switch l.Address {
 		case s.cfg.ExchangeAddress:
@@ -1261,10 +1256,8 @@ func (s *service) processCollectionTx(ctx context.Context, tx pgx.Tx, t types.Tr
 				}
 			}
 		case s.cfg.PublicCollectionAddress:
-			log.Println("here")
 			instance, err := publicCollection.NewPublicCollection(l.Address, nil)
 			if err == nil {
-				log.Println("process")
 				err := s.processPublicCollectionEvents(ctx, tx, t, l, instance, receipt.BlockNumber)
 				if err != nil {
 					return err
