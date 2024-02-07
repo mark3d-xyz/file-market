@@ -183,19 +183,35 @@ async function main() {
     const exchangeFactory = new FilemarketExchangeV2__factory(accounts[0]);
     const likeEmitterFactory = new LikeEmitter__factory(accounts[0])
 
-    const isOpBNB = process.env.HARDHAT_NETWORK!
-      .toLowerCase()
-      .includes("opbnb");
-    const overrides = isOpBNB ?
-      {gasPrice: await accounts[0].provider!.getGasPrice()} :
-      {maxPriorityFeePerGas: await callRpc("eth_maxPriorityFeePerGas", "")};
+    const isFilecoin = process.env.HARDHAT_NETWORK!.toLowerCase()
+        .includes("filecoin") ||
+      process.env.HARDHAT_NETWORK!.toLowerCase()
+        .includes("calibration");
+    let overrides: {};
+    if (!isFilecoin) {
+      const a = await accounts[0].provider!.getGasPrice()
+      overrides = {
+        gasPrice: a.add(a.mul(2))
+      }
+    } else {
+      overrides = {
+        maxPriorityFeePerGas: await callRpc("eth_maxPriorityFeePerGas", "")
+      }
+    }
     console.log(overrides);
 
-    const likeEmitter = await likeEmitterFactory.deploy(overrides);
-    console.log("likeEmitter address: ", likeEmitter.address);
+    // const likeEmitter = await likeEmitterFactory.deploy(overrides);
+    // console.log("likeEmitter address: ", likeEmitter.address);
 
-    const collectionToClone = await collectionFactory.deploy(overrides);
+    const collectionDeployTx = collectionFactory.getDeployTransaction();
+    let collectionGasLimit = await accounts[0].provider!.estimateGas(collectionDeployTx);
+    collectionGasLimit = collectionGasLimit.add(collectionGasLimit.mul(2))
+
+    const collectionToClone = await collectionFactory.deploy({...overrides});
+    console.log(collectionGasLimit)
     console.log("collection address: ", collectionToClone.address);
+
+    process.exit(1)
 
     let fraudDecider = await fraudDeciderFactory.deploy(overrides);
     console.log("fraud decider address: ", fraudDecider.address);
@@ -231,7 +247,7 @@ async function main() {
     let exchange = await exchangeFactory.deploy(overrides);
     console.log("exchange address: ", exchange.address);
 
-    if (!isOpBNB) {
+    if (isFilecoin) {
       let fileBunniesCollection = await fileBunniesCollectionFactory.deploy(
         "FileBunnies",
         "FBNS",

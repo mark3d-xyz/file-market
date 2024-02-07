@@ -29,5 +29,6 @@ test.sh
 .mainnet-secret
 .test-zksync-secret
 .main-zksync-secret
-.opbnb-secret
+.test-opbnb-secret
+.test-scroll-secret
 .yarn

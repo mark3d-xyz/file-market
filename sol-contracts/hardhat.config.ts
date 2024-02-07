@@ -6,77 +6,63 @@ import "@matterlabs/hardhat-zksync-solc";
 import "@matterlabs/hardhat-zksync-verify";
 import fs from "fs";
 
-const mumbaiAccounts: string[] = [];
-const zkSyncTestnetAccounts: string[] = [];
-const zkSyncMainnetAccounts: string[] = [];
-const calibrationAccounts: string[] = [];
-const filecoinAccounts: string[] = [];
-const opbnbAccounts: string[] = [];
+const networks = ["mumbai", "test-zksync", "main-zksync", "calibration", "filecoin", "test-opbnb", "test-scroll"] as const;
+type Network = typeof networks[number];
+const accounts: Map<Network, string[]> = new Map();
 
-if (fs.existsSync(".mumbai-secret")) {
-  mumbaiAccounts.push(fs.readFileSync(".mumbai-secret").toString().trim());
-}
-if (fs.existsSync(".calibration-secret")) {
-  calibrationAccounts.push(fs.readFileSync(".calibration-secret").toString().trim());
-}
-if (fs.existsSync(".test-zksync-secret")) {
-  zkSyncTestnetAccounts.push(fs.readFileSync(".test-zksync-secret").toString().trim());
-}
-if (fs.existsSync(".main-zksync-secret")) {
-  zkSyncMainnetAccounts.push(fs.readFileSync(".main-zksync-secret").toString().trim());
-}
-if (fs.existsSync(".mainnet-secret")) {
-  filecoinAccounts.push(fs.readFileSync(".mainnet-secret").toString().trim());
-}
-if (fs.existsSync(".opbnb-secret")) {
-  fs.readFileSync(".opbnb-secret").toString().trim()
-    .split("\n")
-    .forEach(value => {
-      opbnbAccounts.push(value);
-    });
+for (let name of networks) {
+  const fName = `.${name}-secret`;
+  if (fs.existsSync(fName)) {
+    accounts.set(name, fs.readFileSync(fName).toString().trim().split("\n"));
+  }
 }
 
 const mumbaiConfig: HttpNetworkUserConfig = {
   url: "https://matic-mumbai.chainstacklabs.com/",
   chainId: 80001,
-  accounts: mumbaiAccounts,
+  accounts: accounts.get("mumbai"),
 };
+if (process.env.POLYGON_QUIKNODE_URL) {
+  mumbaiConfig.url = process.env.POLYGON_QUIKNODE_URL;
+}
 const calibrationConfig: HttpNetworkUserConfig = {
   url: "https://filecoin-calibration.chainup.net/rpc/v1",
   chainId: 314159,
-  accounts: calibrationAccounts,
+  accounts: accounts.get("calibration"),
   timeout: 1000000000
 };
 const zksyncConfig = {
   url: "https://mainnet.era.zksync.io",
-  accounts: zkSyncMainnetAccounts,
+  accounts: accounts.get("main-zksync"),
   zksync: true,
   ethNetwork: "mainnet",
   verifyURL: "https://zksync2-mainnet-explorer.zksync.io/contract_verification",
   timeout: 1000000000,
 };
 const testnetZksyncConfig = {
-  url: "https://testnet.era.zksync.dev",
-  accounts: zkSyncTestnetAccounts,
-  ethNetwork: "goerli",
   zksync: true,
+  url: "https://testnet.era.zksync.dev",
+  accounts: accounts.get("test-zksync"),
+  ethNetwork: "goerli",
   verifyURL: "https://zksync2-testnet-explorer.zksync.dev/contract_verification",
   timeout: 1000000000,
 };
-
-if (process.env.POLYGON_QUIKNODE_URL) {
-  mumbaiConfig.url = process.env.POLYGON_QUIKNODE_URL;
+const testnetScrollConfig: HttpNetworkUserConfig = {
+  url: "https://sepolia-rpc.scroll.io/",
+  chainId: 534351,
+  accounts: accounts.get("test-scroll"),
+  timeout: 1000000000
 }
 const filecoinConfig: HttpNetworkUserConfig = {
   url: "https://rpc.ankr.com/filecoin",
   chainId: 314,
-  accounts: filecoinAccounts,
+  accounts: accounts.get("filecoin"),
   timeout: 1000000000
 }
 const testnetOpbnbConfig: HttpNetworkUserConfig = {
   url: "https://opbnb-testnet-rpc.bnbchain.org",
   chainId: 5611,
-  accounts: opbnbAccounts,
+  accounts: accounts.get("test-opbnb"),
   timeout: 1000000000
 }
 
@@ -99,11 +85,14 @@ switch (process.env.HARDHAT_NETWORK!) {
   case "testnetOpbnb":
     console.log("opbnb testnet cfg:", testnetOpbnbConfig);
     break;
+  case "testnetScroll":
+    console.log("scroll testnet cfg:", testnetScrollConfig);
+    break;
 }
 
 const config: HardhatUserConfig = {
   zksolc: {
-    version: "1.3.13",
+    version: "1.3.22",
     settings: {
       optimizer: {
         enabled: true,
@@ -116,7 +105,7 @@ const config: HardhatUserConfig = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 200,
+        runs: 1,
       },
     },
   },
@@ -129,7 +118,8 @@ const config: HardhatUserConfig = {
     filecoin: filecoinConfig,
     testnetZksync: testnetZksyncConfig,
     zksync: zksyncConfig,
-    testnetOpbnb: testnetOpbnbConfig
+    testnetOpbnb: testnetOpbnbConfig,
+    testnetScroll: testnetScrollConfig
   },
   etherscan: {
     apiKey: {

@@ -41,10 +41,11 @@ async function main() {
   let accounts = await hre.ethers.getSigners();
   console.log(accounts)
 
-  const isOpBNB = process.env.HARDHAT_NETWORK!.toLowerCase().includes("opbnb");
-  const overrides = isOpBNB ?
-    {gasPrice: await accounts[0].provider!.getGasPrice()} :
-    {maxPriorityFeePerGas: await callRpc("eth_maxPriorityFeePerGas", "")};
+  const isFilecoin = process.env.HARDHAT_NETWORK!.toLowerCase().includes("filecoin") ||
+    process.env.HARDHAT_NETWORK!.toLowerCase().includes("calibration");
+  const overrides = isFilecoin ?
+    {maxPriorityFeePerGas: await callRpc("eth_maxPriorityFeePerGas", "")} :
+    {gasPrice: await accounts[0].provider!.getGasPrice()};
   console.log(overrides);
 
   const likeFactory = new LikeEmitter__factory(accounts[0]);
