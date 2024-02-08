@@ -82,9 +82,47 @@
   },
   {
     "chain": {
+      "id": 534351,
+      "name": "ScrollTestnet",
+      "network": "Scroll Testnet",
+      "nativeCurrency": {
+        "name": "ETH",
+        "symbol": "ETH",
+        "decimals": 18
+      },
+      "rpcUrls": {
+        "default": {
+          "http": [
+            "https://sepolia-rpc.scroll.io"
+          ]
+        },
+        "public": {
+          "http": [
+            "https://sepolia-rpc.scroll.io"
+          ]
+        }
+      },
+      "blockExplorers": {
+        "default": {
+          "name": "opBNB explorer",
+          "url": "https://sepolia.scrollscan.com/"
+        }
+      }
+    },
+    "img": "https://cryptologos.cc/logos/filecoin-fil-logo.svg?v=025",
+    "imgGray": "/FilecoinGray.svg",
+    "accessTokenAddress": "0xE67a38147AcB520d6B494385bA3C5B0E18Fa71d0",
+    "exchangeTokenAddress": "0xD20658C050860d407BFb2D51CfC96e0edAaB8F13",
+    "likeEmitterAddress": "0xc7477BC829f77A2eE5d6AFbEfefcA0c3E87Bd392",
+    "baseUrl": "https://dev-scroll.filemarket.xyz/api",
+    "explorer": "https://sepolia.scrollscan.com/tx/",
+    "wsUrl": "wss://dev-scroll.filemarket.xyz"
+  },
+  {
+    "chain": {
       "id": 5611,
-      "name": "opBNB",
-      "network": "BNB Optimistic Rollup",
+      "name": "opBNBTestnet",
+      "network": "BNB Optimistic Rollup Testnet",
       "nativeCurrency": {
         "name": "tBNB",
         "symbol": "TBNB",
