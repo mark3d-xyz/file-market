@@ -91,6 +91,7 @@ contract FilemarketCollectionV2 is IEncryptedFileTokenUpgradeableV2, ERC721Enume
         __ERC721_init(name, symbol);
 
         admin = defaultAdmin;
+        mintFeeReceiver = admin;
         tokensCount = 0;
         contractMetaUri = _contractMetaUri;
         accessTokenId = _accessTokenId;
