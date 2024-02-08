@@ -1,12 +1,21 @@
 import {HardhatUserConfig} from "hardhat/config";
 import {HttpNetworkUserConfig} from "hardhat/types/config";
 import "@nomicfoundation/hardhat-toolbox";
+import "hardhat-dependency-compiler";
 import "@matterlabs/hardhat-zksync-deploy";
 import "@matterlabs/hardhat-zksync-solc";
 import "@matterlabs/hardhat-zksync-verify";
 import fs from "fs";
 
-const networks = ["mumbai", "test-zksync", "main-zksync", "calibration", "filecoin", "test-opbnb", "test-scroll"] as const;
+const networks = [
+  "mumbai",
+  "test-zksync",
+  "main-zksync",
+  "calibration",
+  "filecoin",
+  "test-opbnb",
+  "test-scroll"
+] as const;
 type Network = typeof networks[number];
 const accounts: Map<Network, string[]> = new Map();
 
@@ -101,12 +110,13 @@ const config: HardhatUserConfig = {
     },
   },
   solidity: {
-    version: "0.8.18",
+    version: "0.8.24",
     settings: {
       optimizer: {
         enabled: true,
         runs: 1,
       },
+      evmVersion: "london"
     },
   },
   networks: {
@@ -120,6 +130,11 @@ const config: HardhatUserConfig = {
     zksync: zksyncConfig,
     testnetOpbnb: testnetOpbnbConfig,
     testnetScroll: testnetScrollConfig
+  },
+  dependencyCompiler: {
+    paths: [
+      "@scroll-tech/contracts/L2/predeploys/IL1GasPriceOracle.sol"
+    ]
   },
   etherscan: {
     apiKey: {
