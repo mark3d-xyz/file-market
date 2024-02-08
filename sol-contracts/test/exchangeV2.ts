@@ -18,8 +18,11 @@ import {
 import "@nomicfoundation/hardhat-chai-matchers";
 
 const zeroAddress = "0x0000000000000000000000000000000000000000";
+const pkey = process.env.PRIVATE_KEY;
 
 describe("Public collection", async () => {
+  const mintFee = ethers.utils.parseEther("0.1");
+
   describe("Trade token", async () => {
     let accounts: Signer[];
     let fraudDecider: FraudDeciderWeb2V2;
@@ -28,6 +31,12 @@ describe("Public collection", async () => {
 
     before(async () => {
       accounts = await ethers.getSigners();
+      if (pkey) {
+        const admin = new ethers.Wallet(pkey);
+        accounts = [admin.connect(ethers.provider), ...accounts];
+        await accounts[5]
+          .sendTransaction({to: accounts[0].getAddress(), value: ethers.utils.parseEther("5")})
+      }
 
       const fraudDeciderFactory = new FraudDeciderWeb2V2__factory(accounts[0]);
       const collectionFactory = new PublicCollection__factory(accounts[0]);
@@ -48,6 +57,10 @@ describe("Public collection", async () => {
       exchangeInstance = await exchangeFactory.deploy();
     });
 
+    it("set mint fee", async () => {
+      await collectionInstance.connect(accounts[0]).setMintFee(mintFee)
+    })
+
     it("set fee", async () => {
       const tx = await exchangeInstance.setFee(BN.from(1000));
       await expect(tx)
@@ -56,9 +69,13 @@ describe("Public collection", async () => {
     });
 
     it("mint", async () => {
+      const startBalance = await accounts[0].getBalance();
       await collectionInstance
         .connect(accounts[1])
-        .mint(accounts[1].getAddress(), BN.from(0), "a", BN.from(1_000), "0x");
+        .mint(accounts[1].getAddress(), BN.from(0), "a", BN.from(1_000), "0x", {value: mintFee});
+
+      expect(await accounts[0].getBalance())
+        .to.eq(startBalance.add(mintFee))
     });
 
     it("approve", async () => {

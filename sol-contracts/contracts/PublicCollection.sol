@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
 import "./IFraudDecider.sol";
@@ -32,9 +33,14 @@ contract PublicCollection is IEncryptedFileToken, ERC721Enumerable, Ownable, IER
         uint256 passwordSetAt;                                  // password set at
     }
 
+    address public constant defaultAdmin = 0x29957549fcfdd278C72D92721A263C57F603663b;
+
     uint256 public constant PERCENT_MULTIPLIER = 10000;
     uint256 public constant ROYALTY_CEILING = 5000;            // 50%
-    
+
+    address public admin;
+    uint256 public mintFee;
+    address public mintFeeReceiver;
     bytes public collectionData;                               // collection additional data
     string private contractMetaUri;                            // contract-level metadata
     mapping(uint256 => string) public tokenUris;               // mapping of token metadata uri
@@ -46,8 +52,8 @@ contract PublicCollection is IEncryptedFileToken, ERC721Enumerable, Ownable, IER
     mapping(uint256 => uint256) public transferCounts;         // count of transfers per transfer
     bool private fraudLateDecisionEnabled;                     // false if fraud decision is instant
     IFraudDecider private fraudDecider_;                       // fraud decider
-    uint256 public finalizeTransferTimeout;                    // Time before transfer finalizes automatically 
-    uint256 private salesStartTimestamp;                       // Time when users can start transfer tokens 
+    uint256 public finalizeTransferTimeout;                    // Time before transfer finalizes automatically
+    uint256 private salesStartTimestamp;                       // Time when users can start transfer tokens
 
     /// @dev construct
     /// @param name - name of the token
@@ -68,6 +74,8 @@ contract PublicCollection is IEncryptedFileToken, ERC721Enumerable, Ownable, IER
         IFraudDecider _fraudDecider,
         bool _fraudLateDecisionEnabled
     ) ERC721(name, symbol) {
+        admin = defaultAdmin;
+        mintFeeReceiver = admin;
         tokensCount = 0;
         contractMetaUri = _contractMetaUri;
         collectionData = _data;
@@ -84,7 +92,7 @@ contract PublicCollection is IEncryptedFileToken, ERC721Enumerable, Ownable, IER
      */
     function supportsInterface(bytes4 interfaceId) public view virtual override(ERC721Enumerable, IERC165) returns (bool) {
         return interfaceId == type(IEncryptedFileToken).interfaceId ||
-        super.supportsInterface(interfaceId);
+            super.supportsInterface(interfaceId);
     }
 
     /// @dev Returns the Uniform Resource Identifier (URI) for `tokenId` token.
@@ -117,9 +125,16 @@ contract PublicCollection is IEncryptedFileToken, ERC721Enumerable, Ownable, IER
         string memory metaUri,
         uint256 royalty,
         bytes memory _data
-    ) external {
+    ) external payable {
         require(bytes(metaUri).length > 0, "PublicCollection: empty meta uri");
+        require(msg.value >= mintFee, "PublicCollection: Insufficient minting fee");
+
         _mint(to, id, metaUri, _data, royalty);
+
+        if (mintFee != 0) {
+            (bool sent,) = mintFeeReceiver.call{value: msg.value}("");
+            require(sent, "PublicCollection: failed to send like fee");
+        }
     }
 
     /// @dev Mint function without id. Can called only by the owner. Equivalent to mint(to, tokensCount(), metaUri, _data)
@@ -132,10 +147,18 @@ contract PublicCollection is IEncryptedFileToken, ERC721Enumerable, Ownable, IER
         string memory metaUri,
         uint256 royalty,
         bytes memory _data
-    ) external returns (uint256) {
+    ) external payable returns (uint256) {
         require(bytes(metaUri).length > 0, "PublicCollection: empty meta uri");
+        require(msg.value >= mintFee, "PublicCollection: Insufficient minting fee");
+
         uint256 id = tokensCount;
         _mint(to, tokensCount, metaUri, _data, royalty);
+
+        if (mintFee != 0) {
+            (bool sent,) = mintFeeReceiver.call{value: msg.value}("");
+            require(sent, "PublicCollection: failed to send like fee");
+        }
+
         return id;
     }
 
@@ -145,14 +168,27 @@ contract PublicCollection is IEncryptedFileToken, ERC721Enumerable, Ownable, IER
     /// @param metaUris - metadata uri list
     /// @param _data - additional token data list
     /// @param royalty - royalty list
-    function mintBatch(address to, uint256 count, string[] memory metaUris, bytes[] memory _data, uint256[] memory royalty) external onlyOwner {
+    function mintBatch(
+        address to,
+        uint256 count,
+        string[] memory metaUris,
+        bytes[] memory _data,
+        uint256[] memory royalty
+    ) external payable onlyOwner {
         require(count == metaUris.length, "PublicCollection: metaUri list length must be equal to count");
         require(count == _data.length, "PublicCollection: _data list length must be equal to count");
         require(count == royalty.length, "PublicCollection: royalty list length must be equal to count");
+        require(msg.value >= mintFee * count, "PublicCollection: Insufficient minting fee");
+
         uint256 id = tokensCount;
         for (uint256 i = 0; i < count; i++) {
             _mint(to, id, metaUris[i], _data[i], royalty[i]);
             id++;
+        }
+
+        if (mintFee != 0) {
+            (bool sent,) = mintFeeReceiver.call{value: msg.value}("");
+            require(sent, "PublicCollection: failed to send like fee");
         }
     }
 
@@ -181,7 +217,7 @@ contract PublicCollection is IEncryptedFileToken, ERC721Enumerable, Ownable, IER
         transfers[tokenId] = TransferInfo(tokenId, _msgSender(), _msgSender(), to,
             callbackReceiver, data, bytes(""), bytes(""), false, 0, 0);
         transferCounts[tokenId]++;
-        
+
         emit TransferInit(tokenId, ownerOf(tokenId), to, transferCounts[tokenId]);
     }
 
@@ -198,7 +234,7 @@ contract PublicCollection is IEncryptedFileToken, ERC721Enumerable, Ownable, IER
         transfers[tokenId] = TransferInfo(tokenId, _msgSender(), ownerOf(tokenId), address(0),
             callbackReceiver, bytes(""), bytes(""), bytes(""), false, 0, 0);
         transferCounts[tokenId]++;
-        
+
         emit TransferDraft(tokenId, ownerOf(tokenId), transferCounts[tokenId]);
     }
 
@@ -352,7 +388,7 @@ contract PublicCollection is IEncryptedFileToken, ERC721Enumerable, Ownable, IER
     function transferOwnership(address to) public virtual override onlyOwner {
         _transferOwnership(to);
     }
-    
+
     function safeTransferFrom(address, address, uint256,
         bytes memory) public virtual override(ERC721, IERC721, IEncryptedFileToken) {
         revert("common transfer disabled");
@@ -394,11 +430,27 @@ contract PublicCollection is IEncryptedFileToken, ERC721Enumerable, Ownable, IER
         tokenData[id] = data;
         royalties[id] = royalty;
     }
-    
 
     function royaltyInfo(uint256 tokenId, uint256 salePrice) public view override returns (address receiver, uint256 royaltyAmount) {
         require(_exists(tokenId), "ERC2981Royalties: Token does not exist");
         royaltyAmount = (salePrice * royalties[tokenId]) / PERCENT_MULTIPLIER;
         return (royaltyReceiver, royaltyAmount);
+    }
+
+    modifier onlyAdmin {
+        require(admin == msg.sender, "Caller is not an admin");
+        _;
+    }
+
+    function setAdmin(address newAdmin) public onlyAdmin {
+        admin = newAdmin;
+    }
+
+    function setMintFee(uint256 _mintFee) public onlyAdmin {
+        mintFee = _mintFee;
+    }
+
+    function setMintFeeReceiver(address _mintFeeReceiver) public onlyAdmin {
+        mintFeeReceiver = _mintFeeReceiver;
     }
 }
