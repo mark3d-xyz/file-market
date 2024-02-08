@@ -2,6 +2,9 @@ import * as hre from "hardhat";
 import {program} from "commander";
 import {LikeEmitter__factory} from "../typechain-types";
 import util from "util";
+import {isFilecoin, isScroll} from "./util";
+import {Overrides, PayableOverrides} from "ethers";
+import {parseEther} from "ethers/lib/utils";
 
 const request = util.promisify(require("request"));
 
@@ -41,16 +44,18 @@ async function main() {
   let accounts = await hre.ethers.getSigners();
   console.log(accounts)
 
-  const isFilecoin = process.env.HARDHAT_NETWORK!.toLowerCase().includes("filecoin") ||
-    process.env.HARDHAT_NETWORK!.toLowerCase().includes("calibration");
-  const overrides = isFilecoin ?
+  let overrides: PayableOverrides = isFilecoin ?
     {maxPriorityFeePerGas: await callRpc("eth_maxPriorityFeePerGas", "")} :
     {gasPrice: await accounts[0].provider!.getGasPrice()};
+  overrides = {...overrides, value: parseEther("0.00042")}
   console.log(overrides);
 
   const likeFactory = new LikeEmitter__factory(accounts[0]);
   const like = likeFactory.attach(args.instance);
 
+  if (isScroll) {
+    overrides.gasLimit = await like.estimateGas.like(args.collection, args.token, overrides);
+  }
   const tx = await like.like(args.collection, args.token, overrides);
 
   console.log("minting tx id", tx);

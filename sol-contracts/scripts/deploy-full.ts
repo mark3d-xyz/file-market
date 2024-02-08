@@ -12,13 +12,8 @@ import {
 import "@nomicfoundation/hardhat-chai-matchers";
 import {Deployer} from "@matterlabs/hardhat-zksync-deploy";
 import {Contract, Wallet} from "zksync-web3";
-import {BigNumber, ContractFactory, Overrides} from "ethers";
-import {TransactionRequest} from "@ethersproject/providers";
-import {serialize, UnsignedTransaction} from "@ethersproject/transactions";
-import {formatEther} from "ethers/lib/utils";
-import {SignerWithAddress} from "@nomiclabs/hardhat-ethers/signers";
-
-const ORACLE_PRECOMPILE_ADDRESS = "0x5300000000000000000000000000000000000002";
+import {Overrides} from "ethers";
+import {getScrollDetails, isFilecoin, isScroll} from "./util";
 
 const util = require("util");
 const request = util.promisify(require("request"));
@@ -193,11 +188,6 @@ async function main() {
     // Filecoin requires eth_maxPriorityFeePerGas
     // opBNB requires gasPrice
     // Scroll requires both gasPrice and gasLimit
-    const isFilecoin = process.env.HARDHAT_NETWORK!.toLowerCase()
-        .includes("filecoin") ||
-      process.env.HARDHAT_NETWORK!.toLowerCase()
-        .includes("calibration");
-    const isScroll = process.env.HARDHAT_NETWORK!.toLowerCase().includes("scroll");
 
     let overrides: Overrides = isFilecoin ? {
       maxPriorityFeePerGas: await callRpc("eth_maxPriorityFeePerGas", "")
@@ -205,7 +195,6 @@ async function main() {
       gasPrice: await accounts[0].provider!.getGasPrice(),
     };
     console.log(overrides);
-
 
     ////
     // LikeEmitter
@@ -354,42 +343,3 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
-
-
-export async function estimateL1Fee(gasOraclePrecompileAddress: string, unsignedSerializedTransaction: string): Promise<BigNumber> {
-  const l1GasOracle = await ethers.getContractAt("IL1GasPriceOracle", gasOraclePrecompileAddress);
-
-  return l1GasOracle.getL1Fee(unsignedSerializedTransaction);
-}
-
-export async function estimateL2Fee(tx: TransactionRequest): Promise<BigNumber> {
-  const gasToUse = await hre.ethers.provider.estimateGas(tx);
-  const feeData = await hre.ethers.provider.getFeeData();
-  const gasPrice = feeData.gasPrice;
-
-  if (!gasPrice) {
-    throw new Error("There was an error estimating L2 fee");
-  }
-
-  return gasToUse.mul(gasPrice);
-}
-
-async function getScrollDetails(contract: ContractFactory, args: any[], overrides: Overrides, accounts: SignerWithAddress[]): Promise<BigNumber> {
-  const tx = contract.getDeployTransaction(...args);
-  const gasLimit = await accounts[0].provider!.estimateGas(tx);
-  const unsigned: UnsignedTransaction = {
-    data: tx.data,
-    to: tx.to,
-    gasPrice: await overrides.gasPrice,
-    gasLimit: gasLimit,
-    value: BigNumber.from(0),
-    nonce: await accounts[0].provider!.getTransactionCount(accounts[0].address)
-  }
-  const l1 = await estimateL1Fee(ORACLE_PRECOMPILE_ADDRESS, serialize(unsigned));
-  const l2 = await estimateL2Fee(tx);
-  const name = contract.constructor.name.replace("__factory", "");
-  const totalFee = formatEther(l1.add(l2));
-  console.log(`${name}\n\tfee: ${totalFee} ETH\n\tl1 : ${formatEther(l1)} ETH\n\tl2 : ${formatEther(l2)} ETH`);
-
-  return gasLimit
-}
