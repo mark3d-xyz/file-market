@@ -152,7 +152,7 @@ jobs:
       # Scroll
       - name: Copy scroll .env from host
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
-        run: cp ~/scroll_indexer_dev_env indexer/.env
+        run: cp ~/.scroll_indexer_dev_env indexer/.env
       - name: Build scroll indexer container
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
         run: docker build --build-arg env=dev-scroll -t file-market-scroll-indexer-service:latest .
