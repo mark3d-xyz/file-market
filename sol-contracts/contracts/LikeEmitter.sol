@@ -5,7 +5,6 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract LikeEmitter is Ownable {
     uint256 public likeFee;
-    address public likeFeeReceiver;
 
     event Like(address indexed collectionAddress, uint256 tokenId);
 
@@ -16,11 +15,6 @@ contract LikeEmitter is Ownable {
 
     function like(address collectionAddress, uint256 tokenId) external payable {
         require(msg.value >= likeFee, "LikeEmitter: insufficient fee");
-        if (likeFee != 0) {
-            (bool sent,) = likeFeeReceiver.call{value: msg.value}("");
-            require(sent, "LikeEmitter: failed to send like fee");
-        }
-
         emit Like(collectionAddress, tokenId);
     }
 
@@ -28,8 +22,7 @@ contract LikeEmitter is Ownable {
         likeFee = _newLikeFee;
     }
 
-    function setLikeFeeReceiver(address _newLikeFeeReceiver) external onlyOwner {
-        require(_newLikeFeeReceiver != address(0), "LikeEmitter: receiver is the zero address");
-        likeFeeReceiver = _newLikeFeeReceiver;
+    function withdraw() external onlyOwner {
+        payable(owner()).transfer(address(this).balance);
     }
 }
