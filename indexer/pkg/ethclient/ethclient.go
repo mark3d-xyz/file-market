@@ -27,6 +27,7 @@ const (
 	bcTypeZk bcType = iota + 1
 	bcTypeOpbnb
 	bcTypeEth
+	bcTypeScroll
 )
 
 type EthClient interface {
@@ -60,6 +61,8 @@ func NewEthClient(urls []string) (EthClient, error) {
 		res.bcType = bcTypeZk
 	} else if slices.Contains(urls, "https://opbnb-testnet-rpc.bnbchain.org") {
 		res.bcType = bcTypeOpbnb
+	} else if slices.Contains(urls, "https://sepolia-rpc.scroll.io") {
+		res.bcType = bcTypeScroll
 	} else {
 		res.bcType = bcTypeEth
 	}
@@ -142,8 +145,8 @@ func (e *ethClient) BlockByNumber(ctx context.Context, number *big.Int) (types.B
 
 func (e *ethClient) GetLatestBlockNumber(ctx context.Context) (*big.Int, error) {
 	var (
-		err error
-		max *big.Int
+		err    error
+		maxNum *big.Int
 	)
 	for i, c := range e.rpcClients {
 		var res interface{}
@@ -173,13 +176,13 @@ func (e *ethClient) GetLatestBlockNumber(ctx context.Context) (*big.Int, error) 
 			log.Println("get block error", e.urls[i], err)
 			continue
 		}
-		if max == nil || res.(*big.Int).Cmp(max) == 1 {
-			max = res.(*big.Int)
+		if maxNum == nil || res.(*big.Int).Cmp(maxNum) == 1 {
+			maxNum = res.(*big.Int)
 		}
 	}
-	if max != nil {
-		e.latestFetched = max
-		return max, nil
+	if maxNum != nil {
+		e.latestFetched = maxNum
+		return maxNum, nil
 	}
 	return nil, err
 }
