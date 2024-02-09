@@ -12,6 +12,8 @@ import {
 import "@nomicfoundation/hardhat-chai-matchers";
 import {Deployer} from "@matterlabs/hardhat-zksync-deploy";
 import {Contract, Wallet} from "zksync-web3";
+import {Overrides} from "ethers";
+import {getScrollDetails, isFilecoin, isScroll} from "./util";
 
 const util = require("util");
 const request = util.promisify(require("request"));
@@ -183,70 +185,141 @@ async function main() {
     const exchangeFactory = new FilemarketExchangeV2__factory(accounts[0]);
     const likeEmitterFactory = new LikeEmitter__factory(accounts[0])
 
-    const isFilecoin = process.env.HARDHAT_NETWORK!.toLowerCase()
-        .includes("filecoin") ||
-      process.env.HARDHAT_NETWORK!.toLowerCase()
-        .includes("calibration");
-    let overrides: {};
-    if (!isFilecoin) {
-      const a = await accounts[0].provider!.getGasPrice()
-      overrides = {
-        gasPrice: a.add(a.mul(2))
-      }
-    } else {
-      overrides = {
-        maxPriorityFeePerGas: await callRpc("eth_maxPriorityFeePerGas", "")
-      }
-    }
+    // Filecoin requires eth_maxPriorityFeePerGas
+    // opBNB requires gasPrice
+    // Scroll requires both gasPrice and gasLimit
+
+    let overrides: Overrides = isFilecoin ? {
+      maxPriorityFeePerGas: await callRpc("eth_maxPriorityFeePerGas", "")
+    } : {
+      gasPrice: await accounts[0].provider!.getGasPrice(),
+    };
     console.log(overrides);
 
-    // const likeEmitter = await likeEmitterFactory.deploy(overrides);
-    // console.log("likeEmitter address: ", likeEmitter.address);
+    ////
+    // LikeEmitter
+    {
+      const likeFee = hre.ethers.utils.parseEther("0.00041"); // 0.1$
+      if (isScroll) {
+        overrides.gasLimit = getScrollDetails(likeEmitterFactory, [likeFee], overrides, accounts);
+      }
+      const likeEmitter = await likeEmitterFactory.deploy(likeFee, overrides);
+      console.log("likeEmitter address: ", likeEmitter.address);
+    }
 
-    const collectionDeployTx = collectionFactory.getDeployTransaction();
-    let collectionGasLimit = await accounts[0].provider!.estimateGas(collectionDeployTx);
-    collectionGasLimit = collectionGasLimit.add(collectionGasLimit.mul(2))
-
-    const collectionToClone = await collectionFactory.deploy({...overrides});
-    console.log(collectionGasLimit)
+    ////
+    // Collection
+    if (isScroll) {
+      overrides.gasLimit = getScrollDetails(collectionFactory, [], overrides, accounts);
+    }
+    const collectionToClone = await collectionFactory.deploy(overrides);
     console.log("collection address: ", collectionToClone.address);
 
-    process.exit(1)
-
+    ////
+    // Fraud
+    if (isScroll) {
+      overrides.gasLimit = getScrollDetails(fraudDeciderFactory, [], overrides, accounts);
+    }
     let fraudDecider = await fraudDeciderFactory.deploy(overrides);
     console.log("fraud decider address: ", fraudDecider.address);
 
-    const globalSalt = genRanHex(128);
-    console.log("global salt", globalSalt);
 
-    let accessToken = await accessTokenFactory.deploy(
-      "FileMarket Access Token",
-      "FileMarket",
-      "",
-      "0x" + globalSalt,
-      collectionToClone.address,
-      true,
-      fraudDecider.address,
-      overrides
-    );
-    console.log("access token address: ", accessToken.address);
+    ////
+    // Access
+    {
+      const globalSalt = genRanHex(128);
+      console.log("global salt", globalSalt);
 
-    let publicCollection = await publicCollectionFactory.deploy(
-      "FileMarket",
-      "FMRT",
-      "ipfs://QmZm4oLQoyXZLJzioYCjGtGXGHqsscKvWJmWXMVhTXZtc9",
-      accounts[0].getAddress(),
-      accounts[0].getAddress(),
-      "0x",
-      fraudDecider.address,
-      true,
-      overrides
-    );
-    console.log("public collection address: ", publicCollection.address);
+      const name = "FileMarket Access Token";
+      const symbol = "FileMarket";
+      const _contractMetaUri = "";
+      const _globalSalt = "0x" + globalSalt;
+      const _implementation = collectionToClone.address;
+      const _fraudLateDecisionEnabled = true;
+      const _fraudDecider = fraudDecider.address;
+      if (isScroll) {
+        overrides.gasLimit = getScrollDetails(
+          accessTokenFactory,
+          [
+            name,
+            symbol,
+            _contractMetaUri,
+            _globalSalt,
+            _implementation,
+            _fraudLateDecisionEnabled,
+            _fraudDecider,
+          ],
+          overrides,
+          accounts,
+        );
+      }
+      let accessToken = await accessTokenFactory.deploy(
+        name,
+        symbol,
+        _contractMetaUri,
+        _globalSalt,
+        _implementation,
+        _fraudLateDecisionEnabled,
+        _fraudDecider,
+        overrides,
+      );
+      console.log("access token address: ", accessToken.address);
+    }
 
-    let exchange = await exchangeFactory.deploy(overrides);
-    console.log("exchange address: ", exchange.address);
+    ////
+    // PublicCollection
+    {
+      const name = "FileMarket";
+      const symbol = "FMRT";
+      const _contractMetaUri = "ipfs://QmZm4oLQoyXZLJzioYCjGtGXGHqsscKvWJmWXMVhTXZtc9";
+      const _owner = await accounts[0].getAddress();
+      const _royaltyReceiver = await accounts[0].getAddress();
+      const _data = "0x";
+      const _fraudDecider = fraudDecider.address;
+      const _fraudLateDecisionEnabled = true;
+      if (isScroll) {
+        overrides.gasLimit = getScrollDetails(
+          publicCollectionFactory,
+          [
+            name,
+            symbol,
+            _contractMetaUri,
+            _owner,
+            _royaltyReceiver,
+            _data,
+            _fraudDecider,
+            _fraudLateDecisionEnabled,
+          ],
+          overrides,
+          accounts,
+        );
+      }
+      let publicCollection = await publicCollectionFactory.deploy(
+        name,
+        symbol,
+        _contractMetaUri,
+        _owner,
+        _royaltyReceiver,
+        _data,
+        _fraudDecider,
+        _fraudLateDecisionEnabled,
+        overrides
+      );
+      console.log("public collection address: ", publicCollection.address);
+    }
 
+    ////
+    // Exchange
+    {
+      if (isScroll) {
+        overrides.gasLimit = getScrollDetails(exchangeFactory, [], overrides, accounts)
+      }
+      let exchange = await exchangeFactory.deploy(overrides);
+      console.log("exchange address: ", exchange.address);
+    }
+
+    ////
+    // FileBunnies
     if (isFilecoin) {
       let fileBunniesCollection = await fileBunniesCollectionFactory.deploy(
         "FileBunnies",

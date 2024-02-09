@@ -27,6 +27,7 @@
     "commander": "^9.4.1",
     "ethers": "^5.4.7",
     "hardhat": "^2.11.2",
+    "hardhat-dependency-compiler": "^1.1.3",
     "hardhat-gas-reporter": "^1.0.8",
     "js-sha256": "^0.9.0",
     "node-rsa": "^1.1.1",
@@ -39,6 +40,7 @@
     "zksync-web3": "^0.14.3"
   },
   "dependencies": {
+    "@scroll-tech/contracts": "^0.0.3",
     "request": "^2.88.2"
   }
 }
