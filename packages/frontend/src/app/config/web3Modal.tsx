@@ -1,5 +1,5 @@
 import { getDefaultWallets } from '@rainbow-me/rainbowkit'
-import { EthereumClient, w3mProvider } from '@web3modal/ethereum'
+import { w3mProvider } from '@web3modal/ethereum'
 import { configureChains, createConfig } from 'wagmi'
 import { publicProvider } from 'wagmi/providers/public'
 
@@ -35,5 +35,3 @@ export const wagmiConfig = createConfig({
   connectors,
   publicClient,
 })
-
-const ethereumClient = new EthereumClient(wagmiConfig, chains)
