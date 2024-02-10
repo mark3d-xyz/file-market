@@ -14,6 +14,7 @@ import {Deployer} from "@matterlabs/hardhat-zksync-deploy";
 import {Contract, Wallet} from "zksync-web3";
 import {Overrides} from "ethers";
 import {getScrollDetails, isFilecoin, isScroll} from "./util";
+import {parseEther} from "ethers/lib/utils";
 
 const util = require("util");
 const request = util.promisify(require("request"));
@@ -199,7 +200,7 @@ async function main() {
     ////
     // LikeEmitter
     {
-      const likeFee = hre.ethers.utils.parseEther("0.00041"); // 0.1$
+      const likeFee = hre.ethers.utils.parseEther("0.000041"); // 0.1$
       if (isScroll) {
         overrides.gasLimit = getScrollDetails(likeEmitterFactory, [likeFee], overrides, accounts);
       }
@@ -306,6 +307,9 @@ async function main() {
         overrides
       );
       console.log("public collection address: ", publicCollection.address);
+
+      const tx = await publicCollection.connect(accounts[0]).setMintFee(parseEther("0.00041"))
+      console.log("set fee tx: ", tx.hash)
     }
 
     ////
