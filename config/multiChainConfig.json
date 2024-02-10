@@ -78,7 +78,10 @@
     "likeEmitterAddress": "0x03afEF500900839F109957f8b856C3E2CC9309a8",
     "baseUrl": "https://dev.filemarket.xyz/api",
     "explorer": "https://calibration.filfox.info/",
-    "wsUrl": "wss://dev.filemarket.xyz"
+    "wsUrl": "wss://dev.filemarket.xyz",
+    "hacks": {
+      "gasPrice": "30000000000"
+    }
   },
   {
     "chain": {
@@ -235,6 +238,9 @@
     "likeEmitterAddress": "0xE48c71D68101053bC2E0EE18355f1C7A1Fa919E0",
     "baseUrl": "https://era-dev.filemarket.xyz/api",
     "explorer": "https://goerli.explorer.zksync.io/tx/",
-    "wsUrl": "wss://era-dev.filemarket.xyz"
+    "wsUrl": "wss://era-dev.filemarket.xyz",
+    "hacks": {
+      "gasPrice": "30000000000"
+    }
   }
 ]

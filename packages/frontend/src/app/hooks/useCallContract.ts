@@ -50,7 +50,7 @@ export const useCallContract = () => {
         })
       }
 
-      return await getTxReceipt(hash)
+      return await getTxReceipt(hash, chain?.id)
     } catch (error: any) {
       console.error(error)
 
