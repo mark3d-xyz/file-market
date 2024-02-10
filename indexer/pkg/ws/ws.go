@@ -4,16 +4,17 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/ethereum/go-ethereum/common"
-	"github.com/go-openapi/strfmt"
-	"github.com/gorilla/websocket"
-	"github.com/mark3d-xyz/mark3d/indexer/models"
-	log2 "github.com/mark3d-xyz/mark3d/indexer/pkg/log"
 	"log"
 	"math/big"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/ethereum/go-ethereum/common"
+	"github.com/go-openapi/strfmt"
+	"github.com/gorilla/websocket"
+	"github.com/mark3d-xyz/mark3d/indexer/models"
+	log2 "github.com/mark3d-xyz/mark3d/indexer/pkg/log"
 )
 
 var logger = log2.GetLogger()
@@ -99,9 +100,10 @@ func (c *conn) pingPong() {
 
 func (c *conn) sendJson(msg interface{}) {
 	data, err := json.Marshal(msg)
-	if err == nil {
-		c.sendBytes(data)
+	if err != nil {
+		logger.Error("failed to marshal on `sendJson`", err, log2.Fields{"msg": msg})
 	}
+	c.sendBytes(data)
 }
 
 func (c *conn) sendBytes(data []byte) {

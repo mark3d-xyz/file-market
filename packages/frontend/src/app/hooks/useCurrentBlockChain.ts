@@ -1,4 +1,3 @@
-import { useActivateDeactivateRequireParams } from './useActivateDeactivateStore'
 import { useStores } from './useStores'
 
 /**
@@ -7,7 +6,6 @@ import { useStores } from './useStores'
  */
 export function useCurrentBlockChain() {
   const { currentBlockChainStore } = useStores()
-  useActivateDeactivateRequireParams(currentBlockChainStore)
 
   return currentBlockChainStore
 }

@@ -1,6 +1,6 @@
 import * as hre from "hardhat";
-import { program } from "commander";
-import {Mark3dCollection__factory} from "../typechain-types";
+import {program} from "commander";
+import {FilemarketCollectionV2__factory} from "../typechain-types";
 
 async function main() {
   program.option("-id, --id <string>");
@@ -10,9 +10,19 @@ async function main() {
   const args = program.opts();
 
   let accounts = await hre.ethers.getSigners();
-  const collectionFactory = new Mark3dCollection__factory(accounts[0]);
+  if (accounts.length == 1)
+    accounts.push(accounts[0]);
+
+  const collectionFactory = new FilemarketCollectionV2__factory(accounts[0]);
   const collection = collectionFactory.attach(args.collection);
-  const tx = await collection.connect(accounts[1]).approve(args.exchange, args.id);
+
+  const isOpBNB = process.env.HARDHAT_NETWORK!.toLowerCase().includes("opbnb");
+  const overrides = isOpBNB ?
+    {gasPrice: await accounts[0].provider!.getGasPrice()} :
+    {};
+  console.log(overrides);
+
+  const tx = await collection.connect(accounts[1]).approve(args.exchange, args.id, overrides);
   console.log("approve txid: ", tx.hash);
 }
 

@@ -20,5 +20,5 @@ export function useActivateDeactivateRequireParams<Args extends any[]>(
         store.deactivate()
       }
     }
-  }, [...args, activated])
+  }, args)
 }

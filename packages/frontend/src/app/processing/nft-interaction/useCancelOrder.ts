@@ -36,7 +36,7 @@ export function useCancelOrder() {
           BigInt(tokenId)],
       },
     })
-  }), [config, wrapPromise])
+  }), [config, wrapPromise, callContract])
 
   return {
     ...statuses,

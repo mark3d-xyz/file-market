@@ -23,6 +23,7 @@ func (s *service) AddEFTSubscription(ctx context.Context, w http.ResponseWriter,
 	tokenId, ok := big.NewInt(0).SetString(req.TokenID, 10)
 	if !ok {
 		log.Println("failed to parse token id in AddEFTSubscription")
+		return
 	}
 
 	topic := fmt.Sprintf("%s:%s", strings.ToLower(collectionAddress.String()), tokenId.String())
@@ -34,7 +35,7 @@ func (s *service) AddEFTSubscription(ctx context.Context, w http.ResponseWriter,
 }
 
 func (s *service) EFTSubOnConnectionResponse(ctx context.Context, req any) any {
-	r, ok := req.(models.EFTSubscriptionRequest)
+	r, ok := req.(*models.EFTSubscriptionRequest)
 	if !ok {
 		return errors.New("failed to parse EFTSubscriptionRequest")
 	}
@@ -42,8 +43,7 @@ func (s *service) EFTSubOnConnectionResponse(ctx context.Context, req any) any {
 	collectionAddress := common.HexToAddress(r.CollectionAddress)
 	tokenId, ok := big.NewInt(0).SetString(r.TokenID, 10)
 	if !ok {
-		log.Println("failed to parse token id in AddEFTSubscription")
-		return errors.New("failed to parse EFTSubscriptionRequest")
+		return errors.New("failed to parse token id in EFTSubscriptionRequest")
 	}
 
 	token, transfer, order, err := s.getTokenCurrentState(ctx, collectionAddress, tokenId)
@@ -61,10 +61,7 @@ func (s *service) EFTSubOnConnectionResponse(ctx context.Context, req any) any {
 		}
 
 		if m.Order != nil {
-			currency := "FIL"
-			if strings.Contains(s.cfg.Mode, "era") {
-				currency = "ETH"
-			}
+			currency := s.cfg.Currency
 			rate, err := s.currencyConverter.GetExchangeRate(context.Background(), currency, "USD")
 			if err != nil {
 				log.Println("failed to get conversion rate: ", err)

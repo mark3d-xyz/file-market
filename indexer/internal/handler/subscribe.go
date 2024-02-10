@@ -1,10 +1,11 @@
 package handler
 
 import (
-	"github.com/gorilla/mux"
-	"github.com/mark3d-xyz/mark3d/indexer/models"
 	"math/big"
 	"net/http"
+
+	"github.com/gorilla/mux"
+	"github.com/mark3d-xyz/mark3d/indexer/models"
 )
 
 func (h *handler) subscribeToBlockNumber(w http.ResponseWriter, r *http.Request) {
@@ -21,6 +22,7 @@ func (h *handler) subscribeToEFT(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
+
 	req := models.EFTSubscriptionRequest{
 		CollectionAddress: address,
 		TokenID:           id.String(),

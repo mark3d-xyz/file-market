@@ -559,13 +559,7 @@ func (s *service) onTransferDraftCompletionEvent(
 	}
 
 	if owner.IsEmailNotificationEnabled && owner.Email != "" && owner.IsEmailConfirmed {
-		network := "Filecoin"
-		currency := "FIL"
-		if strings.Contains(s.cfg.Mode, "era") {
-			network = "ZkSync"
-			currency = "ETH"
-		}
-		tokenUrl := fmt.Sprintf("%s/collection/%s/%s/%s", s.cfg.Host, network, strings.ToLower(token.CollectionAddress.String()), token.TokenId.String())
+		tokenUrl := fmt.Sprintf("%s/collection/%s/%s/%s", s.cfg.Host, s.cfg.NetworkRouteName, strings.ToLower(token.CollectionAddress.String()), token.TokenId.String())
 		ownerName := owner.Name
 		if ownerName == "" {
 			ownerName = "FileMarketer"
@@ -580,7 +574,7 @@ func (s *service) onTransferDraftCompletionEvent(
 			TokenName:          token.Metadata.Name,
 			TokenUrl:           tokenUrl,
 			Price:              utils.ParseEth(order.Price).String(),
-			Currency:           currency,
+			Currency:           s.cfg.Currency,
 			ProfileSettingsUrl: fmt.Sprintf("%s/profile/%s", s.cfg.Host, buyer.Address),
 			BottomFilename:     "bottompng",
 			LogoFilename:       "logopng",
@@ -738,11 +732,7 @@ func (s *service) onPasswordSetEvent(
 	}
 
 	if buyer.IsEmailNotificationEnabled && buyer.Email != "" {
-		network := "Filecoin"
-		if strings.Contains(s.cfg.Mode, "era") {
-			network = "ZkSync"
-		}
-		tokenUrl := fmt.Sprintf("%s/collection/%s/%s/%s", s.cfg.Host, network, strings.ToLower(token.CollectionAddress.String()), token.TokenId.String())
+		tokenUrl := fmt.Sprintf("%s/collection/%s/%s/%s", s.cfg.Host, s.cfg.NetworkRouteName, strings.ToLower(token.CollectionAddress.String()), token.TokenId.String())
 		ownerName := owner.Name
 		if ownerName == "" {
 			ownerName = owner.Address

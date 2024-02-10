@@ -72,7 +72,7 @@ export const wait = (miliseconds: number) => new Promise<void>((resolve) => {
   setTimeout(() => { resolve() }, miliseconds)
 })
 
-const pingTx = async (txHash: `0x${string}`) => {
+const pingTx = async (txHash: `0x${string}`, chainId: number | undefined) => {
   let receipt = null
   const start = Date.now()
 
@@ -81,7 +81,8 @@ const pingTx = async (txHash: `0x${string}`) => {
     await wait(5000)
 
     try {
-      receipt = await wagmiConfig.getPublicClient().getTransactionReceipt({ hash: txHash })
+      // without chainId the filecoin network is always used
+      receipt = await wagmiConfig.getPublicClient({ chainId }).getTransactionReceipt({ hash: txHash })
     } catch (e) {
       console.error('wagmi getTransactionReceipt error', e)
     }
@@ -92,19 +93,21 @@ const pingTx = async (txHash: `0x${string}`) => {
   return receipt
 }
 
-export const getTxReceipt = async (hash: `0x${string}`) => {
+export const getTxReceipt = async (hash: `0x${string}`, chainId: number | undefined) => {
   console.log(hash)
 
   const receipt = await Promise.race([
     await waitForTransaction({
       hash,
     }),
-    pingTx(hash),
+    pingTx(hash, chainId),
   ])
 
   if (!receipt) {
     throw new JsonRpcError(503, `The transaction ${hash} is failed`)
   }
+
+  console.log('receipt', receipt)
 
   return receipt
 }

@@ -21,7 +21,7 @@ export const useChangeNetwork = (props?: { onSuccess?: (chainId?: number) => voi
       props?.onSuccess?.(data.id)
       reloadStores()
     },
-    onError: (error) => {
+    onError: () => {
       props?.onError?.()
     },
   })
@@ -68,12 +68,11 @@ export const useChangeNetwork = (props?: { onSuccess?: (chainId?: number) => voi
 
   useEffect(() => {
     if (error) {
-      rootStore.errorStore.showError(stringifyError(error !== null ? error : undefined))
+      rootStore.errorStore.showError(stringifyError(error || undefined))
     }
   }, [error])
 
   const changeNetwork = useCallback((chainId: number | undefined, isWarningNetwork?: boolean) => {
-    console.log(isConnected)
     if (!isConnected) {
       if (!!multiChainStore.getChainById(chainId)?.chain) {
         setIsCanConnectAfterChange(true)
@@ -83,8 +82,6 @@ export const useChangeNetwork = (props?: { onSuccess?: (chainId?: number) => voi
 
       return
     }
-
-    console.log('tik1')
 
     // Меняем сеть, если сеть в сторе !== сети кошелька или если сеть кошелька просто не равна переданной сети
     if ((currentChainStore.chainId !== chainId || isWarningNetwork) || chain?.id !== chainId) {

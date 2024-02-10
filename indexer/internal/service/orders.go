@@ -2,11 +2,12 @@ package service
 
 import (
 	"context"
-	"github.com/mark3d-xyz/mark3d/indexer/pkg/currencyconversion"
-	"github.com/mark3d-xyz/mark3d/indexer/pkg/utils"
 	"log"
 	"math/big"
 	"strings"
+
+	"github.com/mark3d-xyz/mark3d/indexer/pkg/currencyconversion"
+	"github.com/mark3d-xyz/mark3d/indexer/pkg/utils"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/jackc/pgx/v4"
@@ -25,10 +26,7 @@ func (s *service) GetOrders(
 	}
 	defer s.repository.RollbackTransaction(ctx, tx)
 
-	currency := "FIL"
-	if strings.Contains(s.cfg.Mode, "era") {
-		currency = "ETH"
-	}
+	currency := s.cfg.Currency
 
 	rate, err := s.currencyConverter.GetExchangeRate(ctx, currency, "USD")
 	if err != nil {
@@ -72,11 +70,7 @@ func (s *service) GetOrdersHistory(
 	}
 	defer s.repository.RollbackTransaction(ctx, tx)
 
-	currency := "FIL"
-	if strings.Contains(s.cfg.Mode, "era") {
-		currency = "ETH"
-	}
-	rate, err := s.currencyConverter.GetExchangeRate(ctx, currency, "USD")
+	rate, err := s.currencyConverter.GetExchangeRate(ctx, s.cfg.Currency, "USD")
 	if err != nil {
 		log.Println("failed to get conversion rate: ", err)
 		rate = 0
@@ -118,10 +112,7 @@ func (s *service) GetOrder(
 	}
 	defer s.repository.RollbackTransaction(ctx, tx)
 
-	currency := "FIL"
-	if strings.Contains(s.cfg.Mode, "era") {
-		currency = "ETH"
-	}
+	currency := s.cfg.Currency
 	rate, err := s.currencyConverter.GetExchangeRate(ctx, currency, "USD")
 	if err != nil {
 		log.Println("failed to get conversion rate: ", err)
@@ -153,11 +144,7 @@ func (s *service) GetAllActiveOrders(
 	}
 	defer s.repository.RollbackTransaction(ctx, tx)
 
-	currency := "FIL"
-	if strings.Contains(s.cfg.Mode, "era") {
-		currency = "ETH"
-	}
-	rate, err := s.currencyConverter.GetExchangeRate(ctx, currency, "USD")
+	rate, err := s.currencyConverter.GetExchangeRate(ctx, s.cfg.Currency, "USD")
 	if err != nil {
 		log.Println("failed to get conversion rate: ", err)
 		rate = 0

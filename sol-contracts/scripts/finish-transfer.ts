@@ -1,5 +1,5 @@
 import * as hre from "hardhat";
-import { program } from "commander";
+import {program} from "commander";
 import {Mark3dCollection__factory} from "../typechain-types";
 
 async function main() {
@@ -9,9 +9,21 @@ async function main() {
   const args = program.opts();
 
   let accounts = await hre.ethers.getSigners();
+  if (accounts.length == 1)
+    accounts.push(accounts[0]);
+
   const collectionFactory = new Mark3dCollection__factory(accounts[0]);
   const collection = collectionFactory.attach(args.collection);
-  const tx = await collection.connect(accounts[2]).finalizeTransfer(hre.ethers.BigNumber.from(args.id));
+
+  const isOpBNB = process.env.HARDHAT_NETWORK!.toLowerCase().includes("opbnb");
+  const overrides = isOpBNB ?
+    {gasPrice: await accounts[0].provider!.getGasPrice()} :
+    {};
+  console.log(overrides);
+
+  const tx = await collection
+    .connect(accounts[1])
+    .finalizeTransfer(args.id, overrides);
   console.log("finish transfer txid: ", tx.hash);
 }
 

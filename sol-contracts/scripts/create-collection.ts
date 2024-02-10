@@ -1,6 +1,8 @@
 import * as hre from "hardhat";
-import { program } from "commander";
-import {Mark3dAccessToken__factory, Mark3dCollection__factory} from "../typechain-types";
+import {program} from "commander";
+import {FilemarketCollectionV2__factory, Mark3dAccessTokenV2__factory} from "../typechain-types";
+import {PayableOverrides} from "ethers";
+import {isFilecoin, isScroll} from "./util";
 
 const genRanHex = (size: number) =>
   [...Array(size)]
@@ -13,15 +15,55 @@ async function main() {
   const args = program.opts();
 
   let accounts = await hre.ethers.getSigners();
-  const accessTokenFactory = new Mark3dAccessToken__factory(accounts[0]);
-  const collectionFactory = new Mark3dCollection__factory(accounts[0]);
+  if (accounts.length == 1)
+    accounts.push(accounts[0]);
+
+  const accessTokenFactory = new Mark3dAccessTokenV2__factory(accounts[0]);
+  const collectionFactory = new FilemarketCollectionV2__factory(accounts[0]);
   const accessToken = accessTokenFactory.attach(args.instance);
   const salt = genRanHex(64);
-  await accessToken.connect(accounts[1]).createCollection("0x" + salt,
-    "TEST", "TEST", "", "ipfs://bafkreigvvqwpop4aeucnjdw6ozjecinuwujka7cjzj7cd323pmsek7mvxu", "0x");
-  const collectionAddress = await accessToken.predictDeterministicAddress("0x" + salt);
-  let collectionInstance = collectionFactory.attach(collectionAddress);
-  console.log("collection address: ", collectionInstance.address);
+
+  let overrides: PayableOverrides = isFilecoin ?
+    {} :
+    {gasPrice: await accounts[0].provider!.getGasPrice()};
+  console.log(overrides);
+
+  {
+    const saltArg = "0x" + salt;
+    const name = "TEST";
+    const symbol = "TEST";
+    const _contractMetaUri = "ipfs://QmQUr4ApevgdEKCbE7W4YHXCCF7JNAVzX2BgZTntaAGQzC";
+    const accessTokenMetaUri = "";
+    const royaltyReceiver = accounts[0].address;
+    const data = "0x";
+    if (isScroll) {
+      overrides.gasLimit = await accessToken.estimateGas.createCollection(
+        saltArg,
+        name,
+        symbol,
+        _contractMetaUri,
+        accessTokenMetaUri,
+        royaltyReceiver,
+        data,
+        overrides);
+    }
+    const tx = await accessToken
+      .connect(accounts[1])
+      .createCollection(
+        saltArg,
+        name,
+        symbol,
+        _contractMetaUri,
+        accessTokenMetaUri,
+        royaltyReceiver,
+        data,
+        overrides);
+    console.log("tx: ", tx.hash)
+
+    const collectionAddress = await accessToken.predictDeterministicAddress("0x" + salt);
+    let collectionInstance = collectionFactory.attach(collectionAddress);
+    console.log("collection address: ", collectionInstance.address);
+  }
 }
 
 main().catch((error) => {

@@ -4,6 +4,7 @@ coverage
 coverage.json
 typechain
 typechain-types
+hardhat-dependency-compiler
 
 #Hardhat files
 cache
@@ -29,4 +30,8 @@ test.sh
 .mainnet-secret
 .test-zksync-secret
 .main-zksync-secret
+.test-opbnb-secret
+.opbnb-secret
+.test-scroll-secret
+.scroll-secret
 .yarn

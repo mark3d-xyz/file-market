@@ -18,7 +18,15 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/types"
 	"github.com/sony/gobreaker"
-	"golang.org/x/exp/slices"
+)
+
+type bcType int32
+
+const (
+	bcTypeZk bcType = iota + 1
+	bcTypeOpbnb
+	bcTypeEth
+	bcTypeScroll
 )
 
 type EthClient interface {
@@ -37,19 +45,25 @@ type ethClient struct {
 	breakers       []*gobreaker.CircuitBreaker
 	latestFetched  *big.Int
 	breakThreshold *big.Int
-	isZk           bool
+	bcType         bcType
 }
 
-func NewEthClient(urls []string) (EthClient, error) {
+func NewEthClient(urls []string, mod string) (EthClient, error) {
 	res := &ethClient{
 		urls:           urls,
 		breakThreshold: big.NewInt(1),
 	}
 
-	if slices.Contains(urls, "https://testnet.era.zksync.dev") ||
-		slices.Contains(urls, "https://mainnet.era.zksync.io") ||
-		slices.Contains(urls, "https://nd-223-015-392.p2pify.com/80abe9200081e09a2ac7f6c101c9dd1e") {
-		res.isZk = true
+	switch mod {
+	case "era", "era-dev":
+		res.bcType = bcTypeZk
+	case "opbnb", "dev-opbnb":
+		res.bcType = bcTypeOpbnb
+	case "scroll", "dev-scroll":
+		res.bcType = bcTypeScroll
+	case "main", "dev":
+	default:
+		res.bcType = bcTypeEth
 	}
 
 	res.rpcClients = make([]*rpc.Client, len(urls))
@@ -85,11 +99,15 @@ func (e *ethClient) BlockByNumber(ctx context.Context, number *big.Int) (types.B
 
 	var err error
 	var block types.Block
-	if e.isZk {
+
+	// For Zk and opBNB
+	// Zk got wierd transactions
+	// Layer 2 ebet mozgi
+	if e.bcType != bcTypeEth {
 		for i, c := range e.RpcClients() {
 			block, err = getZkBlock(ctx, c, hexutil.EncodeBig(number), true)
 			if err != nil {
-				log.Println("get pending zk block failed", number.String(), e.urls[i], err)
+				log.Println("get pending block failed", number.String(), e.urls[i], err)
 				if strings.Contains(err.Error(), "want 512 for Bloom") {
 					return nil, err
 				}
@@ -126,8 +144,8 @@ func (e *ethClient) BlockByNumber(ctx context.Context, number *big.Int) (types.B
 
 func (e *ethClient) GetLatestBlockNumber(ctx context.Context) (*big.Int, error) {
 	var (
-		err error
-		max *big.Int
+		err    error
+		maxNum *big.Int
 	)
 	for i, c := range e.rpcClients {
 		var res interface{}
@@ -157,13 +175,13 @@ func (e *ethClient) GetLatestBlockNumber(ctx context.Context) (*big.Int, error) 
 			log.Println("get block error", e.urls[i], err)
 			continue
 		}
-		if max == nil || res.(*big.Int).Cmp(max) == 1 {
-			max = res.(*big.Int)
+		if maxNum == nil || res.(*big.Int).Cmp(maxNum) == 1 {
+			maxNum = res.(*big.Int)
 		}
 	}
-	if max != nil {
-		e.latestFetched = max
-		return max, nil
+	if maxNum != nil {
+		e.latestFetched = maxNum
+		return maxNum, nil
 	}
 	return nil, err
 }

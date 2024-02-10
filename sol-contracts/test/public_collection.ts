@@ -9,13 +9,23 @@ import {
 } from "../typechain-types";
 import "@nomicfoundation/hardhat-chai-matchers";
 
+const pkey = process.env.PRIVATE_KEY;
+
 describe("Success transfer", async () => {
   let accounts: Signer[];
   let fraudDecider: FraudDeciderWeb2;
   let collectionInstance: PublicCollection;
 
+  const mintFee = ethers.utils.parseEther("0.1");
+
   before(async () => {
     accounts = await ethers.getSigners();
+    if (pkey) {
+      const admin = new ethers.Wallet(pkey);
+      accounts = [admin.connect(ethers.provider), ...accounts];
+      await accounts[5]
+        .sendTransaction({to: accounts[0].getAddress(), value: ethers.utils.parseEther("5")})
+    }
     const fraudDeciderFactory = new FraudDeciderWeb2__factory(accounts[0]);
     const collectionFactory = new PublicCollection__factory(accounts[0]);
     fraudDecider = await fraudDeciderFactory.deploy();
@@ -31,16 +41,28 @@ describe("Success transfer", async () => {
     );
   });
 
+  it("set mint fee", async () => {
+    await collectionInstance.connect(accounts[0]).setMintFee(mintFee)
+  })
+
   it("mint", async () => {
+    const startBalance = await accounts[0].getBalance();
     await collectionInstance
       .connect(accounts[1])
-      .mint(accounts[1].getAddress(), BN.from(0), "a", 1_000, "0x");
+      .mint(accounts[1].getAddress(), BN.from(0), "a", 1_000, "0x", {value: mintFee});
+
+    expect(await accounts[0].getBalance())
+      .to.eq(startBalance.add(mintFee))
   });
 
   it("mint not owner", async () => {
+    const startBalance = await accounts[0].getBalance();
     await collectionInstance
       .connect(accounts[5])
-      .mintWithoutId(accounts[5].getAddress(), "a", 1_000, "0x");
+      .mintWithoutId(accounts[5].getAddress(), "a", 1_000, "0x", {value: mintFee});
+
+    expect(await accounts[0].getBalance())
+      .to.eq(startBalance.add(mintFee))
   });
 
   it("init transfer", async () => {
@@ -206,4 +228,74 @@ describe("Transfer with fraud", async () => {
         BN.from(0)
       );
   });
+});
+
+describe("Admin functionality", async () => {
+  let accounts: Signer[];
+  let fraudDecider: FraudDeciderWeb2;
+  let collectionInstance: PublicCollection;
+
+  const mintFee = ethers.utils.parseEther("0.1");
+
+  before(async () => {
+    accounts = await ethers.getSigners();
+    if (!pkey) {
+      expect(true).to.eq(false)
+      return
+    }
+    const admin = new ethers.Wallet(pkey);
+    accounts = [admin.connect(ethers.provider), ...accounts];
+    await accounts[5]
+      .sendTransaction({to: accounts[0].getAddress(), value: ethers.utils.parseEther("5")})
+
+    const fraudDeciderFactory = new FraudDeciderWeb2__factory(accounts[0]);
+    const collectionFactory = new PublicCollection__factory(accounts[1]);
+    fraudDecider = await fraudDeciderFactory.deploy();
+    collectionInstance = await collectionFactory.deploy(
+      "Collection name",
+      "CN",
+      "",
+      accounts[1].getAddress(),
+      accounts[5].getAddress(),
+      "0x",
+      fraudDecider.address,
+      true
+    );
+  });
+
+  it("set mint fee", async () => {
+    await collectionInstance.connect(accounts[0]).setMintFee(mintFee)
+  })
+
+  it("mint", async () => {
+    const startBalance = await accounts[0].getBalance();
+    await collectionInstance
+      .connect(accounts[1])
+      .mint(accounts[1].getAddress(), BN.from(0), "a", 1_000, "0x", {value: mintFee});
+
+    expect(await accounts[0].getBalance())
+      .to.eq(startBalance.add(mintFee))
+  });
+
+  it("revert set mint fee not admin", async () => {
+    const tx = collectionInstance.connect(accounts[1])
+      .setMintFee(mintFee);
+    await expect(tx)
+      .revertedWith('Caller is not an admin');
+  })
+
+  it("revert set admin", async () => {
+    const tx = collectionInstance.connect(accounts[1])
+      .setAdmin(accounts[1].getAddress());
+    await expect(tx)
+      .revertedWith('Caller is not an admin');
+  })
+
+  it("set admin", async () => {
+    await collectionInstance.connect(accounts[0])
+      .setAdmin(accounts[1].getAddress());
+
+    expect(await collectionInstance.connect(accounts[1]).admin())
+      .eq(await accounts[1].getAddress())
+  })
 });

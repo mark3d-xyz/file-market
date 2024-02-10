@@ -1,0 +1,60 @@
+version: "3.8"
+services:
+  scroll-indexer-service:
+    image: file-market-scroll-indexer-service:latest
+    ports:
+      - "9502:9502"
+    depends_on:
+      - scroll-indexer-postgres
+      - scroll-indexer-redis
+      - scroll-healthcheck-service
+    volumes:
+      - ~/scroll-logs:/logs
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  scroll-oracle-service:
+    image: file-market-scroll-oracle-service:latest
+    depends_on:
+      - scroll-oracle-redis
+    volumes:
+      - ~/scroll-logs:/logs
+    restart: unless-stopped
+  scroll-healthcheck-service:
+    image: file-market-scroll-healthcheck-service:latest
+    volumes:
+      - ~/scroll-logs:/logs
+    restart: unless-stopped
+  scroll-oracle-redis:
+    image: redis:7
+    volumes:
+      - scroll-cache-redis-data:/data
+    command: redis-server --save 60 1
+  scroll-indexer-postgres:
+    image: postgres:13
+    volumes:
+      - scroll-indexer-postgres-data:/var/lib/postgresql/data
+    env_file: ~/.scroll_indexer_pg_env
+    restart: unless-stopped
+    healthcheck:
+      test: pg_isready -d file_market_indexer -U indexer
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  scroll-indexer-redis:
+    image: redis:7
+    volumes:
+      - scroll-indexer-redis-data:/data
+    command: redis-server --save 60 1
+  scroll-indexer-postgres-migration:
+    build:
+      context: .
+      dockerfile: migrate.Dockerfile
+    env_file: ~/.scroll_indexer_pg_env
+    depends_on:
+      - scroll-indexer-postgres
+
+volumes:
+  scroll-indexer-postgres-data:
+  scroll-cache-redis-data:
+  scroll-indexer-redis-data:

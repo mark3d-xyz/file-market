@@ -26,6 +26,8 @@
       "switchTokenTimeout": "3m"
     },
     "currencyConversionCacheTTL": "1h",
+    "currency": "FIL",
+    "network-route-name": "FilecoinTestnet",
     "mode": "dev",
     "chainId": "314159"
   }

@@ -91,7 +91,9 @@ export class MultiChainStore implements IStoreRequester, IActivateDeactivate {
     return {
       chain: chain.chain,
       // Hardcode high gas price in testnet to prevent "transaction underpriced" error
-      gasPrice: !import.meta.env.VITE_IS_MAINNET ? parseUnits('30', 9) : undefined,
+      gasPrice: chain.hacks?.gasPrice ? BigInt(chain.hacks.gasPrice) : undefined,
+      likeFee: chain.likeFee ? parseUnits(chain.likeFee, chain.chain.nativeCurrency.decimals) : undefined,
+      mintFee: chain.mintFee ? parseUnits(chain.mintFee, chain.chain.nativeCurrency.decimals) : undefined,
       accessToken: {
         address: chain.accessTokenAddress,
         abi: accessToken.abi,

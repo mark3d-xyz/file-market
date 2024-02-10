@@ -11,4 +11,10 @@ export interface IMultiChainConfig {
   baseUrl: string
   explorer: string
   wsUrl: string
+  hacks?: {
+    // FileCoin and ZkSync testnets need ridiculously high gas price to process transaction
+    gasPrice?: string
+  }
+  likeFee?: string
+  mintFee?: string
 }

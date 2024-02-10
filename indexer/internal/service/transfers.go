@@ -3,15 +3,16 @@ package service
 import (
 	"context"
 	"errors"
+	"log"
+	"math/big"
+	"strings"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/jackc/pgx/v4"
 	"github.com/mark3d-xyz/mark3d/indexer/internal/domain"
 	"github.com/mark3d-xyz/mark3d/indexer/models"
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/currencyconversion"
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/utils"
-	"log"
-	"math/big"
-	"strings"
 )
 
 func (s *service) GetTransfers(
@@ -215,11 +216,7 @@ func (s *service) GetTransfersV2(
 		return nil, internalError
 	}
 
-	currency := "FIL"
-	if strings.Contains(s.cfg.Mode, "era") {
-		currency = "ETH"
-	}
-	rate, err := s.currencyConverter.GetExchangeRate(ctx, currency, "USD")
+	rate, err := s.currencyConverter.GetExchangeRate(ctx, s.cfg.Currency, "USD")
 	if err != nil {
 		log.Println("failed to get conversion rate: ", err)
 		rate = 0
@@ -360,11 +357,7 @@ func (s *service) GetTransfersHistoryV2(
 		return nil, internalError
 	}
 
-	currency := "FIL"
-	if strings.Contains(s.cfg.Mode, "era") {
-		currency = "ETH"
-	}
-	rate, err := s.currencyConverter.GetExchangeRate(ctx, currency, "USD")
+	rate, err := s.currencyConverter.GetExchangeRate(ctx, s.cfg.Currency, "USD")
 	if err != nil {
 		log.Println("failed to get conversion rate: ", err)
 		rate = 0
@@ -485,12 +478,7 @@ func (s *service) GetTransferV2(
 	if err != nil {
 		return nil, internalError
 	}
-
-	currency := "FIL"
-	if strings.Contains(s.cfg.Mode, "era") {
-		currency = "ETH"
-	}
-	rate, err := s.currencyConverter.GetExchangeRate(ctx, currency, "USD")
+	rate, err := s.currencyConverter.GetExchangeRate(ctx, s.cfg.Currency, "USD")
 	if err != nil {
 		log.Println("failed to get conversion rate: ", err)
 		rate = 0
