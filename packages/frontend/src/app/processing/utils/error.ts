@@ -82,6 +82,7 @@ const pingTx = async (txHash: `0x${string}`, chainId: number | undefined) => {
 
     try {
       // without chainId the filecoin network is always used
+      // @ts-ignore
       receipt = await wagmiConfig.getPublicClient({ chainId }).getTransactionReceipt({ hash: txHash })
     } catch (e) {
       console.error('wagmi getTransactionReceipt error', e)
