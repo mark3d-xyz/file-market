@@ -21,7 +21,7 @@ export const useChangeNetwork = (props?: { onSuccess?: (chainId?: number) => voi
       props?.onSuccess?.(data.id)
       reloadStores()
     },
-    onError: (error) => {
+    onError: () => {
       props?.onError?.()
     },
   })
@@ -68,7 +68,7 @@ export const useChangeNetwork = (props?: { onSuccess?: (chainId?: number) => voi
 
   useEffect(() => {
     if (error) {
-      rootStore.errorStore.showError(stringifyError(error !== null ? error : undefined))
+      rootStore.errorStore.showError(stringifyError(error || undefined))
     }
   }, [error])
 
