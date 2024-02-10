@@ -18,9 +18,9 @@ When adding a new chain
 * add certs
 * add nginx cfg
 * Push
-  * push 1 time (will break because of missing postgres)
   * edit some file (like readme) in EVERY service to trigger every rebuild 
-  * push second time (if fails repeat prev step and push again till success)
+  * push (will break because of missing postgres)
+  * re-run jobs until success
 * Server
   * stop service, add redis key (indexer-redis) "last_block:<mode>" for last block number, start service
   * add public collection record in db `change address and owner`
@@ -40,5 +40,9 @@ When adding a new chain
   ```
   * add token ids to redis for public collection sequencer. `change address and range`
   ```bash
-      for i in $(seq 1 10); do redis-cli SADD "sequencer.{$address}" $i; done
+      for i in $(seq 1 1000); do redis-cli SADD "sequencer.${lower_address}" $i; done
+  ```
+  * add public collection address to oracle redis
+  ```bash
+  docker exec -it file-market-${network}-oracle-redis-1 redis-cli SADD "collections" "${lower_address}"
   ```
