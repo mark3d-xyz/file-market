@@ -34,7 +34,7 @@ contract FilemarketCollectionV2 is IEncryptedFileTokenUpgradeableV2, ERC721Enume
         uint256 passwordSetAt;                                  // password set at
     }
 
-    address public constant defaultAdmin = 0x29957549fcfdd278C72D92721A263C57F603663b;
+    address public constant defaultAdmin = 0xe99328545212e55A12c7142c6696B0B1adC5AE9c;
 
     uint256 public constant PERCENT_MULTIPLIER = 10000;
     uint256 public constant ROYALTY_CEILING = 5000;            // 50%

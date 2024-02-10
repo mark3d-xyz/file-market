@@ -85,6 +85,47 @@
   },
   {
     "chain": {
+      "id": 534352,
+      "name": "Scroll",
+      "network": "Scroll",
+      "nativeCurrency": {
+        "name": "ETH",
+        "symbol": "ETH",
+        "decimals": 18
+      },
+      "rpcUrls": {
+        "default": {
+          "http": [
+            "https://rpc.scroll.io/"
+          ]
+        },
+        "public": {
+          "http": [
+            "https://rpc.scroll.io/"
+          ]
+        }
+      },
+      "blockExplorers": {
+        "default": {
+          "name": "Scroll explorer",
+          "url": "https://scrollscan.com/"
+        }
+      },
+      "testnet": false
+    },
+    "img": "/Scroll.svg",
+    "imgGray": "/ScrollGray.svg",
+    "accessTokenAddress": "0xFDD2eF676C5c5dE3476FFCf6EECa86E4cb8499d4",
+    "exchangeTokenAddress": "0x0C5C679dD1B4975547ccd2E16b02728a9ED0f463",
+    "likeEmitterAddress": "0x853140b933b6C790C4F7a0d33ec5D14f50A5D3bc",
+    "likeFee": "0.000041",
+    "mintFee": "0.00041",
+    "baseUrl": "https://scroll.filemarket.xyz/api",
+    "explorer": "https://scrollscan.com/tx/",
+    "wsUrl": "wss://scroll.filemarket.xyz"
+  },
+  {
+    "chain": {
       "id": 534351,
       "name": "ScrollTestnet",
       "network": "Scroll Testnet",
@@ -126,6 +167,45 @@
   },
   {
     "chain": {
+      "id": 204,
+      "name": "opBNB",
+      "network": "BNB Optimistic Rollup",
+      "nativeCurrency": {
+        "name": "BNB",
+        "symbol": "BNB",
+        "decimals": 18
+      },
+      "rpcUrls": {
+        "default": {
+          "http": [
+            "https://opbnb-mainnet-rpc.bnbchain.org"
+          ]
+        },
+        "public": {
+          "http": [
+            "https://opbnb-mainnet-rpc.bnbchain.org"
+          ]
+        }
+      },
+      "blockExplorers": {
+        "default": {
+          "name": "opBNB explorer",
+          "url": "https://opbnbscan.com/"
+        }
+      },
+      "testnet": false
+    },
+    "img": "/OpBnb.svg",
+    "imgGray": "/OpBnbGray.svg",
+    "accessTokenAddress": "0xFDD2eF676C5c5dE3476FFCf6EECa86E4cb8499d4",
+    "exchangeTokenAddress": "0x0C5C679dD1B4975547ccd2E16b02728a9ED0f463",
+    "likeEmitterAddress": "0x853140b933b6C790C4F7a0d33ec5D14f50A5D3bc",
+    "baseUrl": "https://opbnb.filemarket.xyz/api",
+    "explorer": "https://opbnbscan.com/tx/",
+    "wsUrl": "wss://opbnb.filemarket.xyz"
+  },
+  {
+    "chain": {
       "id": 5611,
       "name": "opBNBTestnet",
       "network": "BNB Optimistic Rollup Testnet",
@@ -148,7 +228,7 @@
       },
       "blockExplorers": {
         "default": {
-          "name": "opBNB explorer",
+          "name": "opBNB Testnet explorer",
           "url": "https://testnet.opbnbscan.com"
         }
       },

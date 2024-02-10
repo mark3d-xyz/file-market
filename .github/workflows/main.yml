@@ -89,6 +89,20 @@ jobs:
       - name: Build era oracle container
         if: ${{ needs.check-changes.outputs.backend_changes == 'true' }}
         run: docker build -t file-market-era-oracle-service:latest -f backend/Dockerfile .
+      # opbnb
+      - name: Copy opbnb .env from host
+        if: ${{ needs.check-changes.outputs.backend_changes == 'true' }}
+        run: cp ~/.opbnb_oracle_main_env backend/.env
+      - name: Build opbnb oracle container
+        if: ${{ needs.check-changes.outputs.backend_changes == 'true' }}
+        run: docker build -t file-market-opbnb-oracle-service:latest -f backend/Dockerfile .
+      # scroll
+      - name: Copy scroll .env from host
+        if: ${{ needs.check-changes.outputs.backend_changes == 'true' }}
+        run: cp ~/.scroll_oracle_main_env backend/.env
+      - name: Build scroll oracle container
+        if: ${{ needs.check-changes.outputs.backend_changes == 'true' }}
+        run: docker build -t file-market-scroll-oracle-service:latest -f backend/Dockerfile .
   build-indexer:
     runs-on: [self-hosted, main]
     needs: [ check-changes ]
@@ -115,17 +129,33 @@ jobs:
       - name: Copy .env from host
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
         run: cp ~/.indexer_main_env indexer/.env
-      - name: Build era indexer container
+      - name: Build indexer container
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
-        run: docker build --build-arg env=dev -t file-market-indexer-service:latest .
+        run: docker build --build-arg env=main -t file-market-indexer-service:latest .
         working-directory: indexer/
       # zk sync
       - name: Copy era .env from host
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
         run: cp ~/.era_indexer_main_env indexer/.env
-      - name: Build indexer container
+      - name: Build era indexer container
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
-        run: docker build --build-arg env=dev-era -t file-market-era-indexer-service:latest .
+        run: docker build --build-arg env=era -t file-market-era-indexer-service:latest .
+        working-directory: indexer/
+      # opbnb
+      - name: Copy opbnb .env from host
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
+        run: cp ~/.opbnb_indexer_main_env indexer/.env
+      - name: Build opbnb indexer container
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
+        run: docker build --build-arg env=opbnb -t file-market-opbnb-indexer-service:latest .
+        working-directory: indexer/
+      # scroll
+      - name: Copy scroll .env from host
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
+        run: cp ~/.scroll_indexer_main_env indexer/.env
+      - name: Build scroll indexer container
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
+        run: docker build --build-arg env=scroll -t file-market-scroll-indexer-service:latest .
         working-directory: indexer/
   build-healthcheck:
     runs-on: [ self-hosted, main ]
@@ -145,12 +175,28 @@ jobs:
         run: docker build -f Dockerfile -t file-market-healthcheck-service:latest .
         working-directory: healthcheck-tg/
       # zk sync era
-      - name: Copy .env from host
+      - name: Copy era .env from host
         if: ${{ needs.check-changes.outputs.healthcheck_changes == 'true' }}
         run: cp ~/.era_healthcheck_main_env healthcheck-tg/.env
-      - name: Build healthcheck container
+      - name: Build era healthcheck container
         if: ${{ needs.check-changes.outputs.healthcheck_changes == 'true' }}
         run: docker build -f Dockerfile -t file-market-era-healthcheck-service:latest .
+        working-directory: healthcheck-tg/
+      # opbnb
+      - name: Copy opbnb .env from host
+        if: ${{ needs.check-changes.outputs.healthcheck_changes == 'true' }}
+        run: cp ~/.opbnb_healthcheck_main_env healthcheck-tg/.env
+      - name: Build opbnb healthcheck container
+        if: ${{ needs.check-changes.outputs.healthcheck_changes == 'true' }}
+        run: docker build -f Dockerfile -t file-market-opbnb-healthcheck-service:latest .
+        working-directory: healthcheck-tg/
+      # scroll
+      - name: Copy scroll .env from host
+        if: ${{ needs.check-changes.outputs.healthcheck_changes == 'true' }}
+        run: cp ~/.scroll_healthcheck_main_env healthcheck-tg/.env
+      - name: Build scroll healthcheck container
+        if: ${{ needs.check-changes.outputs.healthcheck_changes == 'true' }}
+        run: docker build -f Dockerfile -t file-market-scroll-healthcheck-service:latest .
         working-directory: healthcheck-tg/
   build-autoseller:
     runs-on: [self-hosted, main]
@@ -208,6 +254,20 @@ jobs:
       - name: Check era migration status
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
         run: ./check_migration.sh era
+      # opbnb
+      - name: Up opbnb migration
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
+        run: docker-compose -f docker-compose.opbnb.yml up -d --build opbnb-indexer-postgres-migration
+      - name: Check opbnb migration status
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
+        run: ./check_migration.sh opbnb
+      # scroll
+      - name: Up scroll migration
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
+        run: docker-compose -f docker-compose.scroll.yml up -d --build scroll-indexer-postgres-migration
+      - name: Check scroll migration status
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
+        run: ./check_migration.sh scroll
 
       # filecoin
       - name: Update compose
@@ -217,11 +277,21 @@ jobs:
       - name: Update era compose
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' || needs.check-changes.outputs.backend_changes == 'true' || needs.check-changes.outputs.healthcheck_changes == 'true' }}
         run: docker-compose -f docker-compose.era.yml up -d era-indexer-postgres era-indexer-redis era-oracle-redis era-indexer-service era-oracle-service era-healthcheck-service
+      # opbnb
+      - name: Update opbnb compose
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' || needs.check-changes.outputs.backend_changes == 'true' || needs.check-changes.outputs.healthcheck_changes == 'true' }}
+        run: docker-compose -f docker-compose.opbnb.yml up -d opbnb-indexer-postgres opbnb-indexer-redis opbnb-oracle-redis opbnb-indexer-service opbnb-oracle-service opbnb-healthcheck-service
+      # scroll
+      - name: Update scroll compose
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' || needs.check-changes.outputs.backend_changes == 'true' || needs.check-changes.outputs.healthcheck_changes == 'true' }}
+        run: docker-compose -f docker-compose.scroll.yml up -d scroll-indexer-postgres scroll-indexer-redis scroll-oracle-redis scroll-indexer-service scroll-oracle-service scroll-healthcheck-service
 
       - name: update nginx
         run: |
           sudo mv filemarket.conf /etc/nginx/conf.d/filemarket.conf
           sudo mv filemarket.era.conf /etc/nginx/conf.d/filemarket.era.conf
+          sudo mv filemarket.opbnb.conf /etc/nginx/conf.d/filemarket.opbnb.conf
+          sudo mv filemarket.scroll.conf /etc/nginx/conf.d/filemarket.scroll.conf
           sudo nginx -s reload
       - name: Set changes
         run: |
