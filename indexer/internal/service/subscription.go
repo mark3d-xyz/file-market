@@ -26,7 +26,9 @@ func (s *service) AddEFTSubscription(ctx context.Context, w http.ResponseWriter,
 	}
 
 	topic := fmt.Sprintf("%s:%s", strings.ToLower(collectionAddress.String()), tokenId.String())
+
 	resp := s.wsPool.GetOnConnectResponse()(ctx, req)
+	fmt.Println(topic, resp, req)
 	if err := s.wsPool.AddConnection(w, r, topic, resp); err != nil {
 		logger.Error("failed to add connection", err, nil)
 		return
