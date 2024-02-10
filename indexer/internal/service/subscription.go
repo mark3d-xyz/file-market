@@ -36,8 +36,9 @@ func (s *service) AddEFTSubscription(ctx context.Context, w http.ResponseWriter,
 }
 
 func (s *service) EFTSubOnConnectionResponse(ctx context.Context, req any) any {
-	r, ok := req.(models.EFTSubscriptionRequest)
+	r, ok := req.(*models.EFTSubscriptionRequest)
 	if !ok {
+		fmt.Println("req", req)
 		return errors.New("failed to parse EFTSubscriptionRequest")
 	}
 
