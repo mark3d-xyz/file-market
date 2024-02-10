@@ -5,13 +5,6 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"github.com/mark3d-xyz/mark3d/indexer/internal/domain"
-	"github.com/mark3d-xyz/mark3d/indexer/models"
-	"github.com/mark3d-xyz/mark3d/indexer/pkg/currencyconversion"
-	"github.com/mark3d-xyz/mark3d/indexer/pkg/mail"
-	authserver_pb "github.com/mark3d-xyz/mark3d/indexer/proto"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"html/template"
 	"log"
 	"net/http"
@@ -19,6 +12,14 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/mark3d-xyz/mark3d/indexer/internal/domain"
+	"github.com/mark3d-xyz/mark3d/indexer/models"
+	"github.com/mark3d-xyz/mark3d/indexer/pkg/currencyconversion"
+	"github.com/mark3d-xyz/mark3d/indexer/pkg/mail"
+	authserver_pb "github.com/mark3d-xyz/mark3d/indexer/proto"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func grpcErrToHTTP(err error) *models.ErrorResponse {
@@ -216,11 +217,7 @@ func fillTransferUserProfiles(
 }
 
 func (s *service) fillOrderUsdPrice(o *domain.Order) {
-	currency := "FIL"
-	if strings.Contains(s.cfg.Mode, "era") {
-		currency = "ETH"
-	}
-
+	currency := s.cfg.Currency
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 

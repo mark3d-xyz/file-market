@@ -64,9 +64,11 @@ type (
 		HealthCheckInterval          int
 		CoinMarketCapApiKey          string
 		CurrencyConversionCacheTTL   string
+		Currency                     string
 		CommonSignerKey              string
 		UncommonSignerKey            string
 		Mode                         string
+		NetworkRouteName             string
 		ChainID                      string
 		Host                         string
 	}
@@ -140,6 +142,8 @@ func Init(configPath string) (*Config, error) {
 			HealthCheckInterval:          jsonCfg.GetInt("service.healthCheckInterval"),
 			CoinMarketCapApiKey:          envCfg.GetString("COINMARKETCAP_API_KEY"),
 			CurrencyConversionCacheTTL:   jsonCfg.GetString("service.currencyConversionCacheTTL"),
+			Currency:                     jsonCfg.GetString("service.currency"),
+			NetworkRouteName:             jsonCfg.GetString("service.network-route-name"),
 			CommonSignerKey:              envCfg.GetString("COMMON_SIGNER_KEY"),
 			UncommonSignerKey:            envCfg.GetString("UNCOMMON_SIGNER_KEY"),
 			Mode:                         jsonCfg.GetString("service.mode"),

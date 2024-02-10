@@ -26,6 +26,8 @@
       "switchTokenTimeout": "3m"
     },
     "currencyConversionCacheTTL": "1h",
+    "currency": "ETH",
+    "network-route-name": "ScrollTestnet",
     "mode": "dev-scroll",
     "chainId": "534351"
   }

@@ -61,10 +61,7 @@ func (s *service) EFTSubOnConnectionResponse(ctx context.Context, req any) any {
 		}
 
 		if m.Order != nil {
-			currency := "FIL"
-			if strings.Contains(s.cfg.Mode, "era") {
-				currency = "ETH"
-			}
+			currency := s.cfg.Currency
 			rate, err := s.currencyConverter.GetExchangeRate(context.Background(), currency, "USD")
 			if err != nil {
 				log.Println("failed to get conversion rate: ", err)

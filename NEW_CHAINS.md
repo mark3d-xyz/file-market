@@ -1,7 +1,18 @@
-when adding new chain
+When adding a new chain
 
-* add redis key (indexer-redis) "last_block:<mode>"
-* add public collection record in db
+* add cfg, .env files on server
+* add compose and edit workflow
+* change Admin address in PublicCollection and FileMarketCollectionV2
+* deploy contracts
+* test if logs are empty
+* add A record
+* add certs
+* add nginx cfg
+* push 1 time (will break because of missing postgres)
+* edit some file like readme in EVERY service
+* push second time (if fails repeat prev step and push again till success)
+* stop service, add redis key (indexer-redis) "last_block:<mode>" for last block number, start service
+* add public collection record in db `change address and owner`
 ```sql
 INSERT INTO collections(address, creator, owner, name, token_id, meta_uri, description, image, block_number)
 VALUES (
@@ -15,4 +26,8 @@ VALUES (
         'ipfs://QmaetjyGp3GN18FcJWZ6X315Ri8Cq8ZGMMCc4iJjEnhUoJ',
         1
        );
+```
+* add token ids to redis for public collection sequencer. `change address and range`
+```bash
+    for i in $(seq 1 10); do redis-cli SADD "sequencer.{$address}" $i; done
 ```

@@ -3,6 +3,10 @@ package service
 import (
 	"context"
 	"errors"
+	"log"
+	"math/big"
+	"strings"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/jackc/pgx/v4"
 	"github.com/mark3d-xyz/mark3d/indexer/internal/domain"
@@ -10,9 +14,6 @@ import (
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/currencyconversion"
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/utils"
 	authserver_pb "github.com/mark3d-xyz/mark3d/indexer/proto"
-	"log"
-	"math/big"
-	"strings"
 )
 
 func (s *service) GetCollection(
@@ -250,10 +251,7 @@ func (s *service) GetCollectionWithTokens(
 		}
 	}
 
-	currency := "FIL"
-	if strings.Contains(s.cfg.Mode, "era") {
-		currency = "ETH"
-	}
+	currency := s.cfg.Currency
 	rate, err := s.currencyConverter.GetExchangeRate(ctx, currency, "USD")
 	if err != nil {
 		log.Println("failed to get conversion rate: ", err)
