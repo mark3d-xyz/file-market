@@ -13,11 +13,13 @@ import SelectBlockchainBlock from './SelectBlockchainBlock/SelectBlockchainBlock
 
 const SelectBlockchainContainer = styled('div', {
   width: 'max-content',
-  display: 'flex',
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
   gap: '28px',
   rowGap: '28px',
   color: '#2F3134',
   '@md': {
+    display: 'flex',
     flexWrap: 'wrap',
     width: '100%',
   },

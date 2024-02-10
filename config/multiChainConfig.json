@@ -104,13 +104,14 @@
       },
       "blockExplorers": {
         "default": {
-          "name": "opBNB explorer",
+          "name": "ScrollTestnet explorer",
           "url": "https://sepolia.scrollscan.com/"
         }
-      }
+      },
+      "testnet": true
     },
-    "img": "https://cryptologos.cc/logos/filecoin-fil-logo.svg?v=025",
-    "imgGray": "/FilecoinGray.svg",
+    "img": "/Scroll.svg",
+    "imgGray": "/ScrollGray.svg",
     "accessTokenAddress": "0xE67a38147AcB520d6B494385bA3C5B0E18Fa71d0",
     "exchangeTokenAddress": "0xD20658C050860d407BFb2D51CfC96e0edAaB8F13",
     "likeEmitterAddress": "0x368285dA2933F08775EC63b2023e42327CF956c7",
