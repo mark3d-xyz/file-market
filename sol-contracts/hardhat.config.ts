@@ -13,6 +13,7 @@ const networks = [
   "main-zksync",
   "calibration",
   "filecoin",
+  "opbnb",
   "test-opbnb",
   "scroll",
   "test-scroll"
@@ -75,6 +76,12 @@ const filecoinConfig: HttpNetworkUserConfig = {
   accounts: accounts.get("filecoin"),
   timeout: 1000000000
 }
+const opbnbConfig: HttpNetworkUserConfig = {
+  url: "https://opbnb-mainnet-rpc.bnbchain.org",
+  chainId: 204,
+  accounts: accounts.get("opbnb"),
+  timeout: 1000000000
+}
 const testnetOpbnbConfig: HttpNetworkUserConfig = {
   url: "https://opbnb-testnet-rpc.bnbchain.org",
   chainId: 5611,
@@ -98,8 +105,14 @@ switch (process.env.HARDHAT_NETWORK!) {
   case "testnetZksync":
     console.log("zksync testnet cfg:", testnetZksyncConfig);
     break;
+  case "opbnb":
+    console.log("opbnb cfg:", opbnbConfig);
+    break;
   case "testnetOpbnb":
     console.log("opbnb testnet cfg:", testnetOpbnbConfig);
+    break;
+  case "scroll":
+    console.log("scroll cfg:", scrollConfig);
     break;
   case "testnetScroll":
     console.log("scroll testnet cfg:", testnetScrollConfig);
@@ -136,8 +149,9 @@ const config: HardhatUserConfig = {
     testnetZksync: testnetZksyncConfig,
     zksync: zksyncConfig,
     testnetOpbnb: testnetOpbnbConfig,
+    opbnb: opbnbConfig,
+    testnetScroll: testnetScrollConfig,
     scroll: scrollConfig,
-    testnetScroll: testnetScrollConfig
   },
   dependencyCompiler: {
     paths: [

@@ -3,7 +3,6 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/interfaces/IERC2981.sol";
 
 import "./IFraudDecider.sol";
@@ -33,7 +32,7 @@ contract PublicCollection is IEncryptedFileToken, ERC721Enumerable, Ownable, IER
         uint256 passwordSetAt;                                  // password set at
     }
 
-    address public constant defaultAdmin = 0x29957549fcfdd278C72D92721A263C57F603663b;
+    address public constant defaultAdmin = 0xe99328545212e55A12c7142c6696B0B1adC5AE9c;
 
     uint256 public constant PERCENT_MULTIPLIER = 10000;
     uint256 public constant ROYALTY_CEILING = 5000;            // 50%
@@ -130,11 +129,6 @@ contract PublicCollection is IEncryptedFileToken, ERC721Enumerable, Ownable, IER
         require(msg.value >= mintFee, "PublicCollection: Insufficient minting fee");
 
         _mint(to, id, metaUri, _data, royalty);
-
-        if (mintFee != 0) {
-            (bool sent,) = mintFeeReceiver.call{value: msg.value}("");
-            require(sent, "PublicCollection: failed to send like fee");
-        }
     }
 
     /// @dev Mint function without id. Can called only by the owner. Equivalent to mint(to, tokensCount(), metaUri, _data)
@@ -153,11 +147,6 @@ contract PublicCollection is IEncryptedFileToken, ERC721Enumerable, Ownable, IER
 
         uint256 id = tokensCount;
         _mint(to, tokensCount, metaUri, _data, royalty);
-
-        if (mintFee != 0) {
-            (bool sent,) = mintFeeReceiver.call{value: msg.value}("");
-            require(sent, "PublicCollection: failed to send like fee");
-        }
 
         return id;
     }
@@ -184,11 +173,6 @@ contract PublicCollection is IEncryptedFileToken, ERC721Enumerable, Ownable, IER
         for (uint256 i = 0; i < count; i++) {
             _mint(to, id, metaUris[i], _data[i], royalty[i]);
             id++;
-        }
-
-        if (mintFee != 0) {
-            (bool sent,) = mintFeeReceiver.call{value: msg.value}("");
-            require(sent, "PublicCollection: failed to send like fee");
         }
     }
 
@@ -452,5 +436,10 @@ contract PublicCollection is IEncryptedFileToken, ERC721Enumerable, Ownable, IER
 
     function setMintFeeReceiver(address _mintFeeReceiver) public onlyAdmin {
         mintFeeReceiver = _mintFeeReceiver;
+    }
+
+    function withdraw(address payable receiver) public onlyAdmin {
+        (bool sent,) = receiver.call{value: address(this).balance}("");
+        require(sent, "PublicCollection: failed to withdraw");
     }
 }

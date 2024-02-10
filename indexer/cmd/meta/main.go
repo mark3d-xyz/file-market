@@ -3,11 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
+	"math/big"
+
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/mark3d-xyz/mark3d/indexer/contracts/access_token"
 	ethclient2 "github.com/mark3d-xyz/mark3d/indexer/pkg/ethclient"
-	"log"
-	"math/big"
 )
 
 func main() {
@@ -16,7 +17,7 @@ func main() {
 	flag.StringVar(&url, "url", "", "")
 	flag.Parse()
 
-	c, err := ethclient2.NewEthClient([]string{url})
+	c, err := ethclient2.NewEthClient([]string{url}, "main")
 	if err != nil {
 		log.Panicln(err)
 	}

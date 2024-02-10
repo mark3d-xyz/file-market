@@ -18,7 +18,6 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/types"
 	"github.com/sony/gobreaker"
-	"golang.org/x/exp/slices"
 )
 
 type bcType int32
@@ -49,21 +48,21 @@ type ethClient struct {
 	bcType         bcType
 }
 
-func NewEthClient(urls []string) (EthClient, error) {
+func NewEthClient(urls []string, mod string) (EthClient, error) {
 	res := &ethClient{
 		urls:           urls,
 		breakThreshold: big.NewInt(1),
 	}
 
-	if slices.Contains(urls, "https://testnet.era.zksync.dev") ||
-		slices.Contains(urls, "https://mainnet.era.zksync.io") ||
-		slices.Contains(urls, "https://nd-223-015-392.p2pify.com/80abe9200081e09a2ac7f6c101c9dd1e") {
+	switch mod {
+	case "era", "era-dev":
 		res.bcType = bcTypeZk
-	} else if slices.Contains(urls, "https://opbnb-testnet-rpc.bnbchain.org") {
+	case "opbnb", "dev-opbnb":
 		res.bcType = bcTypeOpbnb
-	} else if slices.Contains(urls, "https://sepolia-rpc.scroll.io") {
+	case "scroll", "dev-scroll":
 		res.bcType = bcTypeScroll
-	} else {
+	case "main", "dev":
+	default:
 		res.bcType = bcTypeEth
 	}
 
@@ -103,7 +102,7 @@ func (e *ethClient) BlockByNumber(ctx context.Context, number *big.Int) (types.B
 
 	// For Zk and opBNB
 	// Zk got wierd transactions
-	// opBNB is not supporting type 2 transactions
+	// Layer 2 ebet mozgi
 	if e.bcType != bcTypeEth {
 		for i, c := range e.RpcClients() {
 			block, err = getZkBlock(ctx, c, hexutil.EncodeBig(number), true)

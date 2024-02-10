@@ -62,7 +62,7 @@ func main() {
 		Password: cfg.Redis.Password,
 	})
 
-	client, err := ethclient.NewEthClient(cfg.Service.RpcUrls)
+	client, err := ethclient.NewEthClient(cfg.Service.RpcUrls, cfg.Service.Mode)
 	if err != nil {
 		logger.WithFields(log2.Fields{"error": err}).Fatal("failed to init eth client", nil)
 	}
