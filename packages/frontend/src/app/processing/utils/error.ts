@@ -82,7 +82,7 @@ const pingTx = async (txHash: `0x${string}`, chainId: number | undefined) => {
 
     try {
       // without chainId the filecoin network is always used
-      // @ts-ignore
+      // @ts-expect-error there is a method getTransactionReceipt, but not in types for unknown reason
       receipt = await wagmiConfig.getPublicClient({ chainId }).getTransactionReceipt({ hash: txHash })
     } catch (e) {
       console.error('wagmi getTransactionReceipt error', e)
@@ -107,6 +107,8 @@ export const getTxReceipt = async (hash: `0x${string}`, chainId: number | undefi
   if (!receipt) {
     throw new JsonRpcError(503, `The transaction ${hash} is failed`)
   }
+
+  console.log('receipt', receipt)
 
   return receipt
 }

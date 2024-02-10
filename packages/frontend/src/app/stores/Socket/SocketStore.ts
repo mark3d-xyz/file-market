@@ -112,12 +112,13 @@ export class SocketStore {
   }
 
   disconnect({ type, chainId }: IFindSocket) {
-    const socketConnect = this.socketConnects[this.findIndexSocket({ type, chainId })]
-    console.log('Disconnect')
+    const index = this.findIndexSocket({ type, chainId })
+    const socketConnect = this.socketConnects[index]
     if (socketConnect?.socket) {
       socketConnect.socket.onclose = () => {}
       socketConnect.socket?.close()
     }
+    this.socketConnects.splice(index, 1)
   }
 
   subscribeToEft(params: EFTSubscriptionRequest, chainId?: number) {

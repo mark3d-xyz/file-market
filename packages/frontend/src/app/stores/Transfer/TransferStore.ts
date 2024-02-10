@@ -67,7 +67,6 @@ export class TransferStore implements IStoreRequester,
 
   private request(tokenFullId: TokenFullId, api?: Api<unknown>, onSuccess?: () => void) {
     if (!api) return
-    console.log('REQUESTT')
     storeRequest<Transfer | null>(
       this,
       api.transfers.transfersDetail2(tokenFullId?.collectionAddress, tokenFullId?.tokenId),
@@ -176,7 +175,7 @@ export class TransferStore implements IStoreRequester,
   // We listen to only events related to transfer change, not transfer initialization
   // This store is supposed to be used only on existing transfers (TransferStatus.Drafted or TransferStatus.Created)
 
-  onTransferInit(tokenId: bigint, from: string, to: string, blockNumber: number) {
+  onTransferInit(tokenId: bigint, from: string, to: string, blockNumber: bigint) {
     console.log('onTransferInit')
     if (this.checkExistStatus(TransferStatus.Created)) return
     this.checkActivation(tokenId, (tokenFullId) => {
@@ -189,9 +188,13 @@ export class TransferStore implements IStoreRequester,
           status: TransferStatus.Created,
           timestamp: Date.now(),
         }],
+        block: {
+          number: Number(blockNumber),
+          confirmationsCount: 1, // doesn't matter
+        },
       }
       this.setIsWaitingForEvent(false)
-      this.setBlockTransfer(BigInt(blockNumber ?? 0))
+      this.setBlockTransfer(blockNumber)
     })
   }
 
@@ -207,6 +210,10 @@ export class TransferStore implements IStoreRequester,
           status: TransferStatus.Drafted,
           timestamp: Date.now(),
         }],
+        block: {
+          number: Number(blockNumber),
+          confirmationsCount: 1, // doesn't matter
+        },
       }
       this.setIsWaitingForEvent(false)
       this.setBlockTransfer(blockNumber)
@@ -291,7 +298,6 @@ export class TransferStore implements IStoreRequester,
   }
 
   onTransferCancellation(tokenId: bigint, blockNumber: bigint) {
-    console.log('onTransferCancel')
     this.checkActivation(tokenId, () => {
       this.data = undefined
       this.setIsWaitingForEvent(false)
@@ -300,6 +306,7 @@ export class TransferStore implements IStoreRequester,
   }
 
   get isWaitingForContinue() {
-    return this.isWaitingForEvent || this.isWaitingForReciept || this.isWaitingForSocket
+    // one in enough: event, or receipt, or socket message - all indicates, that transaction was successful
+    return this.isWaitingForEvent && this.isWaitingForReciept && this.isWaitingForSocket
   }
 }

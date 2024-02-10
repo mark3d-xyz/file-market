@@ -57,7 +57,6 @@ export const ButtonFulfillOrder: FC<ButtonFulfillOrderProps> = observer(({
       price: order?.price,
     })
     const publicKeyHexRes = await getPublicKeyHex()
-    console.log(receipt)
     if (receipt?.blockNumber && publicKeyHexRes) {
       transferStore.onTransferPublicKeySet(BigInt(tokenFullId.tokenId), publicKeyHexRes, receipt?.blockNumber)
     }

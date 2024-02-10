@@ -30,7 +30,7 @@ export const useSubscribeToEft = (props?: IUseSubscribeToEft) => {
   useEffect(() => {
     console.log(chainId)
     if (!props?.isDisableListener) socketStore.subscribeToEft({ collectionAddress, tokenId }, chainId)
-  }, [props?.isDisableListener, chainName, collectionAddress, tokenId])
+  }, [props?.isDisableListener, chainId, collectionAddress, tokenId])
 
   return {
     subscribe,
