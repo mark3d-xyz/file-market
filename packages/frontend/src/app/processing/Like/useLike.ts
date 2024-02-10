@@ -27,11 +27,14 @@ export function useLike() {
         abi: config.likesToken.abi,
         functionName: 'like',
         gasPrice: config?.gasPrice,
-        args: [collectionAddress as `0x${string}`,
-          BigInt(tokenId)],
+        args: [
+          collectionAddress as `0x${string}`,
+          BigInt(tokenId),
+        ],
+        value: config.likeFee,
       },
     })
-  }), [config, wrapPromise])
+  }), [config, wrapPromise, callContract])
 
   return {
     ...statuses,
