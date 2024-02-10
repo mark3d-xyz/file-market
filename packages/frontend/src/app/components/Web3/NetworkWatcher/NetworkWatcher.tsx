@@ -1,9 +1,11 @@
+import { type FC, type PropsWithChildren } from 'react'
+
 import { useListenNetwork } from '../../../hooks/useListenNetwork'
 
-const NetworkWatcher = () => {
+const NetworkWatcher: FC<PropsWithChildren> = ({ children }) => {
   useListenNetwork()
 
-  return null
+  return (<>{children}</>)
 }
 
 export default NetworkWatcher

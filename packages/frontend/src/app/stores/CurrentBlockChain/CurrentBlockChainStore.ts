@@ -55,11 +55,13 @@ export class CurrentBlockChainStore implements IStoreRequester, IActivateDeactiv
   }
 
   activate(): void {
+    console.log('activate CurrentBlockChainStore')
     this.isActivated = true
     this.request()
   }
 
   deactivate(): void {
+    console.log('deactivate CurrentBlockChainStore')
     this.reset()
     this.isActivated = false
   }

@@ -10,11 +10,10 @@ export const AppLayout: FC = () => {
   useScrollTop()
 
   return (
-    <>
+    <NetworkWatcher>
       <AppNav />
       <Outlet />
       <Footer />
-      <NetworkWatcher />
-    </>
+    </NetworkWatcher>
   )
 }
