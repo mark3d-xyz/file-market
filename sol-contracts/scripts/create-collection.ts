@@ -1,6 +1,8 @@
 import * as hre from "hardhat";
 import {program} from "commander";
 import {FilemarketCollectionV2__factory, Mark3dAccessTokenV2__factory} from "../typechain-types";
+import {PayableOverrides} from "ethers";
+import {isFilecoin, isScroll} from "./util";
 
 const genRanHex = (size: number) =>
   [...Array(size)]
@@ -21,28 +23,47 @@ async function main() {
   const accessToken = accessTokenFactory.attach(args.instance);
   const salt = genRanHex(64);
 
-  const isOpBNB = process.env.HARDHAT_NETWORK!.toLowerCase().includes("opbnb");
-  const overrides = isOpBNB ?
-    {gasPrice: await accounts[0].provider!.getGasPrice()} :
-    {};
+  let overrides: PayableOverrides = isFilecoin ?
+    {} :
+    {gasPrice: await accounts[0].provider!.getGasPrice()};
   console.log(overrides);
 
-  const tx = await accessToken
-    .connect(accounts[1])
-    .createCollection(
-      "0x" + salt,
-      "TEST",
-      "TEST",
-      "",
-      "ipfs://bafkreigvvqwpop4aeucnjdw6ozjecinuwujka7cjzj7cd323pmsek7mvxu",
-      accounts[0].address,
-      "0x",
-      overrides);
-  console.log("tx: ", tx.hash)
+  {
+    const saltArg = "0x" + salt;
+    const name = "TEST";
+    const symbol = "TEST";
+    const _contractMetaUri = "ipfs://QmQUr4ApevgdEKCbE7W4YHXCCF7JNAVzX2BgZTntaAGQzC";
+    const accessTokenMetaUri = "";
+    const royaltyReceiver = accounts[0].address;
+    const data = "0x";
+    if (isScroll) {
+      overrides.gasLimit = await accessToken.estimateGas.createCollection(
+        saltArg,
+        name,
+        symbol,
+        _contractMetaUri,
+        accessTokenMetaUri,
+        royaltyReceiver,
+        data,
+        overrides);
+    }
+    const tx = await accessToken
+      .connect(accounts[1])
+      .createCollection(
+        saltArg,
+        name,
+        symbol,
+        _contractMetaUri,
+        accessTokenMetaUri,
+        royaltyReceiver,
+        data,
+        overrides);
+    console.log("tx: ", tx.hash)
 
-  const collectionAddress = await accessToken.predictDeterministicAddress("0x" + salt);
-  let collectionInstance = collectionFactory.attach(collectionAddress);
-  console.log("collection address: ", collectionInstance.address);
+    const collectionAddress = await accessToken.predictDeterministicAddress("0x" + salt);
+    let collectionInstance = collectionFactory.attach(collectionAddress);
+    console.log("collection address: ", collectionInstance.address);
+  }
 }
 
 main().catch((error) => {

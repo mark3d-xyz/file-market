@@ -51,6 +51,8 @@ func (s *service) EFTSubOnConnectionResponse(ctx context.Context, req any) any {
 		logger.Error("failed to get token current state", err, nil)
 	}
 
+	fmt.Println(token, transfer, order)
+
 	var msg *models.EFTSubscriptionMessage
 	if token != nil {
 		m := &domain.EFTSubMessage{
@@ -77,6 +79,8 @@ func (s *service) EFTSubOnConnectionResponse(ctx context.Context, req any) any {
 		msg = domain.EFTSubMessageToModel(m)
 		s.fillUserProfilesForEftSubMessage(msg)
 	}
+
+	fmt.Println(msg)
 
 	return msg
 }

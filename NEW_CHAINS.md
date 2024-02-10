@@ -5,7 +5,7 @@ when adding new chain
 ```sql
 INSERT INTO collections(address, creator, owner, name, token_id, meta_uri, description, image, block_number)
 VALUES (
-        lower('0x61e6453AA67feb577946eC9669Ed21eda2666192'),
+        lower('0x1Fd27571fc7db6F4773aa9a1f0dBb61EDf786762'),
         lower('0x29957549fcfdd278C72D92721A263C57F603663b'),
         lower('0x29957549fcfdd278C72D92721A263C57F603663b'),
         'FileMarket',
