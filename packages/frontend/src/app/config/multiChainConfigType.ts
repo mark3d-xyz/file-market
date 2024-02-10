@@ -15,4 +15,6 @@ export interface IMultiChainConfig {
     // FileCoin and ZkSync testnets need ridiculously high gas price to process transaction
     gasPrice?: string
   }
+  likeFee?: string
+  mintFee?: string
 }

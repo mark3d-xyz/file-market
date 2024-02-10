@@ -1,4 +1,5 @@
 import { makeAutoObservable } from 'mobx'
+import { parseUnits } from 'viem'
 
 import multichainConfig from '../../../../../../config/multiChainConfig.json'
 import fileBunniesCollection from '../../../abi/FileBunniesCollection'
@@ -91,6 +92,8 @@ export class MultiChainStore implements IStoreRequester, IActivateDeactivate {
       chain: chain.chain,
       // Hardcode high gas price in testnet to prevent "transaction underpriced" error
       gasPrice: chain.hacks?.gasPrice ? BigInt(chain.hacks.gasPrice) : undefined,
+      likeFee: chain.likeFee ? parseUnits(chain.likeFee, chain.chain.nativeCurrency.decimals) : undefined,
+      mintFee: chain.mintFee ? parseUnits(chain.mintFee, chain.chain.nativeCurrency.decimals) : undefined,
       accessToken: {
         address: chain.accessTokenAddress,
         abi: accessToken.abi,

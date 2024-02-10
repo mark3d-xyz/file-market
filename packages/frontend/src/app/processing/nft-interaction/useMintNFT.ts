@@ -94,11 +94,14 @@ export function useMintNFT() {
         address: collectionAddress as `0x${string}`,
         abi: config.collectionToken.abi,
         functionName: 'mint',
-        args: [address,
+        args: [
+          address,
           tokenIdBN,
           metadata.url,
           parseUnits(royalty.toString(), 2),
-          '0x00'],
+          '0x00',
+        ],
+        value: config.mintFee,
       },
     },
     )
