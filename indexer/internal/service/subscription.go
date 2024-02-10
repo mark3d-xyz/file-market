@@ -23,12 +23,11 @@ func (s *service) AddEFTSubscription(ctx context.Context, w http.ResponseWriter,
 	tokenId, ok := big.NewInt(0).SetString(req.TokenID, 10)
 	if !ok {
 		log.Println("failed to parse token id in AddEFTSubscription")
+		return
 	}
 
 	topic := fmt.Sprintf("%s:%s", strings.ToLower(collectionAddress.String()), tokenId.String())
-
 	resp := s.wsPool.GetOnConnectResponse()(ctx, req)
-	fmt.Println(topic, resp, req)
 	if err := s.wsPool.AddConnection(w, r, topic, resp); err != nil {
 		logger.Error("failed to add connection", err, nil)
 		return
@@ -38,23 +37,19 @@ func (s *service) AddEFTSubscription(ctx context.Context, w http.ResponseWriter,
 func (s *service) EFTSubOnConnectionResponse(ctx context.Context, req any) any {
 	r, ok := req.(*models.EFTSubscriptionRequest)
 	if !ok {
-		fmt.Println("req", req)
 		return errors.New("failed to parse EFTSubscriptionRequest")
 	}
 
 	collectionAddress := common.HexToAddress(r.CollectionAddress)
 	tokenId, ok := big.NewInt(0).SetString(r.TokenID, 10)
 	if !ok {
-		log.Println("failed to parse token id in AddEFTSubscription")
-		return errors.New("failed to parse EFTSubscriptionRequest")
+		return errors.New("failed to parse token id in EFTSubscriptionRequest")
 	}
 
 	token, transfer, order, err := s.getTokenCurrentState(ctx, collectionAddress, tokenId)
 	if err != nil {
 		logger.Error("failed to get token current state", err, nil)
 	}
-
-	fmt.Println(token, transfer, order)
 
 	var msg *models.EFTSubscriptionMessage
 	if token != nil {
@@ -82,8 +77,6 @@ func (s *service) EFTSubOnConnectionResponse(ctx context.Context, req any) any {
 		msg = domain.EFTSubMessageToModel(m)
 		s.fillUserProfilesForEftSubMessage(msg)
 	}
-
-	fmt.Println(msg)
 
 	return msg
 }
