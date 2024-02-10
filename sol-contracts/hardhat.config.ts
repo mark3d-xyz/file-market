@@ -14,6 +14,7 @@ const networks = [
   "calibration",
   "filecoin",
   "test-opbnb",
+  "scroll",
   "test-scroll"
 ] as const;
 type Network = typeof networks[number];
@@ -56,6 +57,12 @@ const testnetZksyncConfig = {
   verifyURL: "https://zksync2-testnet-explorer.zksync.dev/contract_verification",
   timeout: 1000000000,
 };
+const scrollConfig: HttpNetworkUserConfig = {
+  url: "https://rpc.scroll.io/",
+  chainId: 534352,
+  accounts: accounts.get("scroll"),
+  timeout: 1000000000
+}
 const testnetScrollConfig: HttpNetworkUserConfig = {
   url: "https://sepolia-rpc.scroll.io/",
   chainId: 534351,
@@ -129,6 +136,7 @@ const config: HardhatUserConfig = {
     testnetZksync: testnetZksyncConfig,
     zksync: zksyncConfig,
     testnetOpbnb: testnetOpbnbConfig,
+    scroll: scrollConfig,
     testnetScroll: testnetScrollConfig
   },
   dependencyCompiler: {

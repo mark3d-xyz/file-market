@@ -32,4 +32,5 @@ test.sh
 .main-zksync-secret
 .test-opbnb-secret
 .test-scroll-secret
+.scroll-secret
 .yarn
