@@ -78,7 +78,10 @@
     "likeEmitterAddress": "0x03afEF500900839F109957f8b856C3E2CC9309a8",
     "baseUrl": "https://dev.filemarket.xyz/api",
     "explorer": "https://calibration.filfox.info/",
-    "wsUrl": "wss://dev.filemarket.xyz"
+    "wsUrl": "wss://dev.filemarket.xyz",
+    "hacks": {
+      "gasPrice": "30000000000"
+    }
   },
   {
     "chain": {
@@ -104,13 +107,14 @@
       },
       "blockExplorers": {
         "default": {
-          "name": "opBNB explorer",
+          "name": "ScrollTestnet explorer",
           "url": "https://sepolia.scrollscan.com/"
         }
-      }
+      },
+      "testnet": true
     },
-    "img": "https://cryptologos.cc/logos/filecoin-fil-logo.svg?v=025",
-    "imgGray": "/FilecoinGray.svg",
+    "img": "/Scroll.svg",
+    "imgGray": "/ScrollGray.svg",
     "accessTokenAddress": "0xE67a38147AcB520d6B494385bA3C5B0E18Fa71d0",
     "exchangeTokenAddress": "0xD20658C050860d407BFb2D51CfC96e0edAaB8F13",
     "likeEmitterAddress": "0x368285dA2933F08775EC63b2023e42327CF956c7",
@@ -143,17 +147,18 @@
       "blockExplorers": {
         "default": {
           "name": "opBNB explorer",
-          "url": "http://testnet.opbnbscan.com/"
+          "url": "https://testnet.opbnbscan.com"
         }
-      }
+      },
+      "testnet": true
     },
-    "img": "https://cryptologos.cc/logos/filecoin-fil-logo.svg?v=025",
-    "imgGray": "/FilecoinGray.svg",
+    "img": "/OpBnb.svg",
+    "imgGray": "/OpBnbGray.svg",
     "accessTokenAddress": "0xd5d7b5c51D71bbEa05CEE63809d37dbC9F0703D7",
     "exchangeTokenAddress": "0xb5FE7764edf481cCB2fB164437208760c982C184",
     "likeEmitterAddress": "0xD20658C050860d407BFb2D51CfC96e0edAaB8F13",
     "baseUrl": "https://dev-opbnb.filemarket.xyz/api",
-    "explorer": "http://testnet.opbnbscan.com/tx/",
+    "explorer": "https://testnet.opbnbscan.com/tx/",
     "wsUrl": "wss://dev-opbnb.filemarket.xyz"
   },
   {
@@ -233,6 +238,9 @@
     "likeEmitterAddress": "0xE48c71D68101053bC2E0EE18355f1C7A1Fa919E0",
     "baseUrl": "https://era-dev.filemarket.xyz/api",
     "explorer": "https://goerli.explorer.zksync.io/tx/",
-    "wsUrl": "wss://era-dev.filemarket.xyz"
+    "wsUrl": "wss://era-dev.filemarket.xyz",
+    "hacks": {
+      "gasPrice": "30000000000"
+    }
   }
 ]

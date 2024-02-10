@@ -36,6 +36,7 @@ export const ButtonPlaceOrder: React.FC<ButtonPlaceOrderProps> = ({
       ...tokenFullId,
       price,
     })
+    console.log(receipt)
     if (receipt?.blockNumber) {
       transferStore.onTransferDraft(BigInt(tokenFullId.tokenId), receipt.from, receipt?.blockNumber)
     }
