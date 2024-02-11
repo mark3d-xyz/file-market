@@ -7,7 +7,6 @@ import { useAccount } from 'wagmi'
 
 import BaseModal, {
   ErrorBody,
-  extractMessageFromError,
   InProgressBody,
   SuccessOkBody,
 } from '../../../../../components/Modal/Modal'
@@ -63,8 +62,8 @@ export interface CreateNFTForm {
   collection: ComboBoxOption
   description: string
   tags: ComboBoxOption
-  category: ComboBoxOption
-  subcategory: ComboBoxOption
+  category: ComboBoxOption | null
+  subcategory: ComboBoxOption | null
   license: ComboBoxOption
   licenseUrl: string
   tagsValue: string[]
@@ -112,9 +111,13 @@ export const CreateEFTSection: React.FC = observer(() => {
   } = useForm<CreateNFTForm>({
     defaultValues: {
       royalty: 0,
+      name: '',
       collection: predefinedCollection
         ? { id: predefinedCollection.address, title: predefinedCollection.name }
         : undefined,
+      description: '',
+      category: null,
+      subcategory: null,
       license: { id: licenseOptions[0].id, title: licenseOptions[0].title },
     },
   })
@@ -149,7 +152,7 @@ export const CreateEFTSection: React.FC = observer(() => {
       setModalOpen(true)
       setModalBody(
         <ErrorBody
-          message={extractMessageFromError(nftError)}
+          message={nftError}
           onClose={() => {
             setModalOpen(false)
           }}
@@ -345,9 +348,11 @@ export const CreateEFTSection: React.FC = observer(() => {
               controlledInputProps={{
                 control,
                 name: 'description',
+                rules: {
+                  maxLength: { value: 1000, message: 'Aboba' },
+                },
               }}
               placeholder='Description of your item'
-              {...control.register('description', { maxLength: { value: 1000, message: 'Aboba' } })}
             />
           </FormControl>
 
@@ -463,12 +468,13 @@ export const CreateEFTSection: React.FC = observer(() => {
                   setValue,
                   control,
                   rules: {
+                    min: 0,
                     required: true,
                     max: 50,
                   },
                 }}
                 css= {{
-                  color: royalty > 50 ? '$red500' : undefined,
+                  color: royalty > 50 || royalty < 0 ? '$red500' : undefined,
                 }}
               />
               <Description

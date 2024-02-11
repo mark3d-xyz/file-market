@@ -6,7 +6,6 @@ import { styled } from '../../../styles'
 import { ButtonGlowing, ButtonNavGlowing } from '../../UIkit'
 import { Modal, ModalBody, ModalButtonContainer, ModalP, ModalTitle } from '../../UIkit/Modal/Modal'
 import { type AppDialogProps } from '../../utils/dialog'
-import { stringifyError } from '../../utils/error'
 
 export interface InProcessBodyProps {
   text: ReactNode
@@ -54,7 +53,7 @@ export const SuccessNavBody = ({
 }: SuccessNavBodyProps) => {
   return (
     <>
-      {isSuccessImg && <ModalTitle style={{ marginBottom: '40px' }}><img src={SuccessfullImg} /></ModalTitle>}
+      {isSuccessImg && <ModalTitle style={{ marginBottom: '40px' }}><img alt='success' src={SuccessfullImg} /></ModalTitle>}
       <ModalP style={{ marginBottom: '40px' }}>{ mainText ?? 'Success'}</ModalP>
       {underText && <ModalP style={{ marginBottom: '40px', fontSize: '18px' }}>{underText}</ModalP>}
       <ModalButtonContainer style={{ justifyContent: 'center' }}>
@@ -90,7 +89,7 @@ export const SuccessOkBody: FC<SuccessOkBodyProps> = ({
   <>
     {isSuccessImg && (
       <ModalTitle style={{ marginBottom: '40px' }}>
-        { icon ?? <img src={SuccessfullImg} />}
+        { icon ?? <img alt='success' src={SuccessfullImg} />}
       </ModalTitle>
     )}
     <ModalTitle style={{ marginBottom: '12px', fontSize: '20px' }}>
@@ -104,25 +103,6 @@ export const SuccessOkBody: FC<SuccessOkBodyProps> = ({
     )}
   </>
 )
-
-export const extractMessageFromError = (error: any) => {
-  const UNKNOWN_ERROR = 'Something went wrong, try again later'
-
-  if (!error) return UNKNOWN_ERROR
-  if (typeof error === 'string') {
-    const errorPartToShow = error.split('\n').shift()
-    if (!errorPartToShow) return UNKNOWN_ERROR
-    try {
-      const errorObject = JSON.parse(errorPartToShow)
-
-      return errorObject.message ?? stringifyError(error)
-    } catch {
-      return errorPartToShow
-    }
-  }
-
-  return stringifyError(error)
-}
 
 export const ErrorBody = ({ message, onClose }: { message: string, onClose?: () => void }) => (
   <>

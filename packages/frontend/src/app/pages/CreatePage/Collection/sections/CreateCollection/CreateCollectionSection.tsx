@@ -6,7 +6,6 @@ import { useAccount } from 'wagmi'
 import { type Collection } from '../../../../../../swagger/Api'
 import BaseModal, {
   ErrorBody,
-  extractMessageFromError,
   InProgressBody,
   SuccessOkBody,
 } from '../../../../../components/Modal/Modal'
@@ -55,7 +54,14 @@ export default function CreateCollectionSection() {
     resetField,
     control,
     setValue,
-  } = useForm<CreateCollectionForm>()
+    watch,
+  } = useForm<CreateCollectionForm>({
+    defaultValues: {
+      name: '',
+      symbol: '',
+      description: '',
+    },
+  })
 
   const {
     error,
@@ -75,7 +81,9 @@ export default function CreateCollectionSection() {
   const checkIsIndexerHasMintInfo = useCallback(async () => {
     if (!result?.collectionAddress) return
     try {
-      const responseCollection = await wrapRequest(async () => currentBlockChainStore.api.collections.collectionsDetail(result?.collectionAddress))
+      const responseCollection = await wrapRequest(
+        async () => currentBlockChainStore.api.collections.collectionsDetail(result?.collectionAddress),
+      )
       setIndexerCollectionInfo(responseCollection?.collection)
     } catch (e) {
       flushIsMinted()
@@ -136,7 +144,7 @@ export default function CreateCollectionSection() {
       setModalOpen(true)
       setModalBody(
         <ErrorBody
-          message={extractMessageFromError(error)}
+          message={error}
           onClose={() => {
             setModalOpen(false)
           }
@@ -171,9 +179,7 @@ export default function CreateCollectionSection() {
     setModalBody(<InProgressBody text='Collection is being minted' mainText={loadingModalMainText} />)
   }, [loadingModalMainText])
 
-  const [textareaLength, setTextareaLength] = useState(
-    getValues('description')?.length ?? 0,
-  )
+  const textareaLength = watch('description')?.length ?? 0
 
   return (
     <>
@@ -256,14 +262,10 @@ export default function CreateCollectionSection() {
               controlledInputProps={{
                 control,
                 name: 'description',
-              }}
-              { ...control.register('description', {
-                onChange(event) {
-                  setTextareaLength(event?.target?.value?.length ?? 0)
+                rules: {
+                  maxLength: 1000,
                 },
-                maxLength: 1000,
-              })
-              }
+              }}
               placeholder='Description of your token collection'
             />
           </FormControl>

@@ -39,7 +39,6 @@ export const storeRequestGeneric = <ResponseType>(
     const finish = (resultHandler: () => void) => {
       // handle result only if request is not replaced by another and not cancelled
       if (target.currentRequest?.id === context.id) {
-        console.log('request, handle result')
         target.currentRequest = undefined
         target.isLoading = false
         resultHandler()

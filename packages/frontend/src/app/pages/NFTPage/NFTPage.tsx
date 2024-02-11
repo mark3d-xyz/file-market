@@ -59,7 +59,7 @@ const NFTPreviewContent = styled('div', {
 const MainInfo = styled(PageLayout, {
   display: 'flex', // чтобы можно было дочерним заполнить все пространство
   marginTop: '74px',
-  marginBottom: '-80px',
+  marginBottom: '-168px',
   paddingTB: 48,
   fontSize: '16px',
   gridTemplateColumns: '3fr 1fr',
