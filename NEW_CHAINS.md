@@ -38,11 +38,11 @@ When adding a new chain
           1
          );
   ```
-  * add token ids to redis for public collection sequencer. `change address and range`
+  * add token ids to redis for public collection sequencer. `change ADDRESS and range`
   ```bash
-      for i in $(seq 1 1000); do redis-cli SADD "sequencer.${lower_address}" $i; done
+  for i in $(seq 1 100); do lower_address=$(echo "ADDRESS" | tr '[:upper:]' '[:lower:]'); redis-cli SADD "sequencer.${lower_address}" $i; done
   ```
-  * add public collection address to oracle redis
+  * add public collection address to oracle redis. `change ADDRESS and NETWORK`
   ```bash
-  docker exec -it file-market-${network}-oracle-redis-1 redis-cli SADD "collections" "${lower_address}"
+  docker exec -it file-market-${NETWORK}-oracle-redis-1 redis-cli SADD "collections" $(echo "ADDRESS" | tr '[:upper:]' '[:lower:]')
   ```
