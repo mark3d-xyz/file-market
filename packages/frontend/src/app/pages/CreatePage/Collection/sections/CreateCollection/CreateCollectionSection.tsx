@@ -74,7 +74,9 @@ export default function CreateCollectionSection() {
   const checkIsIndexerHasMintInfo = useCallback(async () => {
     if (!result?.collectionAddress) return
     try {
-      const responseCollection = await wrapRequest(async () => currentBlockChainStore.api.collections.collectionsDetail(result?.collectionAddress))
+      const responseCollection = await wrapRequest(
+        async () => currentBlockChainStore.api.collections.collectionsDetail(result?.collectionAddress),
+      )
       setIndexerCollectionInfo(responseCollection?.collection)
     } catch (e) {
       flushIsMinted()

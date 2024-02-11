@@ -54,9 +54,7 @@ export const callContractGetter = async <T extends Abi, B extends string, R = an
   callContractConfig,
 }: {
   callContractConfig: ReadContractConfig<T, B>
-},
-  ...args: any[]
-): Promise<R> => {
+}): Promise<R> => {
   try {
     const data = (await readContract<T, B>(callContractConfig)) as R
 

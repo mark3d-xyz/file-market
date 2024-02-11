@@ -17,9 +17,12 @@ export interface ControlledTextAreaProps<T extends FieldValues> {
   rules?: RegisterOptions
 }
 
-export type TextAreaProps = Omit<ComponentProps<typeof StyledTextFieldsContainer> & ComponentProps<typeof StyledTextArea> & {
+export type TextAreaProps = Omit<
+ComponentProps<typeof StyledTextFieldsContainer> &
+ComponentProps<typeof StyledTextArea> & {
   errorMessage?: string
-}, 'ref'>
+},
+'ref'>
 
 export type TextAreaControlProps<T extends FieldValues> = TextAreaProps & {
   errorMessage?: string

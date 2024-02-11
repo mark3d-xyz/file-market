@@ -53,7 +53,7 @@ export const SuccessNavBody = ({
 }: SuccessNavBodyProps) => {
   return (
     <>
-      {isSuccessImg && <ModalTitle style={{ marginBottom: '40px' }}><img src={SuccessfullImg} /></ModalTitle>}
+      {isSuccessImg && <ModalTitle style={{ marginBottom: '40px' }}><img alt='success' src={SuccessfullImg} /></ModalTitle>}
       <ModalP style={{ marginBottom: '40px' }}>{ mainText ?? 'Success'}</ModalP>
       {underText && <ModalP style={{ marginBottom: '40px', fontSize: '18px' }}>{underText}</ModalP>}
       <ModalButtonContainer style={{ justifyContent: 'center' }}>
@@ -89,7 +89,7 @@ export const SuccessOkBody: FC<SuccessOkBodyProps> = ({
   <>
     {isSuccessImg && (
       <ModalTitle style={{ marginBottom: '40px' }}>
-        { icon ?? <img src={SuccessfullImg} />}
+        { icon ?? <img alt='success' src={SuccessfullImg} />}
       </ModalTitle>
     )}
     <ModalTitle style={{ marginBottom: '12px', fontSize: '20px' }}>
