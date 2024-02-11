@@ -200,8 +200,8 @@
     "accessTokenAddress": "0xFDD2eF676C5c5dE3476FFCf6EECa86E4cb8499d4",
     "exchangeTokenAddress": "0x0C5C679dD1B4975547ccd2E16b02728a9ED0f463",
     "likeEmitterAddress": "0x853140b933b6C790C4F7a0d33ec5D14f50A5D3bc",
-    "likeFee": "0.00041",
-    "mintFee": "0.0041",
+    "likeFee": "0.00031",
+    "mintFee": "0.0031",
     "baseUrl": "https://opbnb.filemarket.xyz/api",
     "explorer": "https://opbnbscan.com/tx/",
     "wsUrl": "wss://opbnb.filemarket.xyz"
