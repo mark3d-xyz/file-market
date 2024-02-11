@@ -32,6 +32,8 @@ export const stringifyContractError = (error: any) => {
       message = rawMessage.split(', vm error:')[0]
     } else if (data?.cause?.reason) {
       message = data.cause.reason
+    } else if (data?.cause?.shortMessage) {
+      message = data.cause.shortMessage
     } else if (data?.cause?.message) {
       message = data.cause.message
     }
@@ -52,9 +54,7 @@ export const callContractGetter = async <T extends Abi, B extends string, R = an
   callContractConfig,
 }: {
   callContractConfig: ReadContractConfig<T, B>
-},
-  ...args: any[]
-): Promise<R> => {
+}): Promise<R> => {
   try {
     const data = (await readContract<T, B>(callContractConfig)) as R
 

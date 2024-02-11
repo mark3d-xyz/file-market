@@ -101,7 +101,7 @@ export function useMintNFT() {
           parseUnits(royalty.toString(), 2),
           '0x00',
         ],
-        value: config.mintFee,
+        value: isPublicCollection ? config.mintFee : undefined,
       },
     },
     )
@@ -112,7 +112,7 @@ export function useMintNFT() {
       tokenId: tokenIdBN.toString(),
       receipt,
     }
-  }), [config, address, factory, wrapPromise])
+  }), [config, address, factory, wrapPromise, callContract])
 
   return { ...statuses, mintNFT }
 }
