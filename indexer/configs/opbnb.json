@@ -26,7 +26,7 @@
       "switchTokenTimeout": "3m"
     },
     "currencyConversionCacheTTL": "1h",
-    "currency": "ETH",
+    "currency": "BNB",
     "network-route-name": "opBNB",
     "mode": "opbnb",
     "chainId": "204"
