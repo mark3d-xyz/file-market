@@ -6,10 +6,15 @@ export function stringifyError(error: any): string {
     return error
   }
   if (error instanceof Error) {
-    if (error.stack) {
-      return error.stack
-    } else {
+    // Some time ago we took just error.stack
+    // But that is not working if we rethrow the error. It just gets dirty with the stack.
+    // So if the message is available, we just take the message
+    if (error.message && error.name) {
       return `${error.name}: ${error.message}`
+    } else if (error.message) {
+      return error.message
+    } else if (error.stack) {
+      return error.stack
     }
   }
   let str

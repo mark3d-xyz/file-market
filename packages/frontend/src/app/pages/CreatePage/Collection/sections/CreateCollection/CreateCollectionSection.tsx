@@ -6,7 +6,6 @@ import { useAccount } from 'wagmi'
 import { type Collection } from '../../../../../../swagger/Api'
 import BaseModal, {
   ErrorBody,
-  extractMessageFromError,
   InProgressBody,
   SuccessOkBody,
 } from '../../../../../components/Modal/Modal'
@@ -136,7 +135,7 @@ export default function CreateCollectionSection() {
       setModalOpen(true)
       setModalBody(
         <ErrorBody
-          message={extractMessageFromError(error)}
+          message={error}
           onClose={() => {
             setModalOpen(false)
           }

@@ -1,6 +1,7 @@
 import { JsonRpcError } from '@metamask/rpc-errors'
 import { getWalletClient, waitForTransaction, writeContract } from '@wagmi/core'
 import assert from 'assert'
+import { useCallback } from 'react'
 import { type Abi, type PublicClient } from 'viem'
 import { useAccount, useBalance, useNetwork } from 'wagmi'
 import { type WriteContractPreparedArgs, type WriteContractUnpreparedArgs } from 'wagmi/actions'
@@ -21,7 +22,7 @@ export const useCallContract = () => {
   const { data } = useBalance({
     address,
   })
-  const callContract = async <TAbi extends Abi | readonly unknown[], TFunctionName extends string> ({
+  const callContract = useCallback(async <TAbi extends Abi | readonly unknown[], TFunctionName extends string> ({
     callContractConfig,
     ignoreTxFailture,
     minBalance,
@@ -52,11 +53,9 @@ export const useCallContract = () => {
 
       return await getTxReceipt(hash, chain?.id)
     } catch (error: any) {
-      console.error(error)
-
       throw new Error(stringifyContractError(error))
     }
-  }
+  }, [address, chain, data])
 
   return {
     callContract,

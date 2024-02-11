@@ -32,6 +32,8 @@ export const stringifyContractError = (error: any) => {
       message = rawMessage.split(', vm error:')[0]
     } else if (data?.cause?.reason) {
       message = data.cause.reason
+    } else if (data?.cause?.shortMessage) {
+      message = data.cause.shortMessage
     } else if (data?.cause?.message) {
       message = data.cause.message
     }

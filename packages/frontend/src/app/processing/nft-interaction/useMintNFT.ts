@@ -112,7 +112,7 @@ export function useMintNFT() {
       tokenId: tokenIdBN.toString(),
       receipt,
     }
-  }), [config, address, factory, wrapPromise])
+  }), [config, address, factory, wrapPromise, callContract])
 
   return { ...statuses, mintNFT }
 }

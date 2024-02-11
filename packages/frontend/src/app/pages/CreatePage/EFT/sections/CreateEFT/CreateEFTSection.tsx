@@ -7,7 +7,6 @@ import { useAccount } from 'wagmi'
 
 import BaseModal, {
   ErrorBody,
-  extractMessageFromError,
   InProgressBody,
   SuccessOkBody,
 } from '../../../../../components/Modal/Modal'
@@ -149,7 +148,7 @@ export const CreateEFTSection: React.FC = observer(() => {
       setModalOpen(true)
       setModalBody(
         <ErrorBody
-          message={extractMessageFromError(nftError)}
+          message={nftError}
           onClose={() => {
             setModalOpen(false)
           }}

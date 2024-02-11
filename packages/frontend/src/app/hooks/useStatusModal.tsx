@@ -2,7 +2,6 @@ import { type ReactNode, useCallback, useEffect } from 'react'
 
 import {
   ErrorBody,
-  extractMessageFromError,
   InProgressBody,
   SuccessNavBody,
   SuccessOkBody,
@@ -91,7 +90,7 @@ export function useStatusModal({
     } else if (error) {
       setModalBody(
         <ErrorBody
-          message={extractMessageFromError(error)}
+          message={error}
           onClose={handleClose}
         />,
       )
