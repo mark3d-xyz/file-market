@@ -54,7 +54,14 @@ export default function CreateCollectionSection() {
     resetField,
     control,
     setValue,
-  } = useForm<CreateCollectionForm>()
+    watch,
+  } = useForm<CreateCollectionForm>({
+    defaultValues: {
+      name: '',
+      symbol: '',
+      description: '',
+    },
+  })
 
   const {
     error,
@@ -172,9 +179,7 @@ export default function CreateCollectionSection() {
     setModalBody(<InProgressBody text='Collection is being minted' mainText={loadingModalMainText} />)
   }, [loadingModalMainText])
 
-  const [textareaLength, setTextareaLength] = useState(
-    getValues('description')?.length ?? 0,
-  )
+  const textareaLength = watch('description')?.length ?? 0
 
   return (
     <>
@@ -257,14 +262,10 @@ export default function CreateCollectionSection() {
               controlledInputProps={{
                 control,
                 name: 'description',
-              }}
-              { ...control.register('description', {
-                onChange(event) {
-                  setTextareaLength(event?.target?.value?.length ?? 0)
+                rules: {
+                  maxLength: 1000,
                 },
-                maxLength: 1000,
-              })
-              }
+              }}
               placeholder='Description of your token collection'
             />
           </FormControl>
