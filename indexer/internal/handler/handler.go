@@ -105,6 +105,11 @@ func (h *handler) corsMiddleware(next http.Handler) http.Handler {
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		w.Header().Set("Access-Control-Allow-Headers", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "*")
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(200)
+		}
+
 		next.ServeHTTP(w, r)
 	})
 }
