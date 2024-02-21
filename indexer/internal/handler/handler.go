@@ -108,6 +108,7 @@ func (h *handler) corsMiddleware(next http.Handler) http.Handler {
 
 		if r.Method == http.MethodOptions {
 			w.WriteHeader(200)
+			return
 		}
 
 		next.ServeHTTP(w, r)
