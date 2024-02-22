@@ -107,14 +107,19 @@ func (h *handler) Init() http.Handler {
 
 func (h *handler) corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		w.Header().Set("Access-Control-Allow-Headers", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "*")
+
 		origin := r.Header.Get("Origin")
 		if _, ok := allowedOrigins[origin]; ok {
 			w.Header().Set("Access-Control-Allow-Origin", origin)
-			w.Header().Set("Access-Control-Allow-Credentials", "true")
-			w.Header().Set("Access-Control-Allow-Headers", "*")
-			w.Header().Set("Access-Control-Allow-Methods", "*")
 			next.ServeHTTP(w, r)
+			return
 		}
+
+		w.Header().Set("Access-Control-Allow-Origin", "https://indexer-swagger.mark3d.xyz")
+		next.ServeHTTP(w, r)
 	})
 }
 
