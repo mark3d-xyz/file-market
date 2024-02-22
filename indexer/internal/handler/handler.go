@@ -15,7 +15,13 @@ import (
 )
 
 var (
-	logger = log.GetLogger()
+	logger         = log.GetLogger()
+	allowedOrigins = map[string]struct{}{
+		"http://localhost:3000":      {},
+		"https://filemarket.xyz":     {},
+		"https://dev.filemarket.xyz": {},
+		"https://galxe.com":          {},
+	}
 )
 
 type Handler interface {
@@ -101,17 +107,14 @@ func (h *handler) Init() http.Handler {
 
 func (h *handler) corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", h.cfg.SwaggerHost)
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
-		w.Header().Set("Access-Control-Allow-Headers", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "*")
-
-		if r.Method == http.MethodOptions {
-			w.WriteHeader(200)
-			return
+		origin := r.Header.Get("Origin")
+		if _, ok := allowedOrigins[origin]; ok {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
+			w.Header().Set("Access-Control-Allow-Headers", "*")
+			w.Header().Set("Access-Control-Allow-Methods", "*")
+			next.ServeHTTP(w, r)
 		}
-
-		next.ServeHTTP(w, r)
 	})
 }
 
