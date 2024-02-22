@@ -50,6 +50,10 @@ func (h *handler) Init() http.Handler {
 	router.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			if r.Method == http.MethodOptions {
+				w.Header().Set("Access-Control-Allow-Origin", "*")
+				w.Header().Set("Access-Control-Allow-Credentials", "true")
+				w.Header().Set("Access-Control-Allow-Headers", "*")
+				w.Header().Set("Access-Control-Allow-Methods", "*")
 				w.WriteHeader(200)
 				return
 			}
