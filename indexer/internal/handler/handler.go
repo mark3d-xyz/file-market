@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -46,20 +45,6 @@ func NewHandler(
 
 func (h *handler) Init() http.Handler {
 	router := mux.NewRouter()
-
-	router.Use(func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if r.Method == http.MethodOptions {
-				w.Header().Set("Access-Control-Allow-Origin", "*")
-				w.Header().Set("Access-Control-Allow-Credentials", "true")
-				w.Header().Set("Access-Control-Allow-Headers", "*")
-				w.Header().Set("Access-Control-Allow-Methods", "*")
-				w.WriteHeader(200)
-				return
-			}
-			next.ServeHTTP(w, r)
-		})
-	})
 
 	router.HandleFunc("/auth/message", h.handleGetAuthMessage)
 	router.HandleFunc("/auth/by_signature", h.handleAuthBySignature)
@@ -123,7 +108,6 @@ func (h *handler) Init() http.Handler {
 func (h *handler) corsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")
-		fmt.Println("-----origin: ", origin) // TODO
 		if _, ok := allowedOrigins[origin]; ok {
 			w.Header().Set("Access-Control-Allow-Origin", origin)
 			w.Header().Set("Access-Control-Allow-Credentials", "true")
