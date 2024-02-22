@@ -114,11 +114,9 @@ func (h *handler) corsMiddleware(next http.Handler) http.Handler {
 		origin := r.Header.Get("Origin")
 		if _, ok := allowedOrigins[origin]; ok {
 			w.Header().Set("Access-Control-Allow-Origin", origin)
-			next.ServeHTTP(w, r)
-			return
+		} else {
+			w.Header().Set("Access-Control-Allow-Origin", "https://indexer-swagger.mark3d.xyz")
 		}
-
-		w.Header().Set("Access-Control-Allow-Origin", "https://indexer-swagger.mark3d.xyz")
 		next.ServeHTTP(w, r)
 	})
 }
