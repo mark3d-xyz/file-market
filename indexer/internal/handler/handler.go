@@ -99,6 +99,7 @@ func (h *handler) Init() http.Handler {
 	router.HandleFunc("/server_time", h.handleServerTime)
 
 	router.HandleFunc("/campaigns/likes", h.handleCampaignsLikes)
+	router.HandleFunc("/campaigns/tokens", h.handleCampaignsTokens)
 
 	router.Use(h.corsMiddleware)
 
