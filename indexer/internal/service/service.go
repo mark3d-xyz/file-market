@@ -94,6 +94,7 @@ type Tokens interface {
 	GetTokensByAddress(ctx context.Context, address common.Address, lastCollectionAddress *common.Address, collectionLimit int, lastTokenCollectionAddress *common.Address, lastTokenId *big.Int, tokenLimit int) (*models.TokensResponse, *models.ErrorResponse)
 	GetFileBunniesTokensForAutosell(ctx context.Context) ([]types.AutosellTokenInfo, *models.ErrorResponse)
 	GetAccountLikeCount(ctx context.Context, from common.Address) (*models.CampaignsLikesResponse, *models.ErrorResponse)
+	GetAccountTokens(ctx context.Context, from common.Address) (*models.CampaignsTokensResponse, *models.ErrorResponse)
 }
 
 type Transfers interface {

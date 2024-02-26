@@ -1179,6 +1179,15 @@ paths:
           schema:
             $ref: '#/definitions/ErrorResponse'
 definitions:
+  CampaignsTokensResponse:
+    type: object
+    properties:
+      data:
+        type: object
+        properties:
+          result:
+            type: boolean
+            x-omitempty: false
   CampaignsLikesResponse:
     type: object
     properties:

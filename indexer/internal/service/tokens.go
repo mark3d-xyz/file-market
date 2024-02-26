@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/big"
 	"strings"
+	"time"
 
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/currencyconversion"
 	"github.com/mark3d-xyz/mark3d/indexer/pkg/utils"
@@ -330,6 +331,22 @@ func (s *service) GetAccountLikeCount(ctx context.Context, from common.Address) 
 	return &models.CampaignsLikesResponse{
 		Result: &models.CampaignsLikesResponseResult{
 			IsValid: count > 0,
+		},
+	}, nil
+}
+
+func (s *service) GetAccountTokens(ctx context.Context, from common.Address) (*models.CampaignsTokensResponse, *models.ErrorResponse) {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+	defer cancel()
+
+	tokens, e := s.GetTokensByAddress(ctx, from, nil, 10, nil, nil, 10)
+	if e != nil {
+		return nil, e
+	}
+
+	return &models.CampaignsTokensResponse{
+		Data: &models.CampaignsTokensResponseData{
+			Result: len(tokens.Collections) > 1 || len(tokens.Tokens) > 0,
 		},
 	}, nil
 }
