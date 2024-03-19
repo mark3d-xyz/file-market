@@ -1,0 +1,60 @@
+version: "3.8"
+services:
+  shardeum-indexer-service:
+    image: file-market-shardeum-indexer-service:latest
+    ports:
+      - "9602:9602"
+    depends_on:
+      - shardeum-indexer-postgres
+      - shardeum-indexer-redis
+      - shardeum-healthcheck-service
+    volumes:
+      - ~/shardeum-logs:/logs
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  shardeum-oracle-service:
+    image: file-market-shardeum-oracle-service:latest
+    depends_on:
+      - shardeum-oracle-redis
+    volumes:
+      - ~/shardeum-logs:/logs
+    restart: unless-stopped
+  shardeum-healthcheck-service:
+    image: file-market-shardeum-healthcheck-service:latest
+    volumes:
+      - ~/shardeum-logs:/logs
+    restart: unless-stopped
+  shardeum-oracle-redis:
+    image: redis:7
+    volumes:
+      - shardeum-cache-redis-data:/data
+    command: redis-server --save 60 1
+  shardeum-indexer-postgres:
+    image: postgres:13
+    volumes:
+      - shardeum-indexer-postgres-data:/var/lib/postgresql/data
+    env_file: ~/.shardeum_indexer_pg_env
+    restart: unless-stopped
+    healthcheck:
+      test: pg_isready -d file_market_indexer -U indexer
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  shardeum-indexer-redis:
+    image: redis:7
+    volumes:
+      - shardeum-indexer-redis-data:/data
+    command: redis-server --save 60 1
+  shardeum-indexer-postgres-migration:
+    build:
+      context: .
+      dockerfile: migrate.Dockerfile
+    env_file: ~/.shardeum_indexer_pg_env
+    depends_on:
+      - shardeum-indexer-postgres
+
+volumes:
+  shardeum-indexer-postgres-data:
+  shardeum-cache-redis-data:
+  shardeum-indexer-redis-data:

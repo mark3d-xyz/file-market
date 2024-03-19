@@ -103,6 +103,13 @@ jobs:
       - name: Build scroll oracle container
         if: ${{ needs.check-changes.outputs.backend_changes == 'true' }}
         run: docker build -t file-market-scroll-oracle-service:latest -f backend/Dockerfile .
+      # Shardeum
+      - name: Copy shardeum .env from host
+        if: ${{ needs.check-changes.outputs.backend_changes == 'true' }}
+        run: cp ~/.shardeum_oracle_dev_env backend/.env
+      - name: Build shardeum oracle container
+        if: ${{ needs.check-changes.outputs.backend_changes == 'true' }}
+        run: docker build -t file-market-shardeum-oracle-service:latest -f backend/Dockerfile .
   build-indexer:
     runs-on: [self-hosted, dev]
     needs: [ check-changes ]
@@ -157,6 +164,14 @@ jobs:
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
         run: docker build --build-arg env=dev-scroll -t file-market-scroll-indexer-service:latest .
         working-directory: indexer/
+      # Shardeum
+      - name: Copy shardeum .env from host
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
+        run: cp ~/.shardeum_indexer_dev_env indexer/.env
+      - name: Build Shardeum indexer container
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
+        run: docker build --build-arg env=dev-shardeum -t file-market-shardeum-indexer-service:latest .
+        working-directory: indexer/
   build-healthcheck:
     runs-on: [ self-hosted, dev ]
     needs: [ check-changes ]
@@ -197,6 +212,14 @@ jobs:
       - name: Build healthcheck container
         if: ${{ needs.check-changes.outputs.healthcheck_changes == 'true' }}
         run: docker build -f Dockerfile -t file-market-scroll-healthcheck-service:latest .
+        working-directory: healthcheck-tg/
+      # Shardeum
+      - name: Copy .env from host
+        if: ${{ needs.check-changes.outputs.healthcheck_changes == 'true' }}
+        run: cp ~/.shardeum_healthcheck_dev_env healthcheck-tg/.env
+      - name: Build healthcheck container
+        if: ${{ needs.check-changes.outputs.healthcheck_changes == 'true' }}
+        run: docker build -f Dockerfile -t file-market-shardeum-healthcheck-service:latest .
         working-directory: healthcheck-tg/
   update:
     runs-on: [self-hosted, dev]
@@ -248,6 +271,13 @@ jobs:
       - name: Check scroll migration status
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
         run: ./check_migration.sh scroll
+      # shardeum
+      - name: Up shardeum migration
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
+        run: docker-compose -f docker-compose.shardeum.dev.yml up -d --build shardeum-indexer-postgres-migration
+      - name: Check shardeum migration status
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
+        run: ./check_migration.sh shardeum
 
       # filecoin
       - name: Update compose
@@ -265,6 +295,10 @@ jobs:
       - name: Update scroll compose
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' || needs.check-changes.outputs.backend_changes == 'true' || needs.check-changes.outputs.healthcheck_changes == 'true' }}
         run: docker-compose -f docker-compose.scroll.dev.yml up -d scroll-indexer-postgres scroll-indexer-redis scroll-oracle-redis scroll-indexer-service scroll-oracle-service scroll-healthcheck-service
+      # shardeum
+      - name: Update shardeum compose
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' || needs.check-changes.outputs.backend_changes == 'true' || needs.check-changes.outputs.healthcheck_changes == 'true' }}
+        run: docker-compose -f docker-compose.shardeum.dev.yml up -d shardeum-indexer-postgres shardeum-indexer-redis shardeum-oracle-redis shardeum-indexer-service shardeum-oracle-service shardeum-healthcheck-service
 
       - name: update nginx
         run: |
@@ -272,6 +306,7 @@ jobs:
           sudo mv filemarket.era.dev.conf /etc/nginx/conf.d/filemarket.era.dev.conf
           sudo mv filemarket.opbnb.dev.conf /etc/nginx/conf.d/filemarket.opbnb.dev.conf
           sudo mv filemarket.scroll.dev.conf /etc/nginx/conf.d/filemarket.scroll.dev.conf
+          sudo mv filemarket.shardeum.dev.conf /etc/nginx/conf.d/filemarket.shardeum.dev.conf
           sudo nginx -s reload
       - name: Set changes
         run: |
