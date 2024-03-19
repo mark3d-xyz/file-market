@@ -16,7 +16,8 @@ const networks = [
   "opbnb",
   "test-opbnb",
   "scroll",
-  "test-scroll"
+  "test-scroll",
+  "test-shardeum"
 ] as const;
 type Network = typeof networks[number];
 const accounts: Map<Network, string[]> = new Map();
@@ -88,6 +89,12 @@ const testnetOpbnbConfig: HttpNetworkUserConfig = {
   accounts: accounts.get("test-opbnb"),
   timeout: 1000000000
 }
+const testnetShardeumConfig: HttpNetworkUserConfig = {
+  url: "https://sphinx.shardeum.org",
+  chainId: 8082,
+  accounts: accounts.get("test-shardeum"),
+  timeout: 1000000000
+}
 
 switch (process.env.HARDHAT_NETWORK!) {
   case "mumbai":
@@ -117,6 +124,9 @@ switch (process.env.HARDHAT_NETWORK!) {
   case "testnetScroll":
     console.log("scroll testnet cfg:", testnetScrollConfig);
     break;
+  case "testnetShardeum":
+    console.log("shardeum testnet cfg:", testnetShardeumConfig);
+    break;
 }
 
 const config: HardhatUserConfig = {
@@ -134,7 +144,7 @@ const config: HardhatUserConfig = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 1,
+        runs: 200,
       },
       evmVersion: "london"
     },
@@ -151,6 +161,7 @@ const config: HardhatUserConfig = {
     testnetOpbnb: testnetOpbnbConfig,
     opbnb: opbnbConfig,
     testnetScroll: testnetScrollConfig,
+    testnetShardeum: testnetShardeumConfig,
     scroll: scrollConfig,
   },
   dependencyCompiler: {

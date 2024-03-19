@@ -41,8 +41,8 @@ async function main() {
     program.parse();
     const args = program.opts();
 
-    const priorityFee = await callRpc("eth_maxPriorityFeePerGas", "");
-    console.log(priorityFee);
+    // const priorityFee = await callRpc("eth_maxPriorityFeePerGas", "");
+    // console.log(priorityFee);
 
     const accounts = await hre.ethers.getSigners();
     console.log(accounts)
@@ -55,7 +55,7 @@ async function main() {
             const tx = accounts[0].sendTransaction({
                 to: args.to,
                 value: args.amount,
-                maxPriorityFeePerGas: priorityFee,
+                // maxPriorityFeePerGas: priorityFee,
             }).then(tx => {
                 console.log(tx);
             }).catch(err => {

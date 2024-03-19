@@ -1,20 +1,22 @@
 import * as hre from "hardhat";
-import {ethers} from "hardhat";
+import { ethers } from "hardhat";
 import {
   FileBunniesCollection__factory,
+  FilemarketCollectionV2,
   FilemarketCollectionV2__factory,
   FilemarketExchangeV2__factory,
+  FraudDeciderWeb2V2,
   FraudDeciderWeb2V2__factory,
   LikeEmitter__factory,
   Mark3dAccessTokenV2__factory,
   PublicCollection__factory,
 } from "../typechain-types";
 import "@nomicfoundation/hardhat-chai-matchers";
-import {Deployer} from "@matterlabs/hardhat-zksync-deploy";
-import {Contract, Wallet} from "zksync-web3";
-import {Overrides} from "ethers";
-import {getScrollDetails, isFilecoin, isScroll} from "./util";
-import {parseEther} from "ethers/lib/utils";
+import { Deployer } from "@matterlabs/hardhat-zksync-deploy";
+import { Contract, Wallet } from "zksync-web3";
+import { Overrides } from "ethers";
+import { getScrollDetails, isFilecoin, isScroll } from "./util";
+import { parseEther } from "ethers/lib/utils";
 
 const util = require("util");
 const request = util.promisify(require("request"));
@@ -85,6 +87,7 @@ async function callRpc(method: string, params: string) {
 
 async function main() {
   const shouldVerify = false;
+  const shouldDeploy = true;
 
   let accounts = await ethers.getSigners();
   if (accounts.length < 1) {
@@ -201,29 +204,45 @@ async function main() {
     // LikeEmitter
     {
       const likeFee = hre.ethers.utils.parseEther("0.000041"); // 0.1$
+
       if (isScroll) {
         overrides.gasLimit = getScrollDetails(likeEmitterFactory, [likeFee], overrides, accounts);
       }
-      const likeEmitter = await likeEmitterFactory.deploy(likeFee, overrides);
-      console.log("likeEmitter address: ", likeEmitter.address);
+      if (shouldDeploy) {
+        const likeEmitter = await likeEmitterFactory.deploy(likeFee, overrides);
+        console.log("likeEmitter address: ", likeEmitter.address);
+      }
+      console.log("like: ", likeEmitterFactory.interface.encodeDeploy([likeFee]));
     }
+
 
     ////
     // Collection
     if (isScroll) {
       overrides.gasLimit = getScrollDetails(collectionFactory, [], overrides, accounts);
     }
-    const collectionToClone = await collectionFactory.deploy(overrides);
-    console.log("collection address: ", collectionToClone.address);
+    let collectionAddr = "";
+    if (shouldDeploy) {
+      const collectionToClone = await collectionFactory.deploy(overrides);
+      collectionAddr = collectionToClone.address;
+      console.log("collection address: ", collectionToClone.address);
+    }
+    console.log("collection: ", collectionFactory.interface.encodeDeploy([]));
+
+    process.exit(1);
 
     ////
     // Fraud
     if (isScroll) {
       overrides.gasLimit = getScrollDetails(fraudDeciderFactory, [], overrides, accounts);
     }
-    let fraudDecider = await fraudDeciderFactory.deploy(overrides);
-    console.log("fraud decider address: ", fraudDecider.address);
-
+    let fraudDeciderAddr = "";
+    if (shouldDeploy) {
+      const fraudDecider = await fraudDeciderFactory.deploy(overrides);
+      fraudDeciderAddr = fraudDecider.address;
+      console.log("fraud decider address: ", fraudDecider.address);
+    }
+    console.log("fraud: ", fraudDeciderFactory.interface.encodeDeploy([]));
 
     ////
     // Access
@@ -235,9 +254,9 @@ async function main() {
       const symbol = "FileMarket";
       const _contractMetaUri = "";
       const _globalSalt = "0x" + globalSalt;
-      const _implementation = collectionToClone.address;
+      const _implementation = collectionAddr;
       const _fraudLateDecisionEnabled = true;
-      const _fraudDecider = fraudDecider.address;
+      const _fraudDecider = fraudDeciderAddr;
       if (isScroll) {
         overrides.gasLimit = getScrollDetails(
           accessTokenFactory,
@@ -254,7 +273,20 @@ async function main() {
           accounts,
         );
       }
-      let accessToken = await accessTokenFactory.deploy(
+      if (shouldDeploy) {
+        let accessToken = await accessTokenFactory.deploy(
+          name,
+          symbol,
+          _contractMetaUri,
+          _globalSalt,
+          _implementation,
+          _fraudLateDecisionEnabled,
+          _fraudDecider,
+          overrides,
+        );
+        console.log("access token address: ", accessToken.address);
+      }
+      console.log("access: ", accessTokenFactory.interface.encodeDeploy([
         name,
         symbol,
         _contractMetaUri,
@@ -262,9 +294,7 @@ async function main() {
         _implementation,
         _fraudLateDecisionEnabled,
         _fraudDecider,
-        overrides,
-      );
-      console.log("access token address: ", accessToken.address);
+      ]));
     }
 
     ////
@@ -276,7 +306,7 @@ async function main() {
       const _owner = await accounts[0].getAddress();
       const _royaltyReceiver = await accounts[0].getAddress();
       const _data = "0x";
-      const _fraudDecider = fraudDecider.address;
+      const _fraudDecider = fraudDeciderAddr;
       const _fraudLateDecisionEnabled = true;
       if (isScroll) {
         overrides.gasLimit = getScrollDetails(
@@ -295,7 +325,24 @@ async function main() {
           accounts,
         );
       }
-      let publicCollection = await publicCollectionFactory.deploy(
+      if (shouldDeploy) {
+        let publicCollection = await publicCollectionFactory.deploy(
+          name,
+          symbol,
+          _contractMetaUri,
+          _owner,
+          _royaltyReceiver,
+          _data,
+          _fraudDecider,
+          _fraudLateDecisionEnabled,
+          overrides
+        );
+        console.log("public collection address: ", publicCollection.address);
+
+        const tx = await publicCollection.connect(accounts[0]).setMintFee(parseEther("0.00041"))
+        console.log("set fee tx: ", tx.hash)
+      }
+      console.log("public: ", publicCollectionFactory.interface.encodeDeploy([
         name,
         symbol,
         _contractMetaUri,
@@ -304,12 +351,7 @@ async function main() {
         _data,
         _fraudDecider,
         _fraudLateDecisionEnabled,
-        overrides
-      );
-      console.log("public collection address: ", publicCollection.address);
-
-      const tx = await publicCollection.connect(accounts[0]).setMintFee(parseEther("0.00041"))
-      console.log("set fee tx: ", tx.hash)
+      ]));
     }
 
     ////
@@ -318,13 +360,16 @@ async function main() {
       if (isScroll) {
         overrides.gasLimit = getScrollDetails(exchangeFactory, [], overrides, accounts)
       }
-      let exchange = await exchangeFactory.deploy(overrides);
-      console.log("exchange address: ", exchange.address);
+      if (shouldDeploy) {
+        let exchange = await exchangeFactory.deploy(overrides);
+        console.log("exchange address: ", exchange.address);
+      }
+      console.log("exchange: ", exchangeFactory.interface.encodeDeploy([]));
     }
 
     ////
     // FileBunnies
-    if (isFilecoin) {
+    if (isFilecoin && shouldDeploy) {
       let fileBunniesCollection = await fileBunniesCollectionFactory.deploy(
         "FileBunnies",
         "FBNS",
@@ -334,7 +379,7 @@ async function main() {
         accounts[0].getAddress(),
         accounts[0].getAddress(),
         "0x",
-        fraudDecider.address,
+        fraudDeciderAddr,
         true,
         overrides
       );

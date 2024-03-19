@@ -286,6 +286,45 @@
   },
   {
     "chain": {
+      "id": 8082,
+      "name": "ShardeumTestnet",
+      "network": "Shardeum Testnet",
+      "nativeCurrency": {
+        "name": "SHM",
+        "symbol": "SHM",
+        "decimals": 18
+      },
+      "rpcUrls": {
+        "default": {
+          "http": [
+            "https://sphinx.shardeum.org/"
+          ]
+        },
+        "public": {
+          "http": [
+            "https://sphinx.shardeum.org/"
+          ]
+        }
+      },
+      "blockExplorers": {
+        "default": {
+          "name": "Shardeum Testnet explorer",
+          "url": "https://explorer-sphinx.shardeum.org/"
+        }
+      },
+      "testnet": true
+    },
+    "img": "/OpBnb.svg",
+    "imgGray": "/ShardeumGray.svg",
+    "accessTokenAddress": "",
+    "exchangeTokenAddress": "",
+    "likeEmitterAddress": "",
+    "baseUrl": "https://dev-shardeum.filemarket.xyz/api",
+    "explorer": "https://explorer-sphinx.shardeum.org/tx/",
+    "wsUrl": "wss://dev-shardeum.filemarket.xyz"
+  },
+  {
+    "chain": {
       "id": 280,
       "name": "ZkSyncTestnet",
       "network": "zkSync Era Testnet",
