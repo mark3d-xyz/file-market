@@ -41,7 +41,7 @@ export type CheckBoxProps = & {
 }
 
 export type CheckBoxControlProps<T extends FieldValues> = CheckBoxProps
-& Omit<ComponentProps<typeof CheckBoxDefault>, 'sx'>
+& Omit<ComponentProps<typeof CheckBoxDefault>, 'sx' | 'disableRipple'>
 & {
   controlledCheckBoxProps: ControlledCheckBoxProps<T>
 }
@@ -62,6 +62,7 @@ export const CheckBox = <T extends FieldValues>({
           icon={<span />}
           {...field}
           checked={value}
+          disableRipple
         />
       )}
     />

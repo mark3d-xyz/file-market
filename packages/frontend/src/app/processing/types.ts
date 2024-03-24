@@ -66,6 +66,7 @@ export interface ERC721TokenMetaInput {
   tags?: string[]
   subcategories?: string[]
   attributes?: Attribute[]
+  isBackedOnGreenfield?: boolean
 }
 
 export enum Mark3dAccessTokenEventNames {

@@ -24,6 +24,7 @@ export interface MintNFTForm {
   tags?: string[] // required
   subcategories?: string[]
   royalty?: number
+  isBackedOnGreenfield?: boolean
 }
 
 type IMintNft = MintNFTForm & {
@@ -49,7 +50,20 @@ export function useMintNFT() {
     assertAccount(address)
     assertConfig(config)
 
-    const { name, description = '', image, hiddenFile, collectionAddress, license, tags, subcategories, categories, royalty, isPublicCollection } = form
+    const {
+      name,
+      description = '',
+      image,
+      hiddenFile,
+      collectionAddress,
+      license,
+      tags,
+      subcategories,
+      categories,
+      royalty,
+      isPublicCollection,
+      isBackedOnGreenfield,
+    } = form
     if (!name || !collectionAddress || !image || !hiddenFile || royalty === undefined) {
       throw Error('CreateCollection form is not filled')
     }
@@ -86,6 +100,7 @@ export function useMintNFT() {
       license,
       tags,
       subcategories,
+      isBackedOnGreenfield,
     })
     console.log('mint metadata', metadata)
 

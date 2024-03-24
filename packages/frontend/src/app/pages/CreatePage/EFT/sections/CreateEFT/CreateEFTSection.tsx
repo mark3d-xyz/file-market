@@ -20,7 +20,7 @@ import { useModalProperties } from '../../../../../hooks/useModalProperties'
 import { usePublicCollectionStore } from '../../../../../hooks/usePublicCollectionStore'
 import { useSubscribeToEft } from '../../../../../hooks/useSubscribeToEft'
 import {
-  Button, CheckBox,
+  Button, CheckBox, CheckBoxContainer,
   type ComboBoxOption,
   ControlledComboBox,
   FormControl,
@@ -47,9 +47,9 @@ import { useCreateNft } from '../../../hooks/useCreateNft'
 import PlusIcon from '../../../img/plus-icon.svg'
 import {
   AddCollectionButton,
-  CategoryAndSubcategory, CheckBoxContainerDisabled,
+  CategoryAndSubcategory, CheckBoxContainerDisabled, CheckBoxLabel, CheckBoxLogo,
   CollectionPickerContainer,
-  ContentField,
+  ContentField, HighlightedText,
   Icon,
   NFTLicense, SecondaryText,
   SubTitle,
@@ -536,14 +536,41 @@ export const CreateEFTSection: React.FC = observer(() => {
                       required: 'Data is always stored on FileCoin',
                     },
                   }}
-                  disableRipple
                 />
               )}
               label={(
-                <Txt primary1>
-                  Store on FileCoin
-                  <SecondaryText>(default option)</SecondaryText>
-                </Txt>
+                <CheckBoxLabel>
+                  <Txt primary1>
+                    Store on FileCoin
+                    {' '}
+                    <SecondaryText>(default option)</SecondaryText>
+                  </Txt>
+                  <CheckBoxLogo src='/Filecoin.svg' alt="FileCoin" />
+                </CheckBoxLabel>
+              )}
+            />
+          </FormControl>
+
+          <FormControl size={'lg'}>
+            <Label paddingL>Backup</Label>
+            <CheckBoxContainer
+              control={(
+                <CheckBox
+                  controlledCheckBoxProps={{
+                    name: 'isBackedOnGreenfield',
+                    control,
+                  }}
+                />
+              )}
+              label={(
+                <CheckBoxLabel>
+                  <Txt primary1>
+                    Back up files on the decentralized storage
+                    {' '}
+                    <HighlightedText>of BNB Greenfield</HighlightedText>
+                  </Txt>
+                  <CheckBoxLogo src='/OpBnb.svg' alt="OpBnb" />
+                </CheckBoxLabel>
               )}
             />
           </FormControl>

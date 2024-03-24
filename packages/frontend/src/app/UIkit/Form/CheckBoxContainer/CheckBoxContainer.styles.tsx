@@ -16,4 +16,7 @@ export const StyledCheckBoxContainer = styled(FormControlLabel, {
       boxShadow: 'none',
     },
   },
+  '& .MuiFormControlLabel-label': {
+    flexGrow: 1,
+  },
 })

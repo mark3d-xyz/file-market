@@ -111,7 +111,6 @@ const NotificationsSection = <T extends FieldValues>({
           control={(
             <CheckBox<T>
               controlledCheckBoxProps={emailNotification}
-              disableRipple
             />
           )}
           label={<Txt primary1>by email</Txt>}
