@@ -20,7 +20,7 @@ import { useModalProperties } from '../../../../../hooks/useModalProperties'
 import { usePublicCollectionStore } from '../../../../../hooks/usePublicCollectionStore'
 import { useSubscribeToEft } from '../../../../../hooks/useSubscribeToEft'
 import {
-  Button,
+  Button, CheckBox,
   type ComboBoxOption,
   ControlledComboBox,
   FormControl,
@@ -47,11 +47,11 @@ import { useCreateNft } from '../../../hooks/useCreateNft'
 import PlusIcon from '../../../img/plus-icon.svg'
 import {
   AddCollectionButton,
-  CategoryAndSubcategory,
+  CategoryAndSubcategory, CheckBoxContainerDisabled,
   CollectionPickerContainer,
   ContentField,
   Icon,
-  NFTLicense,
+  NFTLicense, SecondaryText,
   SubTitle,
 } from './CreateEFTSection.styles'
 
@@ -68,6 +68,8 @@ export interface CreateNFTForm {
   licenseUrl: string
   tagsValue: string[]
   royalty: number
+  isStoredOnFileCoin: true
+  isBackedOnGreenfield: boolean
 }
 
 export const CreateEFTSection: React.FC = observer(() => {
@@ -119,6 +121,8 @@ export const CreateEFTSection: React.FC = observer(() => {
       category: null,
       subcategory: null,
       license: { id: licenseOptions[0].id, title: licenseOptions[0].title },
+      isStoredOnFileCoin: true,
+      isBackedOnGreenfield: false,
     },
   })
 
@@ -518,6 +522,30 @@ export const CreateEFTSection: React.FC = observer(() => {
                 </NFTLicense>
               </Description>
             </ContentField>
+          </FormControl>
+
+          <FormControl size={'lg'}>
+            <Label paddingL>Storage Provider</Label>
+            <CheckBoxContainerDisabled
+              control={(
+                <CheckBox
+                  controlledCheckBoxProps={{
+                    name: 'isStoredOnFileCoin',
+                    control,
+                    rules: {
+                      required: 'Data is always stored on FileCoin',
+                    },
+                  }}
+                  disableRipple
+                />
+              )}
+              label={(
+                <Txt primary1>
+                  Store on FileCoin
+                  <SecondaryText>(default option)</SecondaryText>
+                </Txt>
+              )}
+            />
           </FormControl>
 
           <ButtonContainer>

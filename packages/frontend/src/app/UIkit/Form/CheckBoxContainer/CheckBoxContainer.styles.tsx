@@ -3,7 +3,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import { styled } from '../../../../styles'
 
 export const StyledCheckBoxContainer = styled(FormControlLabel, {
-  borderRadius: '12px',
+  borderRadius: '20px',
   outline: '1px solid #EAEAEC',
   padding: '16px',
   width: '100%',
