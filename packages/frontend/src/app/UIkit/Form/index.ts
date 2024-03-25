@@ -1,3 +1,5 @@
+export * from './CheckBox'
+export * from './CheckBoxContainer'
 export * from './Combobox'
 export * from './ErrorMessage'
 export * from './FormControl'

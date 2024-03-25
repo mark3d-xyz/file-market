@@ -1,5 +1,3 @@
-import FormControlLabel from '@mui/material/FormControlLabel'
-
 import { styled } from '../../../styles'
 import { FormControl, textVariant, Txt } from '../../UIkit'
 
@@ -100,21 +98,6 @@ export const GrayBgText = styled('span', {
         flexDirection: 'column',
         gap: '8px',
       },
-    },
-  },
-})
-
-export const CheckBoxContainer = styled(FormControlLabel, {
-  borderRadius: '12px',
-  outline: '2px solid #EAEAEC',
-  padding: '16px',
-  width: '100%',
-  margin: '0 !important',
-  transition: 'outline 0.25s ease-in-out',
-  '&:hover': {
-    outline: '1px solid $blue500',
-    '> span:first-child': {
-      boxShadow: 'none',
     },
   },
 })

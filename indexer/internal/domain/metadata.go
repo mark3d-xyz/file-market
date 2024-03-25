@@ -2,6 +2,7 @@ package domain
 
 import (
 	"fmt"
+
 	"github.com/mark3d-xyz/mark3d/indexer/models"
 )
 
@@ -12,21 +13,22 @@ type HiddenFileMetadata struct {
 }
 
 type TokenMetadata struct {
-	Id             int64
-	Name           string
-	Description    string
-	Image          string
-	ExternalLink   string
-	HiddenFile     string
-	HiddenFileMeta *HiddenFileMetadata
-	License        string
-	LicenseUrl     string
-	Properties     []*MetadataProperty
-	Rankings       []*MetadataProperty
-	Stats          []*MetadataProperty
-	Categories     []string
-	Subcategories  []string
-	Tags           []string
+	Id                   int64
+	Name                 string
+	Description          string
+	Image                string
+	ExternalLink         string
+	HiddenFile           string
+	HiddenFileMeta       *HiddenFileMetadata
+	License              string
+	LicenseUrl           string
+	Properties           []*MetadataProperty
+	Rankings             []*MetadataProperty
+	Stats                []*MetadataProperty
+	Categories           []string
+	Subcategories        []string
+	Tags                 []string
+	IsBackedOnGreenfield bool
 }
 
 func NewEmptyTokenMetadata() TokenMetadata {
@@ -60,37 +62,39 @@ type MetadataPropertyIpfs struct {
 }
 
 type TokenMetadataIpfs struct {
-	Id             int64                   `json:"-"`
-	Name           string                  `json:"name"`
-	Description    string                  `json:"description"`
-	Image          string                  `json:"image"`
-	ExternalLink   string                  `json:"external_link"`
-	HiddenFile     string                  `json:"hidden_file"`
-	HiddenFileMeta *HiddenFileMetadataIpfs `json:"hidden_file_meta"`
-	License        string                  `json:"license"`
-	LicenseUrl     string                  `json:"license_url"`
-	Attributes     []*MetadataPropertyIpfs `json:"attributes"`
-	Categories     []string                `json:"categories"`
-	Subcategories  []string                `json:"subcategories"`
-	Tags           []string                `json:"tags"`
+	Id                   int64                   `json:"-"`
+	Name                 string                  `json:"name"`
+	Description          string                  `json:"description"`
+	Image                string                  `json:"image"`
+	ExternalLink         string                  `json:"external_link"`
+	HiddenFile           string                  `json:"hidden_file"`
+	HiddenFileMeta       *HiddenFileMetadataIpfs `json:"hidden_file_meta"`
+	License              string                  `json:"license"`
+	LicenseUrl           string                  `json:"license_url"`
+	Attributes           []*MetadataPropertyIpfs `json:"attributes"`
+	Categories           []string                `json:"categories"`
+	Subcategories        []string                `json:"subcategories"`
+	Tags                 []string                `json:"tags"`
+	IsBackedOnGreenfield bool                    `json:"isBackedOnGreenfield"`
 }
 
 func IpfsMetadataToDomain(m TokenMetadataIpfs) TokenMetadata {
 	res := TokenMetadata{
-		Name:           m.Name,
-		Description:    m.Description,
-		Image:          m.Image,
-		ExternalLink:   m.ExternalLink,
-		HiddenFile:     m.HiddenFile,
-		HiddenFileMeta: &HiddenFileMetadata{},
-		License:        m.License,
-		LicenseUrl:     m.LicenseUrl,
-		Properties:     make([]*MetadataProperty, 0),
-		Rankings:       make([]*MetadataProperty, 0),
-		Stats:          make([]*MetadataProperty, 0),
-		Categories:     make([]string, 0),
-		Subcategories:  make([]string, 0),
-		Tags:           make([]string, 0),
+		Name:                 m.Name,
+		Description:          m.Description,
+		Image:                m.Image,
+		ExternalLink:         m.ExternalLink,
+		HiddenFile:           m.HiddenFile,
+		HiddenFileMeta:       &HiddenFileMetadata{},
+		License:              m.License,
+		LicenseUrl:           m.LicenseUrl,
+		Properties:           make([]*MetadataProperty, 0),
+		Rankings:             make([]*MetadataProperty, 0),
+		Stats:                make([]*MetadataProperty, 0),
+		Categories:           make([]string, 0),
+		Subcategories:        make([]string, 0),
+		Tags:                 make([]string, 0),
+		IsBackedOnGreenfield: m.IsBackedOnGreenfield,
 	}
 
 	if m.HiddenFileMeta != nil {

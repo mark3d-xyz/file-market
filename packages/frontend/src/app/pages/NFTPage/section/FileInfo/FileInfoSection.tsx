@@ -4,18 +4,24 @@ import { useAccount } from 'wagmi'
 
 import { styled } from '../../../../../styles'
 import { type HiddenFileMetaData } from '../../../../../swagger/Api'
-import { BaseModal, FileButton, ProtectedStamp } from '../../../../components'
+import { BackedOnGreenfield, BaseModal, FileButton, ProtectedStamp, StoredOnFileCoin } from '../../../../components'
 import { filenameToExtension } from '../../../../components/MarketCard/helper/fileToType'
 import { useStatusState } from '../../../../hooks'
 import { type HiddenFileDownload } from '../../../../hooks/useHiddenFilesDownload'
 import { useStatusModal } from '../../../../hooks/useStatusModal'
 import { Txt } from '../../../../UIkit'
 import { formatFileSize } from '../../../../utils/nfts'
-import { GridBlock, PropertyTitle } from '../../helper/styles/style'
+import { PropertyTitle } from '../../helper/styles/style'
+
+const FileInfoContainer = styled('div', {
+  display: 'flex',
+  flexDirection: 'column',
+  flexWrap: 'nowrap',
+  gap: '16px',
+})
 
 const FileInfoSectionStyle = styled('div', {
   width: '400px',
-  height: '208px',
   border: '3px solid #F4F4F4',
   borderRadius: '20px',
   display: 'flex',
@@ -33,11 +39,17 @@ const FileList = styled('div', {
   },
 })
 
+const FileInfoSectionHeader = styled('div', {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: '12px',
+})
+
 const FileInfoSectionTitle = styled(PropertyTitle, {
   color: '#232528',
   fontWeight: '600',
   fontSize: '20px',
-  marginBottom: '12px',
 })
 
 const Line = styled('div', {
@@ -52,6 +64,7 @@ interface FileInfoSectionProps {
   files: HiddenFileDownload[]
   filesMeta: HiddenFileMetaData[]
   isNetworkIncorrect?: boolean
+  isBackedOnGreenfield?: boolean
 }
 
 const FileInfoSection: FC<FileInfoSectionProps> = ({
@@ -60,6 +73,7 @@ const FileInfoSection: FC<FileInfoSectionProps> = ({
   canViewHiddenFiles,
   filesMeta,
   isNetworkIncorrect,
+  isBackedOnGreenfield,
 }) => {
   const { statuses, wrapPromise } = useStatusState<boolean | void, PressEvent>()
   const { isConnected } = useAccount()
@@ -83,9 +97,12 @@ const FileInfoSection: FC<FileInfoSectionProps> = ({
   return (
     <>
       <BaseModal {...modalProps} />
-      <GridBlock>
+      <FileInfoContainer>
         <FileInfoSectionStyle>
-          <FileInfoSectionTitle>Hidden file</FileInfoSectionTitle>
+          <FileInfoSectionHeader>
+            <FileInfoSectionTitle>Hidden file</FileInfoSectionTitle>
+            <StoredOnFileCoin />
+          </FileInfoSectionHeader>
           <FileList>
             {(isOwner || canViewHiddenFiles) ? (
               files.map(({ cid, name, size, download }) => (
@@ -116,7 +133,10 @@ const FileInfoSection: FC<FileInfoSectionProps> = ({
             )}
           </FileList>
         </FileInfoSectionStyle>
-      </GridBlock>
+        {isBackedOnGreenfield && (
+          <BackedOnGreenfield />
+        )}
+      </FileInfoContainer>
     </>
   )
 }

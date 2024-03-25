@@ -5,19 +5,14 @@ import { BaseModal } from '../../../../components'
 import { Timer } from '../../../../components/Timer'
 import { useStores } from '../../../../hooks'
 import { useStatusModal } from '../../../../hooks/useStatusModal'
-import { type ControlledInputProps, Input, Txt } from '../../../../UIkit'
 import {
-  CheckBox,
+  CheckBox, CheckBoxContainer,
   type ControlledCheckBoxProps,
-} from '../../../../UIkit/Form/CheckBox/CheckBox'
-import {
-  SettingCheckBoxActiveIcon,
-  SettingCheckBoxIcon,
-} from '../../../../UIkit/Form/CheckBox/variants/SettingCheckBoxIcon'
+  type ControlledInputProps, Input, Txt,
+} from '../../../../UIkit'
 import { stringifyError } from '../../../../utils/error'
 import { useUpdateProfile } from '../../helper/hooks/useUpdateProfile'
 import {
-  CheckBoxContainer,
   FormControlSettings,
   GrayBgText,
   StyledSectionContent,
@@ -55,7 +50,6 @@ const NotificationsSection = <T extends FieldValues>({
   const { errorStore } = useStores()
 
   const emailValue = email.control._getWatch('email')
-  const emailNotificationValue = emailNotification.control._getWatch('isEmailNotificationEnabled')
 
   const isSuccessResendEmail = useMemo(() => {
     return (leftTime ?? 0) > 0
@@ -114,27 +108,9 @@ const NotificationsSection = <T extends FieldValues>({
           of the files
         </GrayBgText>
         <CheckBoxContainer
-          checked={emailNotificationValue}
           control={(
             <CheckBox<T>
               controlledCheckBoxProps={emailNotification}
-              icon={<SettingCheckBoxIcon />}
-              checkedIcon={<SettingCheckBoxActiveIcon />}
-              disableRipple
-              sx={{
-                borderRadius: '8px',
-                border: '2px solid #A9ADB1',
-                background: '#D9D9D9',
-                position: 'relative',
-                width: '28px',
-                height: '28px',
-                boxShadow: '2px 2px 0px 0px rgba(0, 0, 0, 0.25)',
-                marginRight: '12px',
-                transition: 'all 0.2s ease-in-out',
-                '&:hover': {
-                  boxShadow: 'none',
-                },
-              }}
             />
           )}
           label={<Txt primary1>by email</Txt>}
