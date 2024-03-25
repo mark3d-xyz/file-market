@@ -1,14 +1,17 @@
-import { StyledHelperText } from '@nextui-org/react'
-
 import { RoundedBadge } from '../../../../UIkit'
-import { StyledMainText } from './BackedOnGreenfield.styles'
+import { StyledChainLogo, StyledHighlightedText, StyledMainText } from './BackedOnGreenfield.styles'
 
 export const BackedOnGreenfield = () => {
   return (
-    <RoundedBadge>
-      <StyledMainText>Backed up on</StyledMainText>
-      {' '}
-      <StyledHelperText>BNB Greenfield</StyledHelperText>
+    <RoundedBadge
+      size='md'
+      icon={<StyledChainLogo src='/OpBnb.svg' alt='Greenfield' />}
+    >
+      <span>
+        <StyledMainText>Backed up on</StyledMainText>
+        {' '}
+        <StyledHighlightedText>BNB Greenfield</StyledHighlightedText>
+      </span>
     </RoundedBadge>
   )
 }

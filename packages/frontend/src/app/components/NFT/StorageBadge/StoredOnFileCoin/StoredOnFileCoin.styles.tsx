@@ -2,7 +2,7 @@ import { styled } from '../../../../../styles'
 import { textVariant } from '../../../../UIkit'
 
 export const StyledText = styled('span', {
-  ...textVariant('primary2'),
+  ...textVariant('primary2').true,
   color: '$gray600',
 })
 

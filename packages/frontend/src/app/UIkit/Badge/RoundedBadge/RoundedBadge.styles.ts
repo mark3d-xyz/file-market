@@ -19,6 +19,7 @@ export const StyledRoundedBadge = styled('div', {
       },
       md: {
         height: '48px',
+        borderRadius: '24px',
         padding: '8xp 24px',
       },
     },
@@ -36,9 +37,13 @@ export const StyledRoundedBadge = styled('div', {
       withIcon: true,
       size: 'md',
       css: {
-        paddingRight: '8px',
+        // without explicit paddings it doesn't work
+        padding: '8px 8px 8px 24px',
         gap: '8px',
       },
     },
   ],
+  defaultVariants: {
+    size: 'sm',
+  },
 })

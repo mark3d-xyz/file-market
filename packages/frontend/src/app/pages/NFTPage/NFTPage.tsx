@@ -57,6 +57,7 @@ const NFTPreviewContent = styled('div', {
 })
 
 const MainInfo = styled(PageLayout, {
+  backgroundColor: '$white',
   display: 'flex', // чтобы можно было дочерним заполнить все пространство
   marginTop: '74px',
   marginBottom: '-168px',
@@ -214,6 +215,7 @@ const NFTPage: React.FC = observer(() => {
                   canViewHiddenFiles={canViewHiddenFiles}
                   files={files}
                   filesMeta={tokenStore.data?.hiddenFileMeta ? [tokenStore.data?.hiddenFileMeta] : []}
+                  isBackedOnGreenfield={tokenStore.data?.isBackedOnGreenfield}
                 />
               )}
             </ControlStickyBlock>

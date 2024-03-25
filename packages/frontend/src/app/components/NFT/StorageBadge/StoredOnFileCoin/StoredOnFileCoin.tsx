@@ -9,6 +9,7 @@ export const StoredOnFileCoin: FC = () => {
       icon={
         <StyledChainLogo src='/Filecoin.svg' alt='FileCoin' />
       }
+      size='sm'
     >
       <StyledText>
         Stored on FileCoin
