@@ -29,6 +29,7 @@ export const {
       whiteOp75: 'rgba(255, 255, 255, 0.75)',
       blue500Op75: 'rgba(0, 144, 255, 0.75)',
 
+      gray50: '#F4F5F5',
       gray100: '#F9F9F9',
       gray200: '#E5E5E5',
       gray300: '#E9E9EA', // raisin + 90%

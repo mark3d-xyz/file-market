@@ -1914,6 +1914,8 @@ definitions:
         type: integer
         format: int64
         description: Количество лайков у токена
+      isBackedOnGreenfield:
+        type: boolean
       block:
         type: object
         description: Информация о блоке с актуальной информацией о сущности

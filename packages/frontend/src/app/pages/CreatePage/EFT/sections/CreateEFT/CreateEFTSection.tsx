@@ -20,7 +20,7 @@ import { useModalProperties } from '../../../../../hooks/useModalProperties'
 import { usePublicCollectionStore } from '../../../../../hooks/usePublicCollectionStore'
 import { useSubscribeToEft } from '../../../../../hooks/useSubscribeToEft'
 import {
-  Button,
+  Button, CheckBox, CheckBoxContainer,
   type ComboBoxOption,
   ControlledComboBox,
   FormControl,
@@ -47,11 +47,11 @@ import { useCreateNft } from '../../../hooks/useCreateNft'
 import PlusIcon from '../../../img/plus-icon.svg'
 import {
   AddCollectionButton,
-  CategoryAndSubcategory,
+  CategoryAndSubcategory, CheckBoxContainerDisabled, CheckBoxLabel, CheckBoxLogo,
   CollectionPickerContainer,
-  ContentField,
+  ContentField, HighlightedText,
   Icon,
-  NFTLicense,
+  NFTLicense, SecondaryText,
   SubTitle,
 } from './CreateEFTSection.styles'
 
@@ -68,6 +68,8 @@ export interface CreateNFTForm {
   licenseUrl: string
   tagsValue: string[]
   royalty: number
+  isStoredOnFileCoin: true
+  isBackedOnGreenfield: boolean
 }
 
 export const CreateEFTSection: React.FC = observer(() => {
@@ -119,6 +121,8 @@ export const CreateEFTSection: React.FC = observer(() => {
       category: null,
       subcategory: null,
       license: { id: licenseOptions[0].id, title: licenseOptions[0].title },
+      isStoredOnFileCoin: true,
+      isBackedOnGreenfield: false,
     },
   })
 
@@ -518,6 +522,57 @@ export const CreateEFTSection: React.FC = observer(() => {
                 </NFTLicense>
               </Description>
             </ContentField>
+          </FormControl>
+
+          <FormControl size={'lg'}>
+            <Label paddingL>Storage Provider</Label>
+            <CheckBoxContainerDisabled
+              control={(
+                <CheckBox
+                  controlledCheckBoxProps={{
+                    name: 'isStoredOnFileCoin',
+                    control,
+                    rules: {
+                      required: 'Data is always stored on FileCoin',
+                    },
+                  }}
+                />
+              )}
+              label={(
+                <CheckBoxLabel>
+                  <Txt primary1>
+                    Store on FileCoin
+                    {' '}
+                    <SecondaryText>(default option)</SecondaryText>
+                  </Txt>
+                  <CheckBoxLogo src='/Filecoin.svg' alt="FileCoin" />
+                </CheckBoxLabel>
+              )}
+            />
+          </FormControl>
+
+          <FormControl size={'lg'}>
+            <Label paddingL>Backup</Label>
+            <CheckBoxContainer
+              control={(
+                <CheckBox
+                  controlledCheckBoxProps={{
+                    name: 'isBackedOnGreenfield',
+                    control,
+                  }}
+                />
+              )}
+              label={(
+                <CheckBoxLabel>
+                  <Txt primary1>
+                    Back up files on the decentralized storage
+                    {' '}
+                    <HighlightedText>of BNB Greenfield</HighlightedText>
+                  </Txt>
+                  <CheckBoxLogo src='/OpBnb.svg' alt="OpBnb" />
+                </CheckBoxLabel>
+              )}
+            />
           </FormControl>
 
           <ButtonContainer>

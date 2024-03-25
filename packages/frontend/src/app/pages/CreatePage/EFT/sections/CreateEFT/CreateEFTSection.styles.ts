@@ -1,5 +1,5 @@
 import { styled } from '../../../../../../styles'
-import { Button } from '../../../../../UIkit'
+import { Button, CheckBoxContainer } from '../../../../../UIkit'
 
 export const AddCollectionButton = styled(Button, {
   width: 48,
@@ -77,4 +77,31 @@ export const NFTLicense = styled('div', {
   '& a': {
     fontSize: '14px',
   },
+})
+
+export const SecondaryText = styled('span', {
+  color: '$gray400',
+})
+
+export const HighlightedText = styled('span', {
+  color: '$gray700',
+})
+
+export const CheckBoxContainerDisabled = styled(CheckBoxContainer, {
+  pointerEvents: 'none',
+  opacity: 0.5,
+})
+
+export const CheckBoxLabel = styled('div', {
+  flexGrow: 1,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: '12px',
+})
+
+export const CheckBoxLogo = styled('img', {
+  width: '40px',
+  height: '40px',
+  objectFit: 'contain',
 })
