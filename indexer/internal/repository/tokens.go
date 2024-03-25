@@ -114,7 +114,7 @@ func (p *postgres) GetCollectionTokensTotal(
 ) (uint64, error) {
 	// language=PostgreSQL
 	query := `
-		SELECT COUNT(*) as total
+		SELECT COUNT(*) AS total
 		FROM tokens t
 		WHERE t.collection_address=$1 AND
 		      t.meta_uri != '' AND
@@ -368,6 +368,7 @@ func (p *postgres) GetMetadata(
 	metadataQuery := `
 		SELECT 
 		    tm.id, tm.name, tm.description, tm.image, tm.external_link, tm.hidden_file, tm.license, tm.license_url,
+			tm.is_backed_on_greenfield,
 			hfm.name, hfm.type, hfm.size
 		FROM token_metadata tm
 		LEFT JOIN hidden_file_metadata hfm 
@@ -388,6 +389,7 @@ func (p *postgres) GetMetadata(
 		&md.HiddenFile,
 		&md.License,
 		&md.LicenseUrl,
+		&md.IsBackedOnGreenfield,
 		&hf.Name,
 		&hf.Type,
 		&hf.Size,
@@ -547,9 +549,9 @@ func (p *postgres) InsertMetadata(
 	tokenQuery := `
 		INSERT INTO token_metadata (
 			id, collection_address, token_id, name, description, 
-		    image, hidden_file, license, license_url, external_link
+		    image, hidden_file, license, license_url, external_link, is_backed_on_greenfield
 		)
-		VALUES (DEFAULT,$1,$2,$3,$4,$5,$6,$7,$8,$9)  
+		VALUES (DEFAULT,$1,$2,$3,$4,$5,$6,$7,$8,$9,$10)  
 		ON CONFLICT ON CONSTRAINT token_metadata_pkey DO NOTHING 
 		RETURNING id
 	`
@@ -565,6 +567,7 @@ func (p *postgres) InsertMetadata(
 		metadata.License,
 		metadata.LicenseUrl,
 		metadata.ExternalLink,
+		metadata.IsBackedOnGreenfield,
 	).Scan(&metadataId)
 	if err != nil {
 		return err
@@ -719,11 +722,11 @@ func (p *postgres) GetTokensForAutosell(
 	// language=PostgreSQL
 	query := `
 		WITH latest_transfers AS (
-		 SELECT id, token_id, collection_address, from_address, encrypted_password, public_key, RANK() OVER(PARTITION BY (collection_address, token_id) ORDER BY number DESC) as rank
+		 SELECT id, token_id, collection_address, from_address, encrypted_password, public_key, RANK() OVER(PARTITION BY (collection_address, token_id) ORDER BY number DESC) AS rank
 		 FROM transfers
 		),
 		latest_order_statuses AS (
-		 SELECT order_id, status, timestamp, tx_id, RANK() OVER(PARTITION BY order_id ORDER BY timestamp DESC) as rank
+		 SELECT order_id, status, timestamp, tx_id, RANK() OVER(PARTITION BY order_id ORDER BY timestamp DESC) AS rank
 		 FROM order_statuses
 		)
 		SELECT lt.token_id, t.meta_uri, lt.public_key
