@@ -12,7 +12,7 @@ export const StoredOnFileCoin: FC = () => {
       size='sm'
     >
       <StyledText>
-        Stored on FileCoin
+        Stored on Filecoin
       </StyledText>
     </RoundedBadge>
   )
