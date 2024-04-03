@@ -273,7 +273,7 @@ export const TopSection = () => {
     },
     {
       text: 'Blogs',
-      url: 'https://medium.com/filemarket-xyz',
+      url: 'https://filemarket.ghost.io/',
     },
   ]
   const Company: ILink[] = [

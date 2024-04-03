@@ -14,7 +14,7 @@ export const paths: NavBarItemData[] = [
     label: 'FileBunnies',
   },
   {
-    to: 'https://medium.com/filemarket-xyz',
+    to: 'https://filemarket.ghost.io/',
     label: 'Blogs',
     isLink: true,
   },
