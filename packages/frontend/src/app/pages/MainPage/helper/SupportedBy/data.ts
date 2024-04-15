@@ -1,6 +1,7 @@
 import item1 from '../../img/SupportedBy/item1.svg'
 import item2 from '../../img/SupportedBy/item2.svg'
 import item3 from '../../img/SupportedBy/item3.svg'
+import item4 from '../../img/SupportedBy/item4.svg'
 import item5 from '../../img/SupportedBy/item5.svg'
 import item6 from '../../img/SupportedBy/item6.svg'
 
@@ -18,11 +19,15 @@ export const supportedByData: Array<{ src: string, url: string }> = [
     url: 'https://fvm.filecoin.io/',
   },
   {
-    src: item5,
+    src: item4,
     url: 'https://horadrim.capital/',
   },
   {
-    src: item6,
+    src: item5,
     url: 'https://cointelegraph.com/',
+  },
+  {
+    src: item6,
+    url: 'https://x.com/ZK_Accelerator/status/1777432554691305773',
   },
 ]
