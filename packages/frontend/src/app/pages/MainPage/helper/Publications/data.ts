@@ -5,14 +5,8 @@ import { type SlideProps } from '../../Blocks/Publications/Publications'
 export const PublicationsData: SlideProps[] = [
   {
     titleLogo: CoinTelegraphLogo,
-    tag: 'FileCoin',
-    text: 'This platform’s EFT standard makes trading downloadable encrypted content accessible',
-    href: 'https://cointelegraph.com/news/this-platforms-eft-standard-makes-trading-downloadable-encrypted-content-accessible',
-  },
-  {
-    titleLogo: CoinTelegraphLogo,
-    tag: 'FileCoin',
-    text: 'Revolutionizing digital privacy: Meet the FileBunnies — The first NFTs with Encrypted FileToken',
+    tag: 'Cointelegraph',
+    text: 'Data storage is \'the new real estate\' — Interview with FileMarket',
     href: 'https://cointelegraph.com/press-releases/revolutionizing-digital-privacy-meet-the-filebunnies-the-first-nfts-with-encrypted-filetoken',
   },
   {
@@ -32,5 +26,17 @@ export const PublicationsData: SlideProps[] = [
     tag: 'FileCoin',
     text: '100 Days of FVM',
     href: 'https://filecoin.io/blog/posts/100-days-of-fvm/',
+  },
+  {
+    titleLogo: CoinTelegraphLogo,
+    tag: 'Cointelegraph',
+    text: 'This platform’s EFT standard makes trading downloadable encrypted content accessible',
+    href: 'https://cointelegraph.com/news/this-platforms-eft-standard-makes-trading-downloadable-encrypted-content-accessible',
+  },
+  {
+    titleLogo: CoinTelegraphLogo,
+    tag: 'Cointelegraph',
+    text: 'Revolutionizing digital privacy: Meet the FileBunnies — The first NFTs with Encrypted FileToken',
+    href: 'https://cointelegraph.com/press-releases/revolutionizing-digital-privacy-meet-the-filebunnies-the-first-nfts-with-encrypted-filetoken',
   },
 ]

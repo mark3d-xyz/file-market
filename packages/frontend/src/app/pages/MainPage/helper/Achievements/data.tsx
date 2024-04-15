@@ -1,15 +1,39 @@
 import AppOfTheMonthImg from '../../../../../assets/img/MainPage/achievements/app_of_the_month-new.svg'
 import CointelegraphImg from '../../../../../assets/img/MainPage/achievements/cointelegraph_startup_program.svg'
+import CyberPort from '../../../../../assets/img/MainPage/achievements/Cyberport.svg'
 import FileCoinGrantImg from '../../../../../assets/img/MainPage/achievements/filecoin_grant_receiver-new.svg'
 import FVMEarlyBuilders from '../../../../../assets/img/MainPage/achievements/fvm_early_builders.svg'
 import FVMMainnet from '../../../../../assets/img/MainPage/achievements/fvm_mainnet.svg'
 import FMSSpace from '../../../../../assets/img/MainPage/achievements/fvm_space.svg'
 import HackFS from '../../../../../assets/img/MainPage/achievements/hack_fs.svg'
 import MagicSquare from '../../../../../assets/img/MainPage/achievements/MagicSquare.svg'
+import Manta from '../../../../../assets/img/MainPage/achievements/Manta.svg'
 import SwitchUp from '../../../../../assets/img/MainPage/achievements/SwitchUp.svg'
+import TechStars from '../../../../../assets/img/MainPage/achievements/TechStars.svg'
 import { type AchievementItemProps } from '../../Blocks/Achievements'
 
 export const AchievementsData: AchievementItemProps[] = [
+  {
+    img: TechStars,
+    title: (
+      <span>{'Got funded by Techstars'}</span>
+    ),
+    description: 'Accepted into an accelerator program and funded by Techstars',
+    href: 'https://www.techstars.com/newsroom/announcing-the-techstars-web3-class-of-2024',
+  },
+  {
+    img: CyberPort,
+    title: (
+      <span>{'Accepted into the Cyberport accelerator program'}</span>
+    ),
+  },
+  {
+    img: Manta,
+    title: (
+      <span>{'Accepted into the Manta accelerator program'}</span>
+    ),
+    href: 'https://x.com/ZK_Accelerator/status/1777432554691305773',
+  },
   {
     img: SwitchUp,
     title: (
