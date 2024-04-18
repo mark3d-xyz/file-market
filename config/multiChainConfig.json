@@ -369,7 +369,7 @@
     "explorer": "https://pacific-explorer.sepolia-testnet.manta.network/tx/",
     "wsUrl": "wss://dev-manta.filemarket.xyz",
     "hacks": {
-      "gasPrice": "30000000000"
+      "gasPrice": "3000000"
     }
   }
 ]
