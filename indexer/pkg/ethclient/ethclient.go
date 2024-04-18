@@ -23,10 +23,8 @@ import (
 type bcType int32
 
 const (
-	bcTypeZk bcType = iota + 1
-	bcTypeOpbnb
-	bcTypeEth
-	bcTypeScroll
+	bcTypeEth bcType = iota + 1
+	bcTypeOther
 )
 
 type EthClient interface {
@@ -55,15 +53,10 @@ func NewEthClient(urls []string, mod string) (EthClient, error) {
 	}
 
 	switch mod {
-	case "era", "era-dev":
-		res.bcType = bcTypeZk
-	case "opbnb", "dev-opbnb":
-		res.bcType = bcTypeOpbnb
-	case "scroll", "dev-scroll":
-		res.bcType = bcTypeScroll
 	case "main", "dev":
-	default:
 		res.bcType = bcTypeEth
+	default:
+		res.bcType = bcTypeOther
 	}
 
 	res.rpcClients = make([]*rpc.Client, len(urls))
