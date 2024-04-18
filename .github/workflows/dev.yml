@@ -20,7 +20,7 @@ jobs:
         run: |
           echo "swagger_changed=$(./is_changed.sh fm_swagger indexer/swagger.yaml)" >> $GITHUB_OUTPUT
           echo "proto_changed=$(./is_changed.sh fm_proto proto)" >> $GITHUB_OUTPUT
-          echo "frontend_changed=$(./is_changed.sh fm_frontend packages)" >> $GITHUB_OUTPUT
+          echo "frontend_changed=$(./is_changed.sh fm_frontend packages config)" >> $GITHUB_OUTPUT
           echo "$(find packages -type f -print0 | sort -z | xargs -0 sha1sum | sha1sum)"
           echo "backend_changed=$(./is_changed.sh fm_backend backend)" >> $GITHUB_OUTPUT
           echo "indexer_changed=$(./is_changed.sh fm_indexer indexer)" >> $GITHUB_OUTPUT
@@ -314,5 +314,5 @@ jobs:
           redis-cli set fm_proto_hash "$(find proto -type f -print0 | sort -z | xargs -0 sha1sum | sha1sum)"
           redis-cli set fm_backend_hash "$(find backend -type f -print0 | sort -z | xargs -0 sha1sum | sha1sum)"
           redis-cli set fm_indexer_hash "$(find indexer -type f -print0 | sort -z | xargs -0 sha1sum | sha1sum)"
-          redis-cli set fm_frontend_hash "$(find packages -type f -print0 | sort -z | xargs -0 sha1sum | sha1sum)"
+          redis-cli set fm_frontend_hash "$(find packages config -type f -print0 | sort -z | xargs -0 sha1sum | sha1sum)"
           redis-cli set fm_healthcheck_hash "$(find healthcheck-tg -type f -print0 | sort -z | xargs -0 sha1sum | sha1sum)"
