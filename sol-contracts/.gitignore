@@ -34,4 +34,5 @@ test.sh
 .opbnb-secret
 .test-scroll-secret
 .scroll-secret
+.*-secret
 .yarn

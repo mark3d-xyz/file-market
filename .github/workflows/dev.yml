@@ -26,7 +26,7 @@ jobs:
           echo "indexer_changed=$(./is_changed.sh fm_indexer indexer)" >> $GITHUB_OUTPUT
           echo "healthcheck_changed=$(./is_changed.sh fm_healthcheck healthcheck-tg)" >> $GITHUB_OUTPUT
   build-frontend:
-    runs-on: [self-hosted, dev]
+    runs-on: [ self-hosted, dev ]
     needs: [ check-changes ]
     if: ${{ !failure() && !cancelled() }}
     steps:
@@ -36,7 +36,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: frontend/node_modules
-          key: ${{ runner.os }}-dev-node-${{ hashFiles('yarn.lock') }}
+          key: "${{ runner.os }}-dev-node-${{ hashFiles('yarn.lock') }}"
           restore-keys: |
             ${{ runner.os }}-dev-node
       - name: Install dependencies
@@ -63,7 +63,7 @@ jobs:
           name: dev-frontend
           path: packages/frontend/frontend.zip
   build-oracle:
-    runs-on: [self-hosted, dev]
+    runs-on: [ self-hosted, dev ]
     needs: [ check-changes ]
     steps:
       - uses: actions/checkout@v3
@@ -103,8 +103,15 @@ jobs:
       - name: Build scroll oracle container
         if: ${{ needs.check-changes.outputs.backend_changes == 'true' }}
         run: docker build -t file-market-scroll-oracle-service:latest -f backend/Dockerfile .
+      # manta
+      - name: Copy manta .env from host
+        if: ${{ needs.check-changes.outputs.backend_changes == 'true' }}
+        run: cp ~/.manta_oracle_dev_env backend/.env
+      - name: Build manta oracle container
+        if: ${{ needs.check-changes.outputs.backend_changes == 'true' }}
+        run: docker build -t file-market-manta-oracle-service:latest -f backend/Dockerfile .
   build-indexer:
-    runs-on: [self-hosted, dev]
+    runs-on: [ self-hosted, dev ]
     needs: [ check-changes ]
     steps:
       - uses: actions/checkout@v3
@@ -157,6 +164,14 @@ jobs:
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
         run: docker build --build-arg env=dev-scroll -t file-market-scroll-indexer-service:latest .
         working-directory: indexer/
+      # manta
+      - name: Copy manta .env from host
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
+        run: cp ~/.manta_indexer_dev_env indexer/.env
+      - name: Build manta indexer container
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
+        run: docker build --build-arg env=dev-manta -t file-market-manta-indexer-service:latest .
+        working-directory: indexer/
   build-healthcheck:
     runs-on: [ self-hosted, dev ]
     needs: [ check-changes ]
@@ -198,8 +213,16 @@ jobs:
         if: ${{ needs.check-changes.outputs.healthcheck_changes == 'true' }}
         run: docker build -f Dockerfile -t file-market-scroll-healthcheck-service:latest .
         working-directory: healthcheck-tg/
+      # manta
+      - name: Copy .env from host
+        if: ${{ needs.check-changes.outputs.healthcheck_changes == 'true' }}
+        run: cp ~/.manta_healthcheck_dev_env healthcheck-tg/.env
+      - name: Build healthcheck container
+        if: ${{ needs.check-changes.outputs.healthcheck_changes == 'true' }}
+        run: docker build -f Dockerfile -t file-market-manta-healthcheck-service:latest .
+        working-directory: healthcheck-tg/
   update:
-    runs-on: [self-hosted, dev]
+    runs-on: [ self-hosted, dev ]
     needs: [ check-changes, build-frontend, build-oracle, build-indexer, build-healthcheck ]
     steps:
       - uses: actions/checkout@v3
@@ -248,6 +271,13 @@ jobs:
       - name: Check scroll migration status
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
         run: ./check_migration.sh scroll
+      # manta
+      - name: Up manta migration
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
+        run: docker-compose -f docker-compose.manta.dev.yml up -d --build manta-indexer-postgres-migration
+      - name: Check manta migration status
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
+        run: ./check_migration.sh manta
 
       # filecoin
       - name: Update compose
@@ -265,6 +295,10 @@ jobs:
       - name: Update scroll compose
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' || needs.check-changes.outputs.backend_changes == 'true' || needs.check-changes.outputs.healthcheck_changes == 'true' }}
         run: docker-compose -f docker-compose.scroll.dev.yml up -d scroll-indexer-postgres scroll-indexer-redis scroll-oracle-redis scroll-indexer-service scroll-oracle-service scroll-healthcheck-service
+      # manta
+      - name: Update manta compose
+        if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' || needs.check-changes.outputs.backend_changes == 'true' || needs.check-changes.outputs.healthcheck_changes == 'true' }}
+        run: docker-compose -f docker-compose.manta.dev.yml up -d manta-indexer-postgres manta-indexer-redis manta-oracle-redis manta-indexer-service manta-oracle-service manta-healthcheck-service
 
       - name: update nginx
         run: |
@@ -272,6 +306,7 @@ jobs:
           sudo mv filemarket.era.dev.conf /etc/nginx/conf.d/filemarket.era.dev.conf
           sudo mv filemarket.opbnb.dev.conf /etc/nginx/conf.d/filemarket.opbnb.dev.conf
           sudo mv filemarket.scroll.dev.conf /etc/nginx/conf.d/filemarket.scroll.dev.conf
+          sudo mv filemarket.manta.dev.conf /etc/nginx/conf.d/filemarket.manta.dev.conf
           sudo nginx -s reload
       - name: Set changes
         run: |

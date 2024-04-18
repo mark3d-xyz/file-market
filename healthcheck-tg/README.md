@@ -19,3 +19,4 @@ Env variables:
 * DEBUG               - Enable debug logging
 * ALLOWED_IPS         - List of IPs that allowed to call `/notify'
 * CHAT_IDs            - List of chat ids that will receive notification
+

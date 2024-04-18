@@ -16,7 +16,8 @@ const networks = [
   "opbnb",
   "test-opbnb",
   "scroll",
-  "test-scroll"
+  "test-scroll",
+  "test-manta"
 ] as const;
 type Network = typeof networks[number];
 const accounts: Map<Network, string[]> = new Map();
@@ -88,6 +89,12 @@ const testnetOpbnbConfig: HttpNetworkUserConfig = {
   accounts: accounts.get("test-opbnb"),
   timeout: 1000000000
 }
+const testnetMantaConfig: HttpNetworkUserConfig = {
+  url: "https://pacific-rpc.sepolia-testnet.manta.network/http",
+  chainId: 3441006,
+  accounts: accounts.get("test-manta"),
+  timeout: 1000000000
+}
 
 switch (process.env.HARDHAT_NETWORK!) {
   case "mumbai":
@@ -152,6 +159,7 @@ const config: HardhatUserConfig = {
     opbnb: opbnbConfig,
     testnetScroll: testnetScrollConfig,
     scroll: scrollConfig,
+    testnetManta: testnetMantaConfig
   },
   dependencyCompiler: {
     paths: [
