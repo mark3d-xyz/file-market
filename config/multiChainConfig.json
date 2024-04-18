@@ -360,6 +360,8 @@
     "img": "/MantaColor.svg",
     "imgGray": "/MantaGray.svg",
     "isDefault": true,
+    "likeFee": "0.000033",
+    "mintFee": "0.00033",
     "accessTokenAddress": "0x2D189D840C0F716FcF883c75A7edB31553151696",
     "exchangeTokenAddress": "0xC3F07F620715Fec92db305f718C7FA10C708Bf7A",
     "likeEmitterAddress": "0xE47AAb76dF0A9CD8d142753198AcaaB475Bf2A21",
