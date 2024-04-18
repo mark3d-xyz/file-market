@@ -363,9 +363,9 @@
     "accessTokenAddress": "0x2D189D840C0F716FcF883c75A7edB31553151696",
     "exchangeTokenAddress": "0xC3F07F620715Fec92db305f718C7FA10C708Bf7A",
     "likeEmitterAddress": "0xE47AAb76dF0A9CD8d142753198AcaaB475Bf2A21",
-    "baseUrl": "https://manta-dev.filemarket.xyz/api",
+    "baseUrl": "https://dev-manta.filemarket.xyz/api",
     "explorer": "https://pacific-explorer.sepolia-testnet.manta.network/tx/",
-    "wsUrl": "wss://manta-dev.filemarket.xyz",
+    "wsUrl": "wss://dev-manta.filemarket.xyz",
     "hacks": {
       "gasPrice": "30000000000"
     }
