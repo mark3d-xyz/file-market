@@ -1,0 +1,60 @@
+version: "3.8"
+services:
+  manta-indexer-service:
+    image: file-market-manta-indexer-service:latest
+    ports:
+      - "9602:9602"
+    depends_on:
+      - manta-indexer-postgres
+      - manta-indexer-redis
+      - manta-healthcheck-service
+    volumes:
+      - ~/manta-logs:/logs
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  manta-oracle-service:
+    image: file-market-manta-oracle-service:latest
+    depends_on:
+      - manta-oracle-redis
+    volumes:
+      - ~/manta-logs:/logs
+    restart: unless-stopped
+  manta-healthcheck-service:
+    image: file-market-manta-healthcheck-service:latest
+    volumes:
+      - ~/manta-logs:/logs
+    restart: unless-stopped
+  manta-oracle-redis:
+    image: redis:7
+    volumes:
+      - manta-cache-redis-data:/data
+    command: redis-server --save 60 1
+  manta-indexer-postgres:
+    image: postgres:13
+    volumes:
+      - manta-indexer-postgres-data:/var/lib/postgresql/data
+    env_file: ~/.manta_indexer_pg_env
+    restart: unless-stopped
+    healthcheck:
+      test: pg_isready -d file_market_indexer -U indexer
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  manta-indexer-redis:
+    image: redis:7
+    volumes:
+      - manta-indexer-redis-data:/data
+    command: redis-server --save 60 1
+  manta-indexer-postgres-migration:
+    build:
+      context: .
+      dockerfile: migrate.Dockerfile
+    env_file: ~/.manta_indexer_pg_env
+    depends_on:
+      - manta-indexer-postgres
+
+volumes:
+  manta-indexer-postgres-data:
+  manta-cache-redis-data:
+  manta-indexer-redis-data:

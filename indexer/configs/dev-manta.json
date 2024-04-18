@@ -1,0 +1,34 @@
+{
+  "server": {
+    "port": 9602,
+    "readTimeout": "5s",
+    "writeTimeout": "5s",
+    "maxHeaderBytes": 1024
+  },
+  "handler": {
+    "requestTimeout": "5s",
+    "swaggerHost": "*"
+  },
+  "service": {
+    "accessTokenAddress": "0x2D189D840C0F716FcF883c75A7edB31553151696",
+    "fraudDeciderWeb2Address": "0x61e6453AA67feb577946eC9669Ed21eda2666192",
+    "exchangeAddress": "0xC3F07F620715Fec92db305f718C7FA10C708Bf7A",
+    "publicCollectionAddress": "0x09bdE52a5251C02B1Be69b40dd6fBdA536Af5164",
+    "likeEmitterAddress": "0xE47AAb76dF0A9CD8d142753198AcaaB475Bf2A21",
+    "fileBunniesCollectionAddress": "0x0000000000000000000000000000000000000123",
+    "fileBunniesCreatorAddress": "0x0000000000000000000000000000000000000123",
+    "allowedBlockNumberDifference": 100,
+    "healthCheckInterval": 60,
+    "sequencer": {
+      "keyPrefix": "sequencer",
+      "tokenIdTTL": "15m",
+      "checkInterval": "5m",
+      "switchTokenTimeout": "3m"
+    },
+    "currencyConversionCacheTTL": "1h",
+    "currency": "ETH",
+    "network-route-name": "ScrollManta",
+    "mode": "dev-manta",
+    "chainId": "3441006"
+  }
+}
