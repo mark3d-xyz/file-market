@@ -10,11 +10,11 @@
     "swaggerHost": "*"
   },
   "service": {
-    "accessTokenAddress": "0x2D189D840C0F716FcF883c75A7edB31553151696",
-    "fraudDeciderWeb2Address": "0x61e6453AA67feb577946eC9669Ed21eda2666192",
-    "exchangeAddress": "0xC3F07F620715Fec92db305f718C7FA10C708Bf7A",
-    "publicCollectionAddress": "0x09bdE52a5251C02B1Be69b40dd6fBdA536Af5164",
-    "likeEmitterAddress": "0xE47AAb76dF0A9CD8d142753198AcaaB475Bf2A21",
+    "accessTokenAddress": "0xFDD2eF676C5c5dE3476FFCf6EECa86E4cb8499d4",
+    "fraudDeciderWeb2Address": "0x2905A2Ad979ABfeb50C12F042Ab2b2A1359a47E4",
+    "exchangeAddress": "0x0C5C679dD1B4975547ccd2E16b02728a9ED0f463",
+    "publicCollectionAddress": "0x4b137dBbb501cDBA5F099B25Ec4859f5f55e1995",
+    "likeEmitterAddress": "0x853140b933b6C790C4F7a0d33ec5D14f50A5D3bc",
     "fileBunniesCollectionAddress": "0x0000000000000000000000000000000000000123",
     "fileBunniesCreatorAddress": "0x0000000000000000000000000000000000000123",
     "allowedBlockNumberDifference": 100,
@@ -27,8 +27,8 @@
     },
     "currencyConversionCacheTTL": "1h",
     "currency": "ETH",
-    "network-route-name": "MantaSepolia",
-    "mode": "dev-manta",
-    "chainId": "3441006"
+    "network-route-name": "Manta",
+    "mode": "manta",
+    "chainId": "169"
   }
 }

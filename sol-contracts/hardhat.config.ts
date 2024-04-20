@@ -17,6 +17,7 @@ const networks = [
   "test-opbnb",
   "scroll",
   "test-scroll",
+  "manta",
   "test-manta"
 ] as const;
 type Network = typeof networks[number];
@@ -63,7 +64,7 @@ const scrollConfig: HttpNetworkUserConfig = {
   url: "https://rpc.scroll.io/",
   chainId: 534352,
   accounts: accounts.get("scroll"),
-  timeout: 1000000000
+  timeout: 1000000000,
 }
 const testnetScrollConfig: HttpNetworkUserConfig = {
   url: "https://sepolia-rpc.scroll.io/",
@@ -87,6 +88,12 @@ const testnetOpbnbConfig: HttpNetworkUserConfig = {
   url: "https://opbnb-testnet-rpc.bnbchain.org",
   chainId: 5611,
   accounts: accounts.get("test-opbnb"),
+  timeout: 1000000000
+}
+const mantaConfig: HttpNetworkUserConfig = {
+  url: "https://pacific-rpc.manta.network/http",
+  chainId: 169,
+  accounts: accounts.get("manta"),
   timeout: 1000000000
 }
 const testnetMantaConfig: HttpNetworkUserConfig = {
@@ -124,6 +131,12 @@ switch (process.env.HARDHAT_NETWORK!) {
   case "testnetScroll":
     console.log("scroll testnet cfg:", testnetScrollConfig);
     break;
+  case "manta":
+    console.log("manta cfg:", mantaConfig);
+    break;
+  case "testnetManta":
+    console.log("manta testnet cfg:", testnetMantaConfig);
+    break;
 }
 
 const config: HardhatUserConfig = {
@@ -141,9 +154,8 @@ const config: HardhatUserConfig = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 1,
+        runs: 200,
       },
-      evmVersion: "london"
     },
   },
   networks: {
@@ -159,7 +171,8 @@ const config: HardhatUserConfig = {
     opbnb: opbnbConfig,
     testnetScroll: testnetScrollConfig,
     scroll: scrollConfig,
-    testnetManta: testnetMantaConfig
+    testnetManta: testnetMantaConfig,
+    manta: mantaConfig
   },
   dependencyCompiler: {
     paths: [

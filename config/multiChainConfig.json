@@ -371,5 +371,50 @@
     "hacks": {
       "gasPrice": "3000000"
     }
+  },
+  {
+    "chain": {
+      "id": 169,
+      "name": "Manta",
+      "network": "Manta",
+      "nativeCurrency": {
+        "name": "ETH",
+        "symbol": "ETH",
+        "decimals": 18
+      },
+      "rpcUrls": {
+        "default": {
+          "http": [
+            "https://pacific-rpc.manta.network/http"
+          ]
+        },
+        "public": {
+          "http": [
+            "https://pacific-rpc.manta.network/http"
+          ]
+        }
+      },
+      "blockExplorers": {
+        "default": {
+          "name": "Explorer Manta",
+          "url": "https://pacific-explorer.manta.network/"
+        }
+      },
+      "testnet": true
+    },
+    "img": "/MantaColor.svg",
+    "imgGray": "/MantaGray.svg",
+    "isDefault": true,
+    "likeFee": "0.000033",
+    "mintFee": "0.00033",
+    "accessTokenAddress": "0xFDD2eF676C5c5dE3476FFCf6EECa86E4cb8499d4",
+    "exchangeTokenAddress": "0x0C5C679dD1B4975547ccd2E16b02728a9ED0f463",
+    "likeEmitterAddress": "0x853140b933b6C790C4F7a0d33ec5D14f50A5D3bc",
+    "baseUrl": "https://manta.filemarket.xyz/api",
+    "explorer": "https://pacific-explorer.manta.network/tx/",
+    "wsUrl": "wss://manta.filemarket.xyz",
+    "hacks": {
+      "gasPrice": "3000000"
+    }
   }
 ]
