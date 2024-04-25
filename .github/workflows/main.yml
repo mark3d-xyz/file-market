@@ -258,6 +258,12 @@ jobs:
           sudo mkdir -p /usr/share/nginx/filemarket.xyz/.well-known
           sudo cp packages/frontend/public/.well-known/walletconnect.txt /usr/share/nginx/filemarket.xyz/.well-known
           rm frontend.zip
+      - name: Update ban frontend
+        run: |
+          sudo rm -fr /usr/share/nginx/nofilemarket.xyz/*
+          sudo cp -r * /usr/share/nginx/nofilemarket.xyz/
+        working-directory:
+          packages/site-unable
       - name: Update swagger
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
         run: |
