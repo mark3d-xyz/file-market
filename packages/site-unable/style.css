@@ -1,0 +1,70 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    display: grid;
+    grid-template-rows: 1fr auto 1fr;
+    align-items: center;
+    justify-content: center;
+    background: #EAEAEC;
+}
+
+.logo-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-block: 24px;
+}
+
+.logo {
+    display: block;
+    width: clamp(200px, 60%, 350px);
+}
+
+.box {
+    display: grid;
+    place-items: center;
+    grid-row-gap: clamp(16px, 5vw, 32px);
+    margin-inline: clamp(16px, 5vw, 64px);
+    padding: clamp(16px, 5vw, 48px);
+    border-radius: 16px;
+    border: 2px solid #6B6F76;
+    background: #FFFFFF;
+    box-shadow: 8px 8px 0 0 #13141540;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    column-gap: 12px;
+}
+
+.icon {
+    width: clamp(32px, 7vw, 56px) ;
+    aspect-ratio: 1;
+}
+
+.title {
+    font-family: "MuseoModerno", sans-serif;
+    font-size: clamp(24px, 7vw, 40px);
+    font-weight: 700;
+    line-height: 1.2;
+    color: #131415;
+}
+
+.description {
+    font-family: "Montserrat", sans-serif;
+    font-size: clamp(16px, 5vw, 24px);
+    font-weight: 500;
+    line-height: 1.4;
+    text-align: center;
+    color: #2F3134;
+}
