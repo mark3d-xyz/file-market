@@ -238,6 +238,12 @@ jobs:
           sudo rm -r /usr/share/nginx/dev.filemarket.xyz/*
           sudo mv dist/* /usr/share/nginx/dev.filemarket.xyz/
           rm frontend.zip
+      - name: Update ban frontend
+        run: |
+          sudo rm -fr /usr/share/nginx/nofilemarket.xyz/*
+          sudo cp -r * /usr/share/nginx/nofilemarket.xyz/
+        working-directory:
+          packages/site-unable
       - name: Update swagger
         if: ${{ needs.check-changes.outputs.swagger_changes == 'true' || needs.check-changes.outputs.proto_changes == 'true' || needs.check-changes.outputs.indexer_changes == 'true' }}
         run: |
