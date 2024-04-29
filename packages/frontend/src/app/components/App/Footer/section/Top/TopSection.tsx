@@ -413,7 +413,7 @@ export const TopSection = () => {
         <ThirdContent>
           {Cards.map((item, index) => (
             <Card key={index} href={item.url} target={'_blank'}>
-              <img src={item.img} />
+              <img src={item.img} alt={item.text} />
               <Text>{item.text}</Text>
             </Card>
           ))}
