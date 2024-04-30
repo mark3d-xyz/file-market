@@ -66,8 +66,8 @@ export const BottomSection = () => {
         </Txt>
         <Divider />
         <div className='links'>
-          <Link footer>Privacy policy</Link>
-          <Link footer>Terms of Service</Link>
+          <Link footer href='/docs/PrivacyPolicy.docx' download>Privacy policy</Link>
+          <Link footer href='/docs/TermsOfService.docx' download>Terms of Service</Link>
         </div>
       </Info>
       <Email>

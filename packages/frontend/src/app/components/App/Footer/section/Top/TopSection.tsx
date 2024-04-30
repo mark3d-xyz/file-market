@@ -275,14 +275,6 @@ export const TopSection = () => {
       text: 'Blogs',
       url: 'https://filemarket.ghost.io/',
     },
-    {
-      text: 'Privacy Policy',
-      url: '/docs/PrivacyPolicy.docx',
-    },
-    {
-      text: 'Terms of Service',
-      url: '/docs/TermsOfService.docx',
-    },
   ]
   const Company: ILink[] = [
     {
