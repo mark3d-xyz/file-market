@@ -120,7 +120,7 @@ const GetAccessPage = () => {
         </MainBlock>
       </Container>
       <IconsBlock>
-        <a href='https://discord.gg/filemarket' target={'_blank'} rel="noreferrer"><img src={DiscordGetAccess} alt='discord icon' /></a>
+        <a href='https://discord.gg/GCjrgdEQRd' target={'_blank'} rel="noreferrer"><img src={DiscordGetAccess} alt='discord icon' /></a>
         <a href='https://twitter.com/filemarket_xyz' target={'_blank'} rel="noreferrer"><img src={TwitterGetAccess} alt='twitter icon' /></a>
         <a href='https://www.linkedin.com/company/filemarketxyz/' target={'_blank'} rel="noreferrer"><img src={LinkdGetAccess} alt='linkedin icon' /></a>
       </IconsBlock>
