@@ -307,29 +307,3 @@ func (s *service) getTokenCurrentState(ctx context.Context, address common.Addre
 
 	return token, transfer, order, nil
 }
-
-func (s *service) GetAccountLikeCount(ctx context.Context, from common.Address) (*models.CampaignsLikesResponse, *models.ErrorResponse) {
-	tx, err := s.repository.BeginTransaction(ctx, pgx.TxOptions{})
-	if err != nil {
-		log.Println("begin tx failed: ", err)
-		return nil, internalError
-	}
-	defer s.repository.RollbackTransaction(ctx, tx)
-
-	count, err := s.repository.GetAccountLikeCount(ctx, tx, from)
-	if err != nil {
-		logger.Error("failed to get account likes", err, nil)
-		return nil, internalError
-	}
-
-	if err := tx.Commit(ctx); err != nil {
-		logger.Error("failed to commit db tx", err, nil)
-		return nil, internalError
-	}
-
-	return &models.CampaignsLikesResponse{
-		Result: &models.CampaignsLikesResponseResult{
-			IsValid: count > 0,
-		},
-	}, nil
-}
