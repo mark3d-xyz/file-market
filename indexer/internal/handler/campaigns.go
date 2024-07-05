@@ -40,3 +40,29 @@ func (h *handler) handleCampaignsTokens(w http.ResponseWriter, r *http.Request) 
 	}
 	sendResponse(w, 200, res)
 }
+
+func (h *handler) handleScrollQuestLikes(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), h.cfg.RequestTimeout)
+	defer cancel()
+
+	from := r.URL.Query().Get("address")
+	if from == "" {
+		sendResponse(w, http.StatusBadRequest, struct{}{})
+		return
+	}
+	res := h.service.GetScrollQuestAccountLikeCount(ctx, common.HexToAddress(from))
+	sendResponse(w, 200, res)
+}
+
+func (h *handler) handleScrollQuestTokens(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(r.Context(), h.cfg.RequestTimeout)
+	defer cancel()
+
+	from := r.URL.Query().Get("address")
+	if from == "" {
+		sendResponse(w, http.StatusBadRequest, struct{}{})
+		return
+	}
+	res := h.service.GetScrollQuestAccountTokens(ctx, common.HexToAddress(from))
+	sendResponse(w, 200, res)
+}

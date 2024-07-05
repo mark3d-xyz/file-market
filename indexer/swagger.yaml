@@ -1197,6 +1197,23 @@ definitions:
           isValid:
             type: boolean
             x-omitempty: false
+  ScrollQuestResponse:
+    type: object
+    properties:
+      error:
+        type: object
+        properties:
+          code:
+            type: number
+            format: int64
+          message: 
+            type: string
+      data:
+        type: object
+        x-omitempty: false
+        properties:
+          result:
+            type: boolean
   EFTSubscriptionRequest:
     type: object
     description: Запрос на подписку на EFT
