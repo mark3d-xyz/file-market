@@ -1214,6 +1214,7 @@ definitions:
         properties:
           result:
             type: boolean
+            x-omitempty: false
   EFTSubscriptionRequest:
     type: object
     description: Запрос на подписку на EFT
