@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -45,7 +46,14 @@ func (h *handler) handleScrollQuestLikes(w http.ResponseWriter, r *http.Request)
 	ctx, cancel := context.WithTimeout(r.Context(), h.cfg.RequestTimeout)
 	defer cancel()
 
-	from := r.URL.Query().Get("address")
+	var req struct{ Address string }
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		logger.Error("failed to parse handleScrollQuestLikes request", err, nil)
+		sendResponse(w, http.StatusBadRequest, struct{}{})
+		return
+	}
+
+	from := req.Address
 	if from == "" {
 		sendResponse(w, http.StatusBadRequest, struct{}{})
 		return
@@ -58,8 +66,14 @@ func (h *handler) handleScrollQuestTokens(w http.ResponseWriter, r *http.Request
 	ctx, cancel := context.WithTimeout(r.Context(), h.cfg.RequestTimeout)
 	defer cancel()
 
-	from := r.URL.Query().Get("address")
-	if from == "" {
+	var req struct{ Address string }
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		logger.Error("failed to parse handleScrollQuestTokens request", err, nil)
+		sendResponse(w, http.StatusBadRequest, struct{}{})
+		return
+	}
+
+	from := req.Address	if from == "" {
 		sendResponse(w, http.StatusBadRequest, struct{}{})
 		return
 	}
