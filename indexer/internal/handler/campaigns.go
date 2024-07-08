@@ -73,7 +73,8 @@ func (h *handler) handleScrollQuestTokens(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	from := req.Address	if from == "" {
+	from := req.Address
+	if from == "" {
 		sendResponse(w, http.StatusBadRequest, struct{}{})
 		return
 	}
