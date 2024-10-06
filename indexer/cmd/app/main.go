@@ -95,6 +95,7 @@ func main() {
 	if err != nil {
 		logger.Fatal("failed to create commonSigner", log2.Fields{"error": err})
 	}
+
 	uncommonSigner, err := ethsigner.NewEthSigner(cfg.Service.UncommonSignerKey)
 	if err != nil {
 		logger.Fatal("failed to create uncommonSigner", log2.Fields{"error": err})
